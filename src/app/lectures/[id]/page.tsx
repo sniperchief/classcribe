@@ -14,17 +14,17 @@ export default function LecturePage() {
   const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
+    const fetchLecture = async () => {
+      const response = await fetch(`/api/lectures/${params.id}`);
+      const data = await response.json();
+      if (data.lecture) {
+        setLecture(data.lecture);
+      }
+      setLoading(false);
+    };
+
     fetchLecture();
   }, [params.id]);
-
-  const fetchLecture = async () => {
-    const response = await fetch(`/api/lectures/${params.id}`);
-    const data = await response.json();
-    if (data.lecture) {
-      setLecture(data.lecture);
-    }
-    setLoading(false);
-  };
 
   const handleDelete = async () => {
     if (!confirm('Are you sure you want to delete this lecture?')) return;
@@ -62,7 +62,7 @@ export default function LecturePage() {
             </svg>
           </div>
           <h2 className="text-xl font-semibold text-[#0F172A] mb-2">Lecture not found</h2>
-          <p className="text-gray-500 mb-6">This lecture may have been deleted or doesn't exist.</p>
+          <p className="text-gray-500 mb-6">This lecture may have been deleted or does not exist.</p>
           <Link
             href="/dashboard"
             className="inline-flex items-center gap-2 px-4 py-2 bg-[#2563EB] text-white rounded-lg hover:bg-[#1d4ed8] transition-colors"
