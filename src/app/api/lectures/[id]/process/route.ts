@@ -4,7 +4,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { transcribeAudio } from '@/lib/deepgram';
 import { generateNotes } from '@/lib/anthropic';
 
-// Retry helper with exponential backoff
+// Retry helper for external API calls
 async function withRetry<T>(
   fn: () => Promise<T>,
   maxRetries: number = 3,
@@ -36,7 +36,6 @@ async function withRetry<T>(
         throw lastError;
       }
 
-      // Wait with exponential backoff (max 30 seconds)
       const delay = Math.min(baseDelay * Math.pow(2, attempt), 30000);
       console.log(`[${stepName}] Retrying after ${delay}ms...`);
       await new Promise(resolve => setTimeout(resolve, delay));
@@ -64,19 +63,14 @@ export async function POST(
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  // Get the lecture with retry
+  // Get the lecture
   console.log(`[Process] Starting processing for lecture ${id}`);
-  const { data: lecture, error: fetchError } = await withRetry(() =>
-    supabase
-      .from('lectures')
-      .select('*')
-      .eq('id', id)
-      .eq('user_id', user.id)
-      .single(),
-    3,
-    1000,
-    'Fetch lecture'
-  );
+  const { data: lecture, error: fetchError } = await supabase
+    .from('lectures')
+    .select('*')
+    .eq('id', id)
+    .eq('user_id', user.id)
+    .single();
 
   if (fetchError || !lecture) {
     return NextResponse.json({ error: 'Lecture not found' }, { status: 404 });
@@ -87,16 +81,11 @@ export async function POST(
   }
 
   // Get user's subscription plan and usage data
-  const { data: profile } = await withRetry(() =>
-    supabase
-      .from('profiles')
-      .select('subscription_plan, subscription_end_date, lectures_used_this_month, usage_reset_date')
-      .eq('id', user.id)
-      .single(),
-    3,
-    1000,
-    'Fetch profile'
-  );
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('subscription_plan, subscription_end_date, lectures_used_this_month, usage_reset_date')
+    .eq('id', user.id)
+    .single();
 
   // Determine active plan
   let userPlan: 'free' | 'student' = 'free';
@@ -108,29 +97,19 @@ export async function POST(
   }
 
   try {
-    // Update status to transcribing with retry
+    // Update status to transcribing
     console.log('[Process] Step 1: Setting status to transcribing...');
-    await withRetry(() =>
-      supabase
-        .from('lectures')
-        .update({ status: 'transcribing', updated_at: new Date().toISOString() })
-        .eq('id', id),
-      3,
-      1000,
-      'Update status'
-    );
+    await supabase
+      .from('lectures')
+      .update({ status: 'transcribing', updated_at: new Date().toISOString() })
+      .eq('id', id);
 
-    // Download audio file from Supabase Storage with retry (more retries for large files)
+    // Download audio file from Supabase Storage
     console.log('[Process] Step 2: Downloading audio file...');
     const filePath = lecture.audio_url.split('/storage/v1/object/public/audio/')[1];
-    const { data: audioData, error: downloadError } = await withRetry(() =>
-      adminClient.storage
-        .from('audio')
-        .download(filePath),
-      5, // More retries for download
-      2000,
-      'Download audio'
-    );
+    const { data: audioData, error: downloadError } = await adminClient.storage
+      .from('audio')
+      .download(filePath);
 
     if (downloadError || !audioData) {
       throw new Error('Failed to download audio file: ' + (downloadError?.message || 'No data'));
@@ -146,43 +125,38 @@ export async function POST(
     console.log('[Process] Step 3: Transcribing audio with Deepgram...');
     const transcriptionResult = await withRetry(
       () => transcribeAudio(audioBuffer, audioData.type),
-      5, // More retries for transcription
-      3000, // Longer delay for transcription retries
+      5,
+      3000,
       'Transcribe audio'
     );
 
     console.log(`Transcription complete: ${transcriptionResult.transcript.length} chars`);
 
     // Validate transcript quality
-    const minTranscriptLength = 100; // Minimum characters for a valid lecture
+    const minTranscriptLength = 100;
     if (transcriptionResult.transcript.length < minTranscriptLength) {
       throw new Error(
-        'We couldn\'t detect enough speech in your audio. Please ensure your recording has clear spoken content and try again.'
+        'We could not detect enough speech in your audio. Please ensure your recording has clear spoken content and try again.'
       );
     }
 
     // Update with transcript and move to generating status
     console.log('[Process] Step 4: Saving transcript and updating status...');
-    await withRetry(() =>
-      supabase
-        .from('lectures')
-        .update({
-          transcript: transcriptionResult.transcript,
-          audio_duration: transcriptionResult.duration,
-          status: 'generating',
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', id),
-      3,
-      1000,
-      'Save transcript'
-    );
+    await supabase
+      .from('lectures')
+      .update({
+        transcript: transcriptionResult.transcript,
+        audio_duration: transcriptionResult.duration,
+        status: 'generating',
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', id);
 
     // Generate notes with Claude (paid users get exam questions)
     console.log('[Process] Step 5: Generating notes with Claude...');
     const notes = await withRetry(
       () => generateNotes(transcriptionResult.transcript, userPlan),
-      5, // More retries for note generation
+      5,
       3000,
       'Generate notes'
     );
@@ -191,37 +165,27 @@ export async function POST(
 
     // Update to finalizing status
     console.log('[Process] Step 6: Saving notes...');
-    await withRetry(() =>
-      supabase
-        .from('lectures')
-        .update({
-          notes,
-          status: 'finalizing',
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', id),
-      3,
-      1000,
-      'Save notes'
-    );
+    await supabase
+      .from('lectures')
+      .update({
+        notes,
+        status: 'finalizing',
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', id);
 
-    // Brief pause for UI feedback, then mark as completed
+    // Brief pause for UI feedback
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
     // Update with final status
     console.log('[Process] Step 7: Marking as completed...');
-    await withRetry(() =>
-      supabase
-        .from('lectures')
-        .update({
-          status: 'completed',
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', id),
-      3,
-      1000,
-      'Mark completed'
-    );
+    await supabase
+      .from('lectures')
+      .update({
+        status: 'completed',
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', id);
 
     // Increment usage counter for free users
     if (userPlan === 'free') {
@@ -239,22 +203,17 @@ export async function POST(
         const currentYear = today.getFullYear();
 
         if (currentYear > resetYear || (currentYear === resetYear && currentMonth > resetMonth)) {
-          newUsageCount = 1; // Reset to 1 (this lecture)
+          newUsageCount = 1;
         }
       }
 
-      await withRetry(() =>
-        supabase
-          .from('profiles')
-          .update({
-            lectures_used_this_month: newUsageCount,
-            usage_reset_date: today.toISOString().split('T')[0],
-          })
-          .eq('id', user.id),
-        3,
-        1000,
-        'Update usage'
-      );
+      await supabase
+        .from('profiles')
+        .update({
+          lectures_used_this_month: newUsageCount,
+          usage_reset_date: today.toISOString().split('T')[0],
+        })
+        .eq('id', user.id);
     }
 
     console.log('[Process] Processing completed successfully!');
@@ -271,7 +230,6 @@ export async function POST(
   } catch (error) {
     console.error('Processing error:', error);
 
-    // Update status to failed
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
 
     // Determine user-friendly error message

@@ -1,42 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
-// Retry helper for network operations
-async function withRetry<T>(
-  fn: () => Promise<T>,
-  maxRetries: number = 3,
-  baseDelay: number = 1000
-): Promise<T> {
-  let lastError: Error | null = null;
-
-  for (let attempt = 0; attempt < maxRetries; attempt++) {
-    try {
-      return await fn();
-    } catch (error) {
-      lastError = error instanceof Error ? error : new Error(String(error));
-      const isNetworkError =
-        lastError.message.includes('fetch failed') ||
-        lastError.message.includes('ECONNRESET') ||
-        lastError.message.includes('ETIMEDOUT') ||
-        lastError.message.includes('ENOTFOUND') ||
-        lastError.message.includes('EAI_AGAIN') ||
-        lastError.message.includes('Bad Gateway') ||
-        lastError.message.includes('502') ||
-        lastError.message.includes('Connect Timeout');
-
-      if (!isNetworkError || attempt === maxRetries - 1) {
-        throw lastError;
-      }
-
-      const delay = baseDelay * Math.pow(2, attempt);
-      console.log(`Upload retry attempt ${attempt + 1}/${maxRetries} after ${delay}ms...`);
-      await new Promise(resolve => setTimeout(resolve, delay));
-    }
-  }
-
-  throw lastError;
-}
-
 // POST /api/upload - Upload audio file to Supabase Storage
 export async function POST(request: NextRequest) {
   const supabase = await createClient();
@@ -133,15 +97,13 @@ export async function POST(request: NextRequest) {
   const fileName = `${user.id}/${timestamp}.${extension}`;
 
   try {
-    // Upload to Supabase Storage with retry
-    const { error: uploadError } = await withRetry(() =>
-      supabase.storage
-        .from('audio')
-        .upload(fileName, file, {
-          contentType: file.type,
-          upsert: false,
-        })
-    );
+    // Upload to Supabase Storage
+    const { error: uploadError } = await supabase.storage
+      .from('audio')
+      .upload(fileName, file, {
+        contentType: file.type,
+        upsert: false,
+      });
 
     if (uploadError) {
       console.error('Upload error:', uploadError);
@@ -151,20 +113,18 @@ export async function POST(request: NextRequest) {
     // Get public URL
     const { data: urlData } = supabase.storage.from('audio').getPublicUrl(fileName);
 
-    // Create lecture record with retry
+    // Create lecture record
     const lectureTitle = title || file.name.replace(/\.[^/.]+$/, '');
-    const { data: lecture, error: insertError } = await withRetry(() =>
-      supabase
-        .from('lectures')
-        .insert({
-          user_id: user.id,
-          title: lectureTitle,
-          audio_url: urlData.publicUrl,
-          status: 'uploading',
-        })
-        .select()
-        .single()
-    );
+    const { data: lecture, error: insertError } = await supabase
+      .from('lectures')
+      .insert({
+        user_id: user.id,
+        title: lectureTitle,
+        audio_url: urlData.publicUrl,
+        status: 'uploading',
+      })
+      .select()
+      .single();
 
     if (insertError) {
       // Clean up uploaded file if lecture creation fails
