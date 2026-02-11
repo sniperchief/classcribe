@@ -20,11 +20,10 @@ const STEPS = [
   { id: 'uploading', label: 'Uploading audio' },
   { id: 'transcribing', label: 'Processing lecture' },
   { id: 'generating', label: 'Structuring note' },
-  { id: 'finalizing', label: 'Finalizing' },
   { id: 'completed', label: 'Note ready' },
 ];
 
-const STATUS_ORDER = ['uploading', 'transcribing', 'generating', 'finalizing', 'completed'];
+const STATUS_ORDER = ['uploading', 'transcribing', 'generating', 'completed'];
 
 export default function ProgressModal({ isOpen, currentStatus, uploadProgress = 0, onRetry, onClose }: ProgressModalProps) {
   const [steps, setSteps] = useState<ProgressStep[]>([]);

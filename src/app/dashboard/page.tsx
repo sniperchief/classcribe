@@ -135,7 +135,7 @@ export default function DashboardPage() {
 
         // Check for in-progress lectures
         const processingLecture = data.lectures.find((l: Lecture) =>
-          ['uploading', 'transcribing', 'generating', 'finalizing'].includes(l.status)
+          ['uploading', 'transcribing', 'generating'].includes(l.status)
         );
 
         if (processingLecture) {
@@ -434,7 +434,6 @@ export default function DashboardPage() {
       uploading: 'bg-yellow-100 text-yellow-800',
       transcribing: 'bg-blue-100 text-blue-800',
       generating: 'bg-indigo-100 text-indigo-800',
-      finalizing: 'bg-purple-100 text-purple-800',
       completed: 'bg-green-100 text-green-800',
       failed: 'bg-red-100 text-red-800',
     };

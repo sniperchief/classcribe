@@ -173,13 +173,13 @@ export async function POST(
     console.log(`Notes generated: ${notes.length} chars`);
     console.log(`Notes preview: ${notes.substring(0, 200)}...`);
 
-    // Update to finalizing status
-    console.log('[Process] Step 6: Saving notes...');
+    // Save notes and mark as completed
+    console.log('[Process] Step 6: Saving notes and marking as completed...');
     const { error: notesUpdateError } = await supabase
       .from('lectures')
       .update({
         notes,
-        status: 'finalizing',
+        status: 'completed',
         updated_at: new Date().toISOString(),
       })
       .eq('id', id);
@@ -188,29 +188,11 @@ export async function POST(
       console.error('[Process] Failed to save notes:', notesUpdateError);
       throw new Error('Failed to save notes: ' + notesUpdateError.message);
     }
-    console.log('[Process] Notes saved successfully');
-
-    // Brief pause for UI feedback
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    // Update with final status
-    console.log('[Process] Step 7: Marking as completed...');
-    const { error: completeUpdateError } = await supabase
-      .from('lectures')
-      .update({
-        status: 'completed',
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', id);
-
-    if (completeUpdateError) {
-      console.error('[Process] Failed to mark as completed:', completeUpdateError);
-      throw new Error('Failed to complete: ' + completeUpdateError.message);
-    }
+    console.log('[Process] Notes saved and marked as completed');
 
     // Increment usage counter for free users
     if (userPlan === 'free') {
-      console.log('[Process] Step 8: Updating usage counter...');
+      console.log('[Process] Step 7: Updating usage counter...');
       const today = new Date();
       const resetDate = profile?.usage_reset_date ? new Date(profile.usage_reset_date) : null;
 
