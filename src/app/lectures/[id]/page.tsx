@@ -169,9 +169,29 @@ export default function LecturePage() {
         {/* Content Area */}
         <div className="bg-white rounded-xl border border-[#E5E7EB] p-5 sm:p-8 min-h-[400px]">
           {activeTab === 'notes' ? (
-            <div className="prose prose-sm sm:prose lg:prose-lg max-w-none prose-headings:text-[#0F172A] prose-headings:font-bold prose-h2:text-xl prose-h2:mt-6 prose-h2:mb-3 prose-h3:text-lg prose-h3:mt-4 prose-h3:mb-2 prose-p:text-gray-700 prose-li:text-gray-700 prose-strong:text-[#0F172A]">
+            <div className="prose prose-slate max-w-none
+              prose-headings:text-[#0F172A] prose-headings:font-semibold
+              prose-h1:text-2xl prose-h1:border-b prose-h1:border-gray-200 prose-h1:pb-3 prose-h1:mb-6
+              prose-h2:text-xl prose-h2:mt-8 prose-h2:mb-4 prose-h2:text-[#2563EB]
+              prose-h3:text-lg prose-h3:mt-6 prose-h3:mb-3 prose-h3:text-[#0F172A]
+              prose-p:text-gray-700 prose-p:leading-7 prose-p:mb-4
+              prose-li:text-gray-700 prose-li:my-1
+              prose-ul:my-4 prose-ol:my-4
+              prose-strong:text-[#0F172A] prose-strong:font-semibold
+              prose-blockquote:border-l-4 prose-blockquote:border-[#2563EB] prose-blockquote:bg-blue-50 prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:rounded-r-lg prose-blockquote:not-italic
+              prose-hr:my-8 prose-hr:border-gray-200">
               {lecture.notes ? (
-                <ReactMarkdown>{lecture.notes}</ReactMarkdown>
+                <ReactMarkdown
+                  components={{
+                    h1: ({children}) => <h1 className="text-2xl font-bold text-[#0F172A] border-b border-gray-200 pb-3 mb-6">{children}</h1>,
+                    h2: ({children}) => <h2 className="text-xl font-semibold text-[#2563EB] mt-8 mb-4">{children}</h2>,
+                    h3: ({children}) => <h3 className="text-lg font-semibold text-[#0F172A] mt-6 mb-3">{children}</h3>,
+                    strong: ({children}) => <strong className="font-semibold text-[#0F172A]">{children}</strong>,
+                    blockquote: ({children}) => <blockquote className="border-l-4 border-[#2563EB] bg-blue-50 py-2 px-4 rounded-r-lg my-4">{children}</blockquote>,
+                  }}
+                >
+                  {lecture.notes}
+                </ReactMarkdown>
               ) : (
                 <div className="text-center py-12">
                   <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
