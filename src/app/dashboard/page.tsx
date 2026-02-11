@@ -242,64 +242,140 @@ export default function DashboardPage() {
       return;
     }
 
+    // Validate file type
+    const allowedTypes = [
+      'audio/mpeg',      // MP3
+      'audio/wav',       // WAV
+      'audio/x-m4a',     // M4A
+      'audio/mp4',       // M4A variant
+      'video/mp4',       // MP4
+    ];
+
+    if (!allowedTypes.includes(file.type)) {
+      setError('Invalid file type. Please upload MP3, WAV, M4A, or MP4.');
+      e.target.value = '';
+      return;
+    }
+
+    // Validate file size (50MB max)
+    const maxSize = 50 * 1024 * 1024;
+    if (file.size > maxSize) {
+      setError('File too large. Maximum size is 50MB.');
+      e.target.value = '';
+      return;
+    }
+
     setUploading(true);
     setUploadProgress(0);
     setError('');
     setProcessingStatus('uploading');
     setShowProgressModal(true);
 
-    const formData = new FormData();
-    formData.append('file', file);
-
-    // Use XMLHttpRequest for upload progress tracking
-    const xhr = new XMLHttpRequest();
-
-    xhr.upload.addEventListener('progress', (event) => {
-      if (event.lengthComputable) {
-        // Cap at 90% - remaining 10% is for server processing (upload to Supabase)
-        const percent = Math.round((event.loaded / event.total) * 90);
-        setUploadProgress(percent);
+    try {
+      // Get the current user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        throw new Error('Not authenticated');
       }
-    });
 
-    xhr.addEventListener('load', async () => {
-      if (xhr.status >= 200 && xhr.status < 300) {
-        // Server confirmed success - now show 100%
-        setUploadProgress(100);
-        try {
-          const data = JSON.parse(xhr.responseText);
-          // Set the processing lecture and refresh list
-          setProcessingLectureId(data.lecture.id);
-          await fetchLectures();
-          await fetchSubscription(); // Refresh usage count
-          // Auto-process the lecture
-          processLecture(data.lecture.id);
-        } catch (err) {
-          setError('Failed to process server response');
-          setProcessingStatus('failed');
+      // Generate unique filename
+      const timestamp = Date.now();
+      const extension = file.name.split('.').pop() || 'mp3';
+      const fileName = `${user.id}/${timestamp}.${extension}`;
+
+      // Upload directly to Supabase Storage with progress tracking
+      // Using XMLHttpRequest for progress tracking with signed URL
+      const { data: signedUrlData, error: signedUrlError } = await supabase.storage
+        .from('audio')
+        .createSignedUploadUrl(fileName);
+
+      if (signedUrlError || !signedUrlData) {
+        // Fallback: try direct upload without progress tracking
+        console.log('Signed URL not available, using direct upload');
+
+        const { error: uploadError } = await supabase.storage
+          .from('audio')
+          .upload(fileName, file, {
+            contentType: file.type,
+            upsert: false,
+          });
+
+        if (uploadError) {
+          throw new Error(uploadError.message);
         }
+
+        setUploadProgress(90);
       } else {
-        try {
-          const data = JSON.parse(xhr.responseText);
-          setError(data.error || 'Upload failed');
-        } catch {
-          setError('Upload failed');
-        }
-        setProcessingStatus('failed');
+        // Upload using signed URL with progress tracking
+        await new Promise<void>((resolve, reject) => {
+          const xhr = new XMLHttpRequest();
+
+          xhr.upload.addEventListener('progress', (event) => {
+            if (event.lengthComputable) {
+              const percent = Math.round((event.loaded / event.total) * 90);
+              setUploadProgress(percent);
+            }
+          });
+
+          xhr.addEventListener('load', () => {
+            if (xhr.status >= 200 && xhr.status < 300) {
+              resolve();
+            } else {
+              reject(new Error('Upload failed'));
+            }
+          });
+
+          xhr.addEventListener('error', () => {
+            reject(new Error('Network error during upload'));
+          });
+
+          xhr.open('PUT', signedUrlData.signedUrl);
+          xhr.setRequestHeader('Content-Type', file.type);
+          xhr.send(file);
+        });
       }
-      setUploading(false);
-      e.target.value = '';
-    });
 
-    xhr.addEventListener('error', () => {
-      setError('Network error during upload. Please try again.');
+      // Get public URL
+      const { data: urlData } = supabase.storage.from('audio').getPublicUrl(fileName);
+
+      setUploadProgress(95);
+
+      // Create lecture record via API
+      const lectureTitle = file.name.replace(/\.[^/.]+$/, '');
+      const response = await fetch('/api/lectures', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: lectureTitle,
+          audio_url: urlData.publicUrl,
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        // If lecture creation fails, clean up the uploaded file
+        await supabase.storage.from('audio').remove([fileName]);
+        throw new Error(data.error || 'Failed to create lecture');
+      }
+
+      const data = await response.json();
+      setUploadProgress(100);
+
+      // Set the processing lecture and refresh list
+      setProcessingLectureId(data.lecture.id);
+      await fetchLectures();
+      await fetchSubscription(); // Refresh usage count
+
+      // Auto-process the lecture
+      processLecture(data.lecture.id);
+    } catch (err) {
+      console.error('Upload error:', err);
+      setError(err instanceof Error ? err.message : 'Upload failed');
       setProcessingStatus('failed');
+    } finally {
       setUploading(false);
       e.target.value = '';
-    });
-
-    xhr.open('POST', '/api/upload');
-    xhr.send(formData);
+    }
   };
 
   const processLecture = async (lectureId: string) => {

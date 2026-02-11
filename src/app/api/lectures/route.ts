@@ -27,7 +27,7 @@ export async function GET() {
   return NextResponse.json({ lectures });
 }
 
-// POST /api/lectures - Create a new lecture record
+// POST /api/lectures - Create a new lecture record (after direct upload to storage)
 export async function POST(request: NextRequest) {
   const supabase = await createClient();
 
@@ -48,6 +48,50 @@ export async function POST(request: NextRequest) {
       { error: 'Title and audio_url are required' },
       { status: 400 }
     );
+  }
+
+  // Check usage limit for free users
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('subscription_plan, subscription_end_date, lectures_used_this_month, usage_reset_date')
+    .eq('id', user.id)
+    .single();
+
+  // Determine if user has active paid subscription
+  let isPaidUser = false;
+  if (profile?.subscription_plan === 'student') {
+    const endDate = profile.subscription_end_date ? new Date(profile.subscription_end_date) : null;
+    if (endDate && endDate > new Date()) {
+      isPaidUser = true;
+    }
+  }
+
+  // Check monthly limit for free users
+  if (!isPaidUser) {
+    const FREE_MONTHLY_LIMIT = 2;
+    const today = new Date();
+    const resetDate = profile?.usage_reset_date ? new Date(profile.usage_reset_date) : null;
+
+    // Check if we need to reset the counter (new month)
+    let currentUsage = profile?.lectures_used_this_month || 0;
+    if (resetDate) {
+      const resetMonth = resetDate.getMonth();
+      const resetYear = resetDate.getFullYear();
+      const currentMonth = today.getMonth();
+      const currentYear = today.getFullYear();
+
+      // If we're in a new month, usage resets
+      if (currentYear > resetYear || (currentYear === resetYear && currentMonth > resetMonth)) {
+        currentUsage = 0;
+      }
+    }
+
+    if (currentUsage >= FREE_MONTHLY_LIMIT) {
+      return NextResponse.json(
+        { error: 'Monthly limit reached. Upgrade to Student plan for more lectures.' },
+        { status: 403 }
+      );
+    }
   }
 
   const { data: lecture, error } = await supabase
