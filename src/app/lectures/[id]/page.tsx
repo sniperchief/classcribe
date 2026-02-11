@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import ReactMarkdown from 'react-markdown';
 import type { Lecture } from '@/lib/types';
 
 export default function LecturePage() {
@@ -168,11 +169,9 @@ export default function LecturePage() {
         {/* Content Area */}
         <div className="bg-white rounded-xl border border-[#E5E7EB] p-5 sm:p-8 min-h-[400px]">
           {activeTab === 'notes' ? (
-            <div className="prose prose-sm sm:prose max-w-none">
+            <div className="prose prose-sm sm:prose lg:prose-lg max-w-none prose-headings:text-[#0F172A] prose-headings:font-bold prose-h2:text-xl prose-h2:mt-6 prose-h2:mb-3 prose-h3:text-lg prose-h3:mt-4 prose-h3:mb-2 prose-p:text-gray-700 prose-li:text-gray-700 prose-strong:text-[#0F172A]">
               {lecture.notes ? (
-                <div className="whitespace-pre-wrap text-[#0F172A] leading-relaxed">
-                  {lecture.notes}
-                </div>
+                <ReactMarkdown>{lecture.notes}</ReactMarkdown>
               ) : (
                 <div className="text-center py-12">
                   <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
