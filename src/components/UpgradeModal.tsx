@@ -35,7 +35,7 @@ export default function UpgradeModal({ isOpen, onClose, lecturesUsed, lectureLim
 
   if (!isOpen) return null;
 
-  const price = currency === 'NGN' ? '₦2,500' : '$6';
+  const price = currency === 'NGN' ? '₦6,500' : '$6';
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
