@@ -142,7 +142,7 @@ export async function POST(
 
     // Update with transcript and move to generating status
     console.log('[Process] Step 4: Saving transcript and updating status...');
-    await supabase
+    const { error: transcriptUpdateError } = await supabase
       .from('lectures')
       .update({
         transcript: transcriptionResult.transcript,
@@ -152,8 +152,17 @@ export async function POST(
       })
       .eq('id', id);
 
+    if (transcriptUpdateError) {
+      console.error('[Process] Failed to save transcript:', transcriptUpdateError);
+      throw new Error('Failed to save transcript: ' + transcriptUpdateError.message);
+    }
+    console.log('[Process] Transcript saved successfully');
+
     // Generate notes with Claude (paid users get exam questions)
     console.log('[Process] Step 5: Generating notes with Claude...');
+    console.log('[Process] ANTHROPIC_API_KEY present:', !!process.env.ANTHROPIC_API_KEY);
+    console.log('[Process] ANTHROPIC_API_KEY length:', process.env.ANTHROPIC_API_KEY?.length || 0);
+
     const notes = await withRetry(
       () => generateNotes(transcriptionResult.transcript, userPlan),
       5,
@@ -162,10 +171,11 @@ export async function POST(
     );
 
     console.log(`Notes generated: ${notes.length} chars`);
+    console.log(`Notes preview: ${notes.substring(0, 200)}...`);
 
     // Update to finalizing status
     console.log('[Process] Step 6: Saving notes...');
-    await supabase
+    const { error: notesUpdateError } = await supabase
       .from('lectures')
       .update({
         notes,
@@ -174,18 +184,29 @@ export async function POST(
       })
       .eq('id', id);
 
+    if (notesUpdateError) {
+      console.error('[Process] Failed to save notes:', notesUpdateError);
+      throw new Error('Failed to save notes: ' + notesUpdateError.message);
+    }
+    console.log('[Process] Notes saved successfully');
+
     // Brief pause for UI feedback
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
     // Update with final status
     console.log('[Process] Step 7: Marking as completed...');
-    await supabase
+    const { error: completeUpdateError } = await supabase
       .from('lectures')
       .update({
         status: 'completed',
         updated_at: new Date().toISOString(),
       })
       .eq('id', id);
+
+    if (completeUpdateError) {
+      console.error('[Process] Failed to mark as completed:', completeUpdateError);
+      throw new Error('Failed to complete: ' + completeUpdateError.message);
+    }
 
     // Increment usage counter for free users
     if (userPlan === 'free') {

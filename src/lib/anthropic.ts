@@ -87,24 +87,41 @@ Tone:
 - Simple English`;
 
 export async function generateNotes(transcript: string, plan: 'free' | 'student' = 'free'): Promise<string> {
+  console.log('[Anthropic] Starting note generation...');
+  console.log('[Anthropic] Plan:', plan);
+  console.log('[Anthropic] Transcript length:', transcript.length);
+
   const systemPrompt = plan === 'student' ? PAID_SYSTEM_PROMPT : FREE_SYSTEM_PROMPT;
 
-  const message = await getClient().messages.create({
-    model: 'claude-3-haiku-20240307',
-    max_tokens: 4096,
-    messages: [
-      {
-        role: 'user',
-        content: `Please convert the following lecture transcript into well-structured study notes:\n\n${transcript}`,
-      },
-    ],
-    system: systemPrompt,
-  });
+  try {
+    const client = getClient();
+    console.log('[Anthropic] Client created, calling API...');
 
-  const content = message.content[0];
-  if (content.type !== 'text') {
-    throw new Error('Unexpected response type from Claude');
+    const message = await client.messages.create({
+      model: 'claude-3-haiku-20240307',
+      max_tokens: 4096,
+      messages: [
+        {
+          role: 'user',
+          content: `Please convert the following lecture transcript into well-structured study notes:\n\n${transcript}`,
+        },
+      ],
+      system: systemPrompt,
+    });
+
+    console.log('[Anthropic] API response received');
+    console.log('[Anthropic] Stop reason:', message.stop_reason);
+    console.log('[Anthropic] Content blocks:', message.content.length);
+
+    const content = message.content[0];
+    if (content.type !== 'text') {
+      throw new Error('Unexpected response type from Claude: ' + content.type);
+    }
+
+    console.log('[Anthropic] Notes generated successfully, length:', content.text.length);
+    return content.text;
+  } catch (error) {
+    console.error('[Anthropic] Error generating notes:', error);
+    throw error;
   }
-
-  return content.text;
 }
