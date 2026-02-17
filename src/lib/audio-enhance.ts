@@ -14,7 +14,8 @@ export async function enhanceAudio(audioBuffer: Buffer, mimeType: string): Promi
   console.log(`[AudioEnhance] Sending ${audioBuffer.length} bytes to Railway for enhancement...`);
 
   const formData = new FormData();
-  const blob = new Blob([audioBuffer], { type: mimeType });
+  const uint8Array = new Uint8Array(audioBuffer);
+  const blob = new Blob([uint8Array], { type: mimeType });
   formData.append('audio', blob, `audio.${getExtension(mimeType)}`);
 
   const response = await fetch(`${AUDIO_ENHANCER_URL}/enhance`, {
