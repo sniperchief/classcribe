@@ -6,6 +6,8 @@ import { createClient } from '@/lib/supabase/client';
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isToolsDropdownOpen, setIsToolsDropdownOpen] = useState(false);
+  const [isMobileToolsOpen, setIsMobileToolsOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [checkingAuth, setCheckingAuth] = useState(true);
 
@@ -52,15 +54,36 @@ export default function Navbar() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
-            <a href="#how-it-works" className="text-sm text-gray-600 hover:text-[#0F172A] transition-colors">
-              How It Works
-            </a>
-            <a href="#features" className="text-sm text-gray-600 hover:text-[#0F172A] transition-colors">
-              Features
-            </a>
-            <a href="#testimonials" className="text-sm text-gray-600 hover:text-[#0F172A] transition-colors">
-              Testimonials
-            </a>
+            <Link href="/" className="text-sm text-gray-600 hover:text-[#0F172A] transition-colors">
+              Home
+            </Link>
+            <div
+              className="relative"
+              onMouseEnter={() => setIsToolsDropdownOpen(true)}
+              onMouseLeave={() => setIsToolsDropdownOpen(false)}
+            >
+              <button className="text-sm text-gray-600 hover:text-[#0F172A] transition-colors flex items-center gap-1">
+                Tools
+                <svg
+                  className={`w-4 h-4 transition-transform ${isToolsDropdownOpen ? 'rotate-180' : ''}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              {isToolsDropdownOpen && (
+                <div className="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-[#E5E7EB] py-2">
+                  <Link
+                    href="/signup"
+                    className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-[#0F172A] transition-colors"
+                  >
+                    Exam Ready Notes
+                  </Link>
+                </div>
+              )}
+            </div>
             <Link href="/pricing" className="text-sm text-gray-600 hover:text-[#0F172A] transition-colors">
               Pricing
             </Link>
@@ -121,27 +144,40 @@ export default function Navbar() {
         {isMobileMenuOpen && (
           <div className="md:hidden py-4 border-t border-[#E5E7EB]">
             <div className="flex flex-col gap-4">
-              <a
-                href="#how-it-works"
+              <Link
+                href="/"
                 className="text-sm text-gray-600 hover:text-[#0F172A] transition-colors"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                How It Works
-              </a>
-              <a
-                href="#features"
-                className="text-sm text-gray-600 hover:text-[#0F172A] transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Features
-              </a>
-              <a
-                href="#testimonials"
-                className="text-sm text-gray-600 hover:text-[#0F172A] transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Testimonials
-              </a>
+                Home
+              </Link>
+              <div>
+                <button
+                  className="text-sm text-gray-600 hover:text-[#0F172A] transition-colors flex items-center gap-1 w-full"
+                  onClick={() => setIsMobileToolsOpen(!isMobileToolsOpen)}
+                >
+                  Tools
+                  <svg
+                    className={`w-4 h-4 transition-transform ${isMobileToolsOpen ? 'rotate-180' : ''}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                {isMobileToolsOpen && (
+                  <div className="pl-4 mt-2">
+                    <Link
+                      href="/signup"
+                      className="block text-sm text-gray-600 hover:text-[#0F172A] transition-colors py-1"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      Exam Ready Notes
+                    </Link>
+                  </div>
+                )}
+              </div>
               <Link
                 href="/pricing"
                 className="text-sm text-gray-600 hover:text-[#0F172A] transition-colors"
