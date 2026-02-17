@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { transcribeAudio } from '@/lib/deepgram';
 import { generateNotes } from '@/lib/anthropic';
+import { enhanceAudio } from '@/lib/audio-enhance';
 
 // Retry helper for external API calls
 async function withRetry<T>(
@@ -117,14 +118,32 @@ export async function POST(
 
     // Convert to buffer
     const arrayBuffer = await audioData.arrayBuffer();
-    const audioBuffer = Buffer.from(arrayBuffer);
+    let audioBuffer = Buffer.from(arrayBuffer);
 
     console.log(`Audio downloaded: ${audioBuffer.length} bytes, type: ${audioData.type}`);
 
+    // Enhance audio quality with FFmpeg (via Railway microservice)
+    console.log('[Process] Step 3: Enhancing audio quality...');
+    let audioMimeType = audioData.type;
+    try {
+      audioBuffer = await withRetry(
+        () => enhanceAudio(audioBuffer, audioData.type),
+        3,
+        2000,
+        'Enhance audio'
+      );
+      // Enhanced audio is always WAV
+      audioMimeType = 'audio/wav';
+      console.log(`[Process] Audio enhanced: ${audioBuffer.length} bytes`);
+    } catch (enhanceError) {
+      // Log but continue with original audio if enhancement fails
+      console.warn('[Process] Audio enhancement failed, continuing with original:', enhanceError);
+    }
+
     // Transcribe with Deepgram (with retry for network issues)
-    console.log('[Process] Step 3: Transcribing audio with Deepgram...');
+    console.log('[Process] Step 4: Transcribing audio with Deepgram...');
     const transcriptionResult = await withRetry(
-      () => transcribeAudio(audioBuffer, audioData.type),
+      () => transcribeAudio(audioBuffer, audioMimeType),
       5,
       3000,
       'Transcribe audio'
@@ -141,7 +160,7 @@ export async function POST(
     }
 
     // Update with transcript and move to generating status
-    console.log('[Process] Step 4: Saving transcript and updating status...');
+    console.log('[Process] Step 5: Saving transcript and updating status...');
     const { error: transcriptUpdateError } = await supabase
       .from('lectures')
       .update({
@@ -159,7 +178,7 @@ export async function POST(
     console.log('[Process] Transcript saved successfully');
 
     // Generate notes with Claude (paid users get exam questions)
-    console.log('[Process] Step 5: Generating notes with Claude...');
+    console.log('[Process] Step 6: Generating notes with Claude...');
     console.log('[Process] ANTHROPIC_API_KEY present:', !!process.env.ANTHROPIC_API_KEY);
     console.log('[Process] ANTHROPIC_API_KEY length:', process.env.ANTHROPIC_API_KEY?.length || 0);
 
@@ -174,7 +193,7 @@ export async function POST(
     console.log(`Notes preview: ${notes.substring(0, 200)}...`);
 
     // Save notes and mark as completed
-    console.log('[Process] Step 6: Saving notes and marking as completed...');
+    console.log('[Process] Step 7: Saving notes and marking as completed...');
     const { error: notesUpdateError } = await supabase
       .from('lectures')
       .update({
@@ -192,7 +211,7 @@ export async function POST(
 
     // Increment usage counter for free users
     if (userPlan === 'free') {
-      console.log('[Process] Step 7: Updating usage counter...');
+      console.log('[Process] Step 8: Updating usage counter...');
       const today = new Date();
       const resetDate = profile?.usage_reset_date ? new Date(profile.usage_reset_date) : null;
 
@@ -242,6 +261,8 @@ export async function POST(
         errorMessage.includes('ETIMEDOUT') ||
         errorMessage.includes('ENOTFOUND')) {
       userMessage = 'Network connection error. Please check your internet and try again.';
+    } else if (errorMessage.includes('enhancement')) {
+      userMessage = 'Audio processing failed. Please try again.';
     } else if (errorMessage.includes('Deepgram')) {
       userMessage = 'Audio transcription failed. Please try again.';
     } else if (errorMessage.includes('Claude') || errorMessage.includes('Anthropic')) {
