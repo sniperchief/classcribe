@@ -118,7 +118,7 @@ export async function POST(
 
     // Convert to buffer
     const arrayBuffer = await audioData.arrayBuffer();
-    let audioBuffer = Buffer.from(arrayBuffer);
+    let audioBuffer: Buffer = Buffer.from(arrayBuffer);
 
     console.log(`Audio downloaded: ${audioBuffer.length} bytes, type: ${audioData.type}`);
 
