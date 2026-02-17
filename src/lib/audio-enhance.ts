@@ -5,7 +5,7 @@
 
 const AUDIO_ENHANCER_URL = process.env.AUDIO_ENHANCER_URL;
 
-export async function enhanceAudio(audioBuffer: Buffer, mimeType: string): Promise<Buffer> {
+export async function enhanceAudio(audioBuffer: Buffer<ArrayBufferLike>, mimeType: string): Promise<Buffer<ArrayBufferLike>> {
   if (!AUDIO_ENHANCER_URL) {
     console.log('[AudioEnhance] AUDIO_ENHANCER_URL not set, skipping enhancement');
     return audioBuffer;
@@ -31,7 +31,7 @@ export async function enhanceAudio(audioBuffer: Buffer, mimeType: string): Promi
   console.log(`[AudioEnhance] Enhancement completed in ${processingTime}ms`);
 
   const enhancedArrayBuffer = await response.arrayBuffer();
-  const enhancedBuffer = Buffer.from(enhancedArrayBuffer);
+  const enhancedBuffer = Buffer.from(enhancedArrayBuffer) as Buffer<ArrayBufferLike>;
 
   console.log(`[AudioEnhance] Original: ${audioBuffer.length} bytes, Enhanced: ${enhancedBuffer.length} bytes`);
 
