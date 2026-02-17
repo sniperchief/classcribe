@@ -4,11 +4,8 @@ export default function HowItWorks() {
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
         <div className="text-center mb-12 sm:mb-16">
-          <p className="text-sm font-medium text-[#2563EB] uppercase tracking-wider mb-3 sm:mb-4">
-            How It Works
-          </p>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#0F172A] mb-3 sm:mb-4 px-2">
-            From Recording to Notes in 3 Steps
+            How to Use Classcribe
           </h2>
           <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto px-2">
             No complicated setup. Just upload, wait, and study.

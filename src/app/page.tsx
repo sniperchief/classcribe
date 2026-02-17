@@ -3,7 +3,6 @@ import {
   Hero,
   Problem,
   HowItWorks,
-  Features,
   Testimonials,
   FinalCTA,
   Footer,
@@ -32,7 +31,6 @@ export default function Home() {
         <Hero />
         <Problem />
         <HowItWorks />
-        <Features />
         <Testimonials />
         <FinalCTA />
       </main>

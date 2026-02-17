@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 
@@ -13,7 +13,11 @@ export default function SignupPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
   const supabase = createClient();
+
+  // Check for guest token
+  const guestToken = searchParams.get('token');
 
   // Prefetch onboarding and dashboard pages
   useEffect(() => {
@@ -56,6 +60,26 @@ export default function SignupPage() {
         setError(error.message);
         setLoading(false);
       } else {
+        // If there's a guest token, claim the lecture
+        if (guestToken) {
+          try {
+            const claimResponse = await fetch('/api/guest/claim', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ token: guestToken }),
+            });
+
+            if (claimResponse.ok) {
+              const { lectureId } = await claimResponse.json();
+              // Redirect to view the claimed lecture
+              router.push(`/lectures/${lectureId}`);
+              return;
+            }
+          } catch (claimError) {
+            console.error('Failed to claim lecture:', claimError);
+          }
+        }
+
         // Redirect to onboarding for new users
         router.push('/onboarding');
       }
@@ -93,13 +117,29 @@ export default function SignupPage() {
 
         {/* Heading */}
         <h1 className="text-2xl sm:text-3xl font-bold text-[#0F172A] text-center mb-2">
-          Get started!
+          {guestToken ? 'Your notes are ready!' : 'Get started!'}
         </h1>
 
         {/* Subtext */}
         <p className="text-gray-600 text-center mb-8 text-sm sm:text-base px-4">
-          Join over 10,000+ students globally and start transforming recorded lectures into notes
+          {guestToken
+            ? 'Create an account to view your generated notes'
+            : 'Join over 10,000+ students globally and start transforming recorded lectures into notes'
+          }
         </p>
+
+        {/* Guest Token Notice */}
+        {guestToken && (
+          <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+            <div className="flex items-center gap-2 text-green-700">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span className="text-sm font-medium">Your lecture has been processed!</span>
+            </div>
+            <p className="text-xs text-green-600 mt-1">Sign up to access your notes.</p>
+          </div>
+        )}
 
         {/* Form */}
         <form onSubmit={handleSignup} className="space-y-5">
