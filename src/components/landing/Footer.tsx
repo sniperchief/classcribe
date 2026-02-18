@@ -8,7 +8,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
             <Link href="/" className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 bg-[#2563EB] rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-[#A855F7] rounded-lg flex items-center justify-center">
                 <svg
                   className="w-5 h-5 text-white"
                   fill="none"
@@ -36,22 +36,22 @@ export default function Footer() {
             <h3 className="font-semibold text-[#0F172A] mb-3 sm:mb-4 text-sm sm:text-base">Product</h3>
             <ul className="space-y-2 sm:space-y-3">
               <li>
-                <a href="#how-it-works" className="text-sm text-gray-600 hover:text-[#0F172A] transition-colors">
+                <a href="#how-it-works" className="text-sm text-gray-600 hover:text-[#4F6B5C] transition-colors">
                   How It Works
                 </a>
               </li>
               <li>
-                <a href="#features" className="text-sm text-gray-600 hover:text-[#0F172A] transition-colors">
+                <a href="#features" className="text-sm text-gray-600 hover:text-[#4F6B5C] transition-colors">
                   Features
                 </a>
               </li>
               <li>
-                <Link href="/signup" className="text-sm text-gray-600 hover:text-[#0F172A] transition-colors">
+                <Link href="/signup" className="text-sm text-gray-600 hover:text-[#4F6B5C] transition-colors">
                   Pricing
                 </Link>
               </li>
               <li>
-                <a href="#testimonials" className="text-sm text-gray-600 hover:text-[#0F172A] transition-colors">
+                <a href="#testimonials" className="text-sm text-gray-600 hover:text-[#4F6B5C] transition-colors">
                   Testimonials
                 </a>
               </li>
@@ -63,22 +63,22 @@ export default function Footer() {
             <h3 className="font-semibold text-[#0F172A] mb-3 sm:mb-4 text-sm sm:text-base">Support</h3>
             <ul className="space-y-2 sm:space-y-3">
               <li>
-                <a href="#" className="text-sm text-gray-600 hover:text-[#0F172A] transition-colors">
+                <a href="#" className="text-sm text-gray-600 hover:text-[#4F6B5C] transition-colors">
                   Help Center
                 </a>
               </li>
               <li>
-                <a href="#" className="text-sm text-gray-600 hover:text-[#0F172A] transition-colors">
+                <a href="#" className="text-sm text-gray-600 hover:text-[#4F6B5C] transition-colors">
                   Contact Us
                 </a>
               </li>
               <li>
-                <a href="#" className="text-sm text-gray-600 hover:text-[#0F172A] transition-colors">
+                <a href="#" className="text-sm text-gray-600 hover:text-[#4F6B5C] transition-colors">
                   FAQs
                 </a>
               </li>
               <li>
-                <a href="#" className="text-sm text-gray-600 hover:text-[#0F172A] transition-colors">
+                <a href="#" className="text-sm text-gray-600 hover:text-[#4F6B5C] transition-colors">
                   System Status
                 </a>
               </li>
@@ -90,17 +90,17 @@ export default function Footer() {
             <h3 className="font-semibold text-[#0F172A] mb-3 sm:mb-4 text-sm sm:text-base">Legal</h3>
             <ul className="space-y-2 sm:space-y-3">
               <li>
-                <a href="#" className="text-sm text-gray-600 hover:text-[#0F172A] transition-colors">
+                <a href="#" className="text-sm text-gray-600 hover:text-[#4F6B5C] transition-colors">
                   Privacy Policy
                 </a>
               </li>
               <li>
-                <a href="#" className="text-sm text-gray-600 hover:text-[#0F172A] transition-colors">
+                <a href="#" className="text-sm text-gray-600 hover:text-[#4F6B5C] transition-colors">
                   Terms of Service
                 </a>
               </li>
               <li>
-                <a href="#" className="text-sm text-gray-600 hover:text-[#0F172A] transition-colors">
+                <a href="#" className="text-sm text-gray-600 hover:text-[#4F6B5C] transition-colors">
                   Cookie Policy
                 </a>
               </li>
@@ -118,7 +118,7 @@ export default function Footer() {
           <div className="flex items-center gap-3 sm:gap-4">
             <a
               href="#"
-              className="w-9 h-9 sm:w-10 sm:h-10 bg-[#F8FAFC] rounded-lg flex items-center justify-center text-gray-500 hover:text-[#0F172A] hover:bg-gray-100 transition-colors"
+              className="w-9 h-9 sm:w-10 sm:h-10 bg-[#F8FAFC] rounded-lg flex items-center justify-center text-gray-500 hover:text-[#4F6B5C] hover:bg-gray-100 transition-colors"
               aria-label="Twitter"
             >
               <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -127,7 +127,7 @@ export default function Footer() {
             </a>
             <a
               href="#"
-              className="w-9 h-9 sm:w-10 sm:h-10 bg-[#F8FAFC] rounded-lg flex items-center justify-center text-gray-500 hover:text-[#0F172A] hover:bg-gray-100 transition-colors"
+              className="w-9 h-9 sm:w-10 sm:h-10 bg-[#F8FAFC] rounded-lg flex items-center justify-center text-gray-500 hover:text-[#4F6B5C] hover:bg-gray-100 transition-colors"
               aria-label="LinkedIn"
             >
               <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -136,7 +136,7 @@ export default function Footer() {
             </a>
             <a
               href="#"
-              className="w-9 h-9 sm:w-10 sm:h-10 bg-[#F8FAFC] rounded-lg flex items-center justify-center text-gray-500 hover:text-[#0F172A] hover:bg-gray-100 transition-colors"
+              className="w-9 h-9 sm:w-10 sm:h-10 bg-[#F8FAFC] rounded-lg flex items-center justify-center text-gray-500 hover:text-[#4F6B5C] hover:bg-gray-100 transition-colors"
               aria-label="Instagram"
             >
               <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">

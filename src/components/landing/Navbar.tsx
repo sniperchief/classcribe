@@ -33,7 +33,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-[#2563EB] rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-[#A855F7] rounded-lg flex items-center justify-center">
               <svg
                 className="w-5 h-5 text-white"
                 fill="none"
@@ -54,7 +54,7 @@ export default function Navbar() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
-            <Link href="/" className="text-sm text-gray-600 hover:text-[#0F172A] transition-colors">
+            <Link href="/" className="text-sm text-gray-600 hover:text-[#4F6B5C] transition-colors">
               Home
             </Link>
             <div
@@ -62,7 +62,7 @@ export default function Navbar() {
               onMouseEnter={() => setIsToolsDropdownOpen(true)}
               onMouseLeave={() => setIsToolsDropdownOpen(false)}
             >
-              <button className="text-sm text-gray-600 hover:text-[#0F172A] transition-colors flex items-center gap-1">
+              <button className="text-sm text-gray-600 hover:text-[#4F6B5C] transition-colors flex items-center gap-1">
                 Tools
                 <svg
                   className={`w-4 h-4 transition-transform ${isToolsDropdownOpen ? 'rotate-180' : ''}`}
@@ -77,14 +77,14 @@ export default function Navbar() {
                 <div className="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-[#E5E7EB] py-2">
                   <Link
                     href="/signup"
-                    className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-[#0F172A] transition-colors"
+                    className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-[#4F6B5C] transition-colors"
                   >
                     Exam Ready Notes
                   </Link>
                 </div>
               )}
             </div>
-            <Link href="/pricing" className="text-sm text-gray-600 hover:text-[#0F172A] transition-colors">
+            <Link href="/pricing" className="text-sm text-gray-600 hover:text-[#4F6B5C] transition-colors">
               Pricing
             </Link>
           </div>
@@ -95,7 +95,7 @@ export default function Navbar() {
               isLoggedIn ? (
                 <Link
                   href="/dashboard"
-                  className="bg-[#2563EB] text-sm font-medium py-2 px-4 rounded-lg hover:bg-[#1d4ed8] transition-colors"
+                  className="bg-[#A855F7] text-sm font-medium py-2 px-4 rounded-lg hover:bg-[#9333EA] transition-colors"
                   style={{ color: '#FFFFFF' }}
                 >
                   Dashboard
@@ -104,13 +104,13 @@ export default function Navbar() {
                 <>
                   <Link
                     href="/login"
-                    className="text-sm font-medium text-gray-600 hover:text-[#0F172A] transition-colors"
+                    className="text-sm font-medium text-gray-600 hover:text-[#4F6B5C] transition-colors"
                   >
                     Log In
                   </Link>
                   <Link
                     href="/signup"
-                    className="bg-[#2563EB] text-sm font-medium py-2 px-4 rounded-lg hover:bg-[#1d4ed8] transition-colors"
+                    className="bg-[#A855F7] text-sm font-medium py-2 px-4 rounded-lg hover:bg-[#9333EA] transition-colors"
                     style={{ color: '#FFFFFF' }}
                   >
                     Get Started Free
@@ -123,7 +123,7 @@ export default function Navbar() {
           {/* Mobile Menu Button */}
           <button
             type="button"
-            className="md:hidden p-2 text-gray-600 hover:text-[#0F172A]"
+            className="md:hidden p-2 text-gray-600 hover:text-[#4F6B5C]"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             aria-expanded={isMobileMenuOpen}
             aria-label="Toggle navigation menu"
@@ -146,14 +146,14 @@ export default function Navbar() {
             <div className="flex flex-col gap-4">
               <Link
                 href="/"
-                className="text-sm text-gray-600 hover:text-[#0F172A] transition-colors"
+                className="text-sm text-gray-600 hover:text-[#4F6B5C] transition-colors"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Home
               </Link>
               <div>
                 <button
-                  className="text-sm text-gray-600 hover:text-[#0F172A] transition-colors flex items-center gap-1 w-full"
+                  className="text-sm text-gray-600 hover:text-[#4F6B5C] transition-colors flex items-center gap-1 w-full"
                   onClick={() => setIsMobileToolsOpen(!isMobileToolsOpen)}
                 >
                   Tools
@@ -170,7 +170,7 @@ export default function Navbar() {
                   <div className="pl-4 mt-2">
                     <Link
                       href="/signup"
-                      className="block text-sm text-gray-600 hover:text-[#0F172A] transition-colors py-1"
+                      className="block text-sm text-gray-600 hover:text-[#4F6B5C] transition-colors py-1"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       Exam Ready Notes
@@ -180,7 +180,7 @@ export default function Navbar() {
               </div>
               <Link
                 href="/pricing"
-                className="text-sm text-gray-600 hover:text-[#0F172A] transition-colors"
+                className="text-sm text-gray-600 hover:text-[#4F6B5C] transition-colors"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Pricing
@@ -190,19 +190,19 @@ export default function Navbar() {
                 isLoggedIn ? (
                   <Link
                     href="/dashboard"
-                    className="bg-[#2563EB] text-sm font-medium py-2 px-4 rounded-lg text-center hover:bg-[#1d4ed8] transition-colors"
+                    className="bg-[#A855F7] text-sm font-medium py-2 px-4 rounded-lg text-center hover:bg-[#9333EA] transition-colors"
                     style={{ color: '#FFFFFF' }}
                   >
                     Dashboard
                   </Link>
                 ) : (
                   <>
-                    <Link href="/login" className="text-sm font-medium text-gray-600 hover:text-[#0F172A]">
+                    <Link href="/login" className="text-sm font-medium text-gray-600 hover:text-[#4F6B5C]">
                       Log In
                     </Link>
                     <Link
                       href="/signup"
-                      className="bg-[#2563EB] text-sm font-medium py-2 px-4 rounded-lg text-center hover:bg-[#1d4ed8] transition-colors"
+                      className="bg-[#A855F7] text-sm font-medium py-2 px-4 rounded-lg text-center hover:bg-[#9333EA] transition-colors"
                       style={{ color: '#FFFFFF' }}
                     >
                       Get Started Free

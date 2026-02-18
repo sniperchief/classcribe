@@ -165,7 +165,7 @@ export default function PricingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <Link href="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-[#2563EB] rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-[#A855F7] rounded-lg flex items-center justify-center">
                 <svg
                   className="w-5 h-5 text-white"
                   fill="none"
@@ -189,7 +189,7 @@ export default function PricingPage() {
               </Link>
               <Link
                 href="/signup"
-                className="bg-[#2563EB] text-sm font-medium py-2 px-4 rounded-lg hover:bg-[#1d4ed8] transition-colors"
+                className="bg-[#A855F7] text-sm font-medium py-2 px-4 rounded-lg hover:bg-[#9333EA] transition-colors"
                 style={{ color: '#FFFFFF' }}
               >
                 Get Started
@@ -247,13 +247,13 @@ export default function PricingPage() {
               key={plan.name}
               className={`bg-white rounded-2xl p-6 sm:p-8 border-2 transition-shadow hover:shadow-lg ${
                 plan.highlighted
-                  ? 'border-[#2563EB] shadow-lg relative'
+                  ? 'border-[#A855F7] shadow-lg relative'
                   : 'border-[#E5E7EB]'
               }`}
             >
               {plan.highlighted && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                  <span className="bg-[#2563EB] text-white text-xs font-medium px-3 py-1 rounded-full">
+                  <span className="bg-[#A855F7] text-white text-xs font-medium px-3 py-1 rounded-full">
                     Most Popular
                   </span>
                 </div>
@@ -285,7 +285,7 @@ export default function PricingPage() {
                 disabled={checkingOut}
                 className={`block w-full py-3 rounded-lg text-center font-medium transition-colors ${
                   plan.highlighted
-                    ? 'bg-[#2563EB] hover:bg-[#1d4ed8]'
+                    ? 'bg-[#A855F7] hover:bg-[#9333EA]'
                     : 'bg-[#0F172A] hover:bg-[#1e293b]'
                 } ${checkingOut ? 'opacity-50 cursor-not-allowed' : ''}`}
                 style={{ color: '#FFFFFF' }}
@@ -300,7 +300,7 @@ export default function PricingPage() {
                     <li key={index} className="flex items-start gap-3">
                       <svg
                         className={`w-5 h-5 flex-shrink-0 ${
-                          plan.highlighted ? 'text-[#2563EB]' : 'text-green-500'
+                          plan.highlighted ? 'text-[#A855F7]' : 'text-green-500'
                         }`}
                         fill="none"
                         stroke="currentColor"
@@ -384,7 +384,7 @@ export default function PricingPage() {
           </p>
           <Link
             href="/signup"
-            className="inline-block bg-[#2563EB] px-8 py-3 rounded-lg font-medium hover:bg-[#1d4ed8] transition-colors"
+            className="inline-block bg-[#A855F7] px-8 py-3 rounded-lg font-medium hover:bg-[#9333EA] transition-colors"
             style={{ color: '#FFFFFF' }}
           >
             Get Started Free

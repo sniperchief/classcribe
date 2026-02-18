@@ -37,7 +37,7 @@ export default function ForgotPasswordPage() {
         {/* Logo */}
         <div className="flex justify-center mb-6">
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-[#2563EB] rounded-xl flex items-center justify-center">
+            <div className="w-10 h-10 bg-[#A855F7] rounded-xl flex items-center justify-center">
               <svg
                 className="w-6 h-6 text-white"
                 fill="none"
@@ -80,7 +80,7 @@ export default function ForgotPasswordPage() {
                   setEmailSent(false);
                   setEmail('');
                 }}
-                className="w-full py-3 rounded-lg text-base font-medium bg-[#2563EB] hover:bg-[#1d4ed8] transition-colors"
+                className="w-full py-3 rounded-lg text-base font-medium bg-[#A855F7] hover:bg-[#9333EA] transition-colors"
                 style={{ color: '#FFFFFF' }}
               >
                 Try another email
@@ -123,7 +123,7 @@ export default function ForgotPasswordPage() {
                   placeholder="Enter your email"
                   required
                   className="w-full px-4 py-3 border border-[#E5E7EB] rounded-lg text-base
-                           focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:border-transparent
+                           focus:outline-none focus:ring-2 focus:ring-[#A855F7] focus:border-transparent
                            placeholder:text-gray-400 transition-all"
                 />
               </div>
@@ -134,7 +134,7 @@ export default function ForgotPasswordPage() {
                 disabled={!isFormComplete || loading}
                 className={`w-full py-3 rounded-lg text-base font-medium transition-all duration-200
                   ${isFormComplete && !loading
-                    ? 'bg-[#2563EB] hover:bg-[#1d4ed8] cursor-pointer'
+                    ? 'bg-[#A855F7] hover:bg-[#9333EA] cursor-pointer'
                     : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                   }`}
                 style={{ color: isFormComplete && !loading ? '#FFFFFF' : undefined }}

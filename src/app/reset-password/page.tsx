@@ -65,7 +65,7 @@ export default function ResetPasswordPage() {
     return (
       <main className="min-h-screen flex items-center justify-center bg-[#F8FAFC]">
         <div className="text-center">
-          <div className="w-10 h-10 border-2 border-[#2563EB] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="w-10 h-10 border-2 border-[#A855F7] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-gray-500">Verifying your reset link...</p>
         </div>
       </main>
@@ -90,7 +90,7 @@ export default function ResetPasswordPage() {
           </p>
           <Link
             href="/forgot-password"
-            className="inline-block w-full py-3 rounded-lg text-base font-medium bg-[#2563EB] hover:bg-[#1d4ed8] transition-colors text-center"
+            className="inline-block w-full py-3 rounded-lg text-base font-medium bg-[#A855F7] hover:bg-[#9333EA] transition-colors text-center"
             style={{ color: '#FFFFFF' }}
           >
             Request new link
@@ -106,7 +106,7 @@ export default function ResetPasswordPage() {
         {/* Logo */}
         <div className="flex justify-center mb-6">
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-[#2563EB] rounded-xl flex items-center justify-center">
+            <div className="w-10 h-10 bg-[#A855F7] rounded-xl flex items-center justify-center">
               <svg
                 className="w-6 h-6 text-white"
                 fill="none"
@@ -140,7 +140,7 @@ export default function ResetPasswordPage() {
             <p className="text-gray-600 text-sm sm:text-base mb-6 px-4">
               Your password has been successfully reset. Redirecting you to your dashboard...
             </p>
-            <div className="w-8 h-8 border-2 border-[#2563EB] border-t-transparent rounded-full animate-spin mx-auto"></div>
+            <div className="w-8 h-8 border-2 border-[#A855F7] border-t-transparent rounded-full animate-spin mx-auto"></div>
           </div>
         ) : (
           /* Form State */
@@ -172,7 +172,7 @@ export default function ResetPasswordPage() {
                   placeholder="Enter new password"
                   required
                   className="w-full px-4 py-3 border border-[#E5E7EB] rounded-lg text-base
-                           focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:border-transparent
+                           focus:outline-none focus:ring-2 focus:ring-[#A855F7] focus:border-transparent
                            placeholder:text-gray-400 transition-all"
                 />
                 <p className="mt-1 text-xs text-gray-500">Must be at least 6 characters</p>
@@ -190,7 +190,7 @@ export default function ResetPasswordPage() {
                   placeholder="Confirm new password"
                   required
                   className="w-full px-4 py-3 border border-[#E5E7EB] rounded-lg text-base
-                           focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:border-transparent
+                           focus:outline-none focus:ring-2 focus:ring-[#A855F7] focus:border-transparent
                            placeholder:text-gray-400 transition-all"
                 />
               </div>
@@ -201,7 +201,7 @@ export default function ResetPasswordPage() {
                 disabled={!isFormComplete || loading}
                 className={`w-full py-3 rounded-lg text-base font-medium transition-all duration-200
                   ${isFormComplete && !loading
-                    ? 'bg-[#2563EB] hover:bg-[#1d4ed8] cursor-pointer'
+                    ? 'bg-[#A855F7] hover:bg-[#9333EA] cursor-pointer'
                     : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                   }`}
                 style={{ color: isFormComplete && !loading ? '#FFFFFF' : undefined }}

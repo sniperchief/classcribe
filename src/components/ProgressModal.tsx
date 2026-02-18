@@ -90,8 +90,8 @@ export default function ProgressModal({ isOpen, currentStatus, uploadProgress = 
             </>
           ) : (
             <>
-              <div className="w-16 h-16 bg-[#2563EB]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-[#2563EB] animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-16 h-16 bg-[#A855F7]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-[#A855F7] animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
               </div>
@@ -115,7 +115,7 @@ export default function ProgressModal({ isOpen, currentStatus, uploadProgress = 
                     </svg>
                   </div>
                 ) : step.status === 'active' ? (
-                  <div className="w-8 h-8 bg-[#2563EB] rounded-full flex items-center justify-center">
+                  <div className="w-8 h-8 bg-[#A855F7] rounded-full flex items-center justify-center">
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                   </div>
                 ) : step.status === 'failed' ? (
@@ -137,7 +137,7 @@ export default function ProgressModal({ isOpen, currentStatus, uploadProgress = 
                   step.status === 'completed'
                     ? 'text-green-600'
                     : step.status === 'active'
-                    ? 'text-[#2563EB]'
+                    ? 'text-[#A855F7]'
                     : step.status === 'failed'
                     ? 'text-red-600'
                     : 'text-gray-400'
@@ -161,7 +161,7 @@ export default function ProgressModal({ isOpen, currentStatus, uploadProgress = 
           <div className="flex flex-col gap-3">
             <button
               onClick={onRetry}
-              className="w-full py-3 bg-[#2563EB] text-white rounded-lg font-medium hover:bg-[#1d4ed8] transition-colors"
+              className="w-full py-3 bg-[#A855F7] text-white rounded-lg font-medium hover:bg-[#9333EA] transition-colors"
             >
               Retry
             </button>
@@ -175,7 +175,7 @@ export default function ProgressModal({ isOpen, currentStatus, uploadProgress = 
         ) : isCompleted ? (
           <button
             onClick={onClose}
-            className="w-full py-3 bg-[#2563EB] text-white rounded-lg font-medium hover:bg-[#1d4ed8] transition-colors"
+            className="w-full py-3 bg-[#A855F7] text-white rounded-lg font-medium hover:bg-[#9333EA] transition-colors"
           >
             View Notes
           </button>

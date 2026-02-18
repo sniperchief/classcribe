@@ -46,7 +46,7 @@ export default function LecturePage() {
     return (
       <main className="min-h-screen bg-[#F8FAFC] flex items-center justify-center">
         <div className="text-center">
-          <div className="w-10 h-10 border-2 border-[#2563EB] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="w-10 h-10 border-2 border-[#A855F7] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-gray-500">Loading lecture...</p>
         </div>
       </main>
@@ -66,7 +66,7 @@ export default function LecturePage() {
           <p className="text-gray-500 mb-6">This lecture may have been deleted or does not exist.</p>
           <Link
             href="/dashboard"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-[#2563EB] text-white rounded-lg hover:bg-[#1d4ed8] transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-[#A855F7] text-white rounded-lg hover:bg-[#9333EA] transition-colors"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -142,7 +142,7 @@ export default function LecturePage() {
             onClick={() => setActiveTab('notes')}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-colors
               ${activeTab === 'notes'
-                ? 'bg-[#2563EB] text-white'
+                ? 'bg-[#A855F7] text-white'
                 : 'bg-white text-gray-600 border border-[#E5E7EB] hover:bg-gray-50'
               }`}
           >
@@ -155,7 +155,7 @@ export default function LecturePage() {
             onClick={() => setActiveTab('transcript')}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-colors
               ${activeTab === 'transcript'
-                ? 'bg-[#2563EB] text-white'
+                ? 'bg-[#A855F7] text-white'
                 : 'bg-white text-gray-600 border border-[#E5E7EB] hover:bg-gray-50'
               }`}
           >
@@ -172,22 +172,22 @@ export default function LecturePage() {
             <div className="prose prose-slate max-w-none
               prose-headings:text-[#0F172A] prose-headings:font-semibold
               prose-h1:text-2xl prose-h1:border-b prose-h1:border-gray-200 prose-h1:pb-3 prose-h1:mb-6
-              prose-h2:text-xl prose-h2:mt-8 prose-h2:mb-4 prose-h2:text-[#2563EB]
+              prose-h2:text-xl prose-h2:mt-8 prose-h2:mb-4 prose-h2:text-[#A855F7]
               prose-h3:text-lg prose-h3:mt-6 prose-h3:mb-3 prose-h3:text-[#0F172A]
               prose-p:text-gray-700 prose-p:leading-7 prose-p:mb-4
               prose-li:text-gray-700 prose-li:my-1
               prose-ul:my-4 prose-ol:my-4
               prose-strong:text-[#0F172A] prose-strong:font-semibold
-              prose-blockquote:border-l-4 prose-blockquote:border-[#2563EB] prose-blockquote:bg-blue-50 prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:rounded-r-lg prose-blockquote:not-italic
+              prose-blockquote:border-l-4 prose-blockquote:border-[#A855F7] prose-blockquote:bg-blue-50 prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:rounded-r-lg prose-blockquote:not-italic
               prose-hr:my-8 prose-hr:border-gray-200">
               {lecture.notes ? (
                 <ReactMarkdown
                   components={{
                     h1: ({children}) => <h1 className="text-2xl font-bold text-[#0F172A] border-b border-gray-200 pb-3 mb-6">{children}</h1>,
-                    h2: ({children}) => <h2 className="text-xl font-semibold text-[#2563EB] mt-8 mb-4">{children}</h2>,
+                    h2: ({children}) => <h2 className="text-xl font-semibold text-[#A855F7] mt-8 mb-4">{children}</h2>,
                     h3: ({children}) => <h3 className="text-lg font-semibold text-[#0F172A] mt-6 mb-3">{children}</h3>,
                     strong: ({children}) => <strong className="font-semibold text-[#0F172A]">{children}</strong>,
-                    blockquote: ({children}) => <blockquote className="border-l-4 border-[#2563EB] bg-blue-50 py-2 px-4 rounded-r-lg my-4">{children}</blockquote>,
+                    blockquote: ({children}) => <blockquote className="border-l-4 border-[#A855F7] bg-blue-50 py-2 px-4 rounded-r-lg my-4">{children}</blockquote>,
                   }}
                 >
                   {lecture.notes}
@@ -227,8 +227,8 @@ export default function LecturePage() {
         {lecture.audio_url && (
           <div className="mt-6 bg-white rounded-xl border border-[#E5E7EB] p-5 sm:p-6">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-[#2563EB]/10 rounded-lg flex items-center justify-center">
-                <svg className="w-5 h-5 text-[#2563EB]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-10 h-10 bg-[#A855F7]/10 rounded-lg flex items-center justify-center">
+                <svg className="w-5 h-5 text-[#A855F7]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
                 </svg>
               </div>
@@ -252,7 +252,7 @@ export default function LecturePage() {
         <div className="mt-6 text-center">
           <Link
             href="/dashboard"
-            className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-[#2563EB] transition-colors"
+            className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-[#A855F7] transition-colors"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />

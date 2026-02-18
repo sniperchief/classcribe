@@ -8,7 +8,7 @@ export default function Hero() {
         <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-[#0F172A] leading-tight max-w-4xl mx-auto mb-4 sm:mb-6 px-2">
           Turn Lecture Recordings Into
           <br />
-          <span className="text-[#2563EB]">Exam-Ready Notes</span>
+          <span className="text-[#A855F7]">Exam-Ready Notes</span>
         </h1>
 
         {/* Subtext */}
@@ -21,7 +21,7 @@ export default function Hero() {
           <GuestUpload />
           {/* Decorative Elements */}
           <div className="absolute inset-0 -z-10 flex items-center justify-center pointer-events-none">
-            <div className="w-full h-full max-w-4xl bg-gradient-to-r from-blue-50 via-transparent to-green-50 rounded-full blur-3xl opacity-60"></div>
+            <div className="w-full h-full max-w-4xl bg-gradient-to-r from-violet-50 via-transparent to-green-50 rounded-full blur-3xl opacity-60"></div>
           </div>
         </div>
       </div>

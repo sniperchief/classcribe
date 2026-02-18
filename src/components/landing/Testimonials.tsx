@@ -1,13 +1,20 @@
 export default function Testimonials() {
   return (
-    <section id="testimonials" className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-black">
-      <div className="max-w-7xl mx-auto">
+    <section id="testimonials" className="relative overflow-hidden bg-gradient-to-b from-white via-[#7EBD8E] to-white">
+      {/* Soft radial gradient overlay */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(100,170,120,0.4)_0%,_transparent_70%)]"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(255,255,255,0.4)_0%,_transparent_50%)]"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_rgba(255,255,255,0.3)_0%,_transparent_40%)]"></div>
+
+      {/* Main content area */}
+      <div className="py-20 sm:py-28 lg:py-32 px-4 sm:px-6 lg:px-8 relative">
+      <div className="max-w-7xl mx-auto relative z-10">
         {/* Section Header */}
         <div className="text-center mb-12 sm:mb-16">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-3 sm:mb-4 px-2">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#3D4A38] mb-3 sm:mb-4 px-2">
             What Our Users Say
           </h2>
-          <p className="text-base sm:text-lg text-gray-400 max-w-2xl mx-auto px-2">
+          <p className="text-base sm:text-lg text-[#5A6654] max-w-2xl mx-auto px-2">
             Join thousands of students who are studying smarter, not harder.
           </p>
         </div>
@@ -60,6 +67,7 @@ export default function Testimonials() {
           <Stat value="4.8/5" label="Average Rating" />
         </div>
       </div>
+      </div>
     </section>
   );
 }
@@ -79,8 +87,8 @@ function Testimonial({
     <div className="bg-white rounded-xl sm:rounded-2xl p-5 sm:p-6 lg:p-8 shadow-lg shadow-black/20 hover:shadow-xl hover:shadow-black/30 transition-shadow duration-200">
       {/* Author - Now at top */}
       <div className="flex items-center gap-3 mb-3">
-        <div className="w-10 h-10 bg-[#2563EB]/10 rounded-full flex items-center justify-center flex-shrink-0">
-          <span className="text-[#2563EB] font-semibold text-sm">
+        <div className="w-10 h-10 bg-[#A855F7]/10 rounded-full flex items-center justify-center flex-shrink-0">
+          <span className="text-[#A855F7] font-semibold text-sm">
             {name.split(' ').map(n => n[0]).join('')}
           </span>
         </div>
@@ -110,8 +118,8 @@ function Testimonial({
 function Stat({ value, label }: { value: string; label: string }) {
   return (
     <div className="p-2">
-      <p className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#2563EB] mb-1">{value}</p>
-      <p className="text-gray-400 text-xs sm:text-sm">{label}</p>
+      <p className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#3D4A38] mb-1">{value}</p>
+      <p className="text-[#5A6654] text-xs sm:text-sm">{label}</p>
     </div>
   );
 }

@@ -29,8 +29,8 @@ export default function Home() {
       <Navbar />
       <main className="overflow-x-hidden">
         <Hero />
-        <Problem />
         <HowItWorks />
+        <Problem />
         <Testimonials />
         <FinalCTA />
       </main>

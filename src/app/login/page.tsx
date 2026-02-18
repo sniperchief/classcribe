@@ -45,7 +45,7 @@ export default function LoginPage() {
         {/* Logo */}
         <div className="flex justify-center mb-6">
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-[#2563EB] rounded-xl flex items-center justify-center">
+            <div className="w-10 h-10 bg-[#A855F7] rounded-xl flex items-center justify-center">
               <svg
                 className="w-6 h-6 text-white"
                 fill="none"
@@ -96,7 +96,7 @@ export default function LoginPage() {
               placeholder="Enter your email"
               required
               className="w-full px-4 py-3 border border-[#E5E7EB] rounded-lg text-base
-                       focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:border-transparent
+                       focus:outline-none focus:ring-2 focus:ring-[#A855F7] focus:border-transparent
                        placeholder:text-gray-400 transition-all"
             />
           </div>
@@ -107,7 +107,7 @@ export default function LoginPage() {
               <label className="text-sm font-medium text-[#0F172A]">
                 Password <span className="text-red-500">*</span>
               </label>
-              <Link href="/forgot-password" className="text-sm text-[#2563EB] hover:underline">
+              <Link href="/forgot-password" className="text-sm text-[#A855F7] hover:underline">
                 Forgot password?
               </Link>
             </div>
@@ -118,7 +118,7 @@ export default function LoginPage() {
               placeholder="Enter your password"
               required
               className="w-full px-4 py-3 border border-[#E5E7EB] rounded-lg text-base
-                       focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:border-transparent
+                       focus:outline-none focus:ring-2 focus:ring-[#A855F7] focus:border-transparent
                        placeholder:text-gray-400 transition-all"
             />
           </div>
@@ -129,7 +129,7 @@ export default function LoginPage() {
             disabled={!isFormComplete || loading}
             className={`w-full py-3 rounded-lg text-base font-medium transition-all duration-200
               ${isFormComplete && !loading
-                ? 'bg-[#2563EB] text-white hover:bg-[#1d4ed8] cursor-pointer'
+                ? 'bg-[#A855F7] text-white hover:bg-[#9333EA] cursor-pointer'
                 : 'bg-gray-300 text-gray-500 cursor-not-allowed'
               }`}
           >
@@ -140,7 +140,7 @@ export default function LoginPage() {
         {/* Signup Link */}
         <div className="mt-6 text-center">
           <span className="text-gray-600 text-sm">Don&apos;t have an account?</span>{' '}
-          <Link href="/signup" className="text-[#2563EB] text-sm font-bold hover:underline">
+          <Link href="/signup" className="text-[#A855F7] text-sm font-bold hover:underline">
             Sign up
           </Link>
         </div>

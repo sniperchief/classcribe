@@ -459,7 +459,7 @@ export default function DashboardPage() {
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-[#2563EB] rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-[#A855F7] rounded-lg flex items-center justify-center">
                 <svg
                   className="w-5 h-5 text-white"
                   fill="none"
@@ -518,7 +518,7 @@ export default function DashboardPage() {
                           onChange={(e) => setProfileForm({ ...profileForm, full_name: e.target.value })}
                           placeholder="e.g. Sandra Johnson"
                           className="w-full px-3 py-2 border border-[#E5E7EB] rounded-lg text-sm
-                                   focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:border-transparent
+                                   focus:outline-none focus:ring-2 focus:ring-[#A855F7] focus:border-transparent
                                    placeholder:text-gray-400"
                         />
                       </div>
@@ -531,7 +531,7 @@ export default function DashboardPage() {
                           onChange={(e) => setProfileForm({ ...profileForm, country: e.target.value })}
                           placeholder="e.g. Nigeria"
                           className="w-full px-3 py-2 border border-[#E5E7EB] rounded-lg text-sm
-                                   focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:border-transparent
+                                   focus:outline-none focus:ring-2 focus:ring-[#A855F7] focus:border-transparent
                                    placeholder:text-gray-400"
                         />
                       </div>
@@ -544,7 +544,7 @@ export default function DashboardPage() {
                           onChange={(e) => setProfileForm({ ...profileForm, university: e.target.value })}
                           placeholder="e.g. University of Lagos"
                           className="w-full px-3 py-2 border border-[#E5E7EB] rounded-lg text-sm
-                                   focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:border-transparent
+                                   focus:outline-none focus:ring-2 focus:ring-[#A855F7] focus:border-transparent
                                    placeholder:text-gray-400"
                         />
                       </div>
@@ -557,7 +557,7 @@ export default function DashboardPage() {
                           onChange={(e) => setProfileForm({ ...profileForm, course_of_study: e.target.value })}
                           placeholder="e.g. Computer Science"
                           className="w-full px-3 py-2 border border-[#E5E7EB] rounded-lg text-sm
-                                   focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:border-transparent
+                                   focus:outline-none focus:ring-2 focus:ring-[#A855F7] focus:border-transparent
                                    placeholder:text-gray-400"
                         />
                       </div>
@@ -567,8 +567,8 @@ export default function DashboardPage() {
                         disabled={savingProfile}
                         className={`w-full py-2.5 rounded-lg text-sm font-medium transition-colors
                           ${savingProfile
-                            ? 'bg-blue-300 text-white cursor-not-allowed'
-                            : 'bg-[#2563EB] text-white hover:bg-[#1d4ed8]'
+                            ? 'bg-violet-300 text-white cursor-not-allowed'
+                            : 'bg-[#A855F7] text-white hover:bg-[#9333EA]'
                           }`}
                       >
                         {savingProfile ? 'Saving...' : 'Save Profile'}
@@ -607,7 +607,7 @@ export default function DashboardPage() {
                     {subscription.lecturesRemaining} of {subscription.lectureLimit} lectures remaining
                   </span>
                   <span className={`px-2 py-0.5 rounded-full text-xs font-medium capitalize
-                    ${subscription.plan === 'student' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600'}`}>
+                    ${subscription.plan === 'student' ? 'bg-violet-100 text-violet-700' : 'bg-gray-100 text-gray-600'}`}>
                     {subscription.plan}
                   </span>
                 </div>
@@ -616,7 +616,7 @@ export default function DashboardPage() {
               {subscription.plan === 'free' && (
                 <Link
                   href="/pricing"
-                  className="text-sm font-medium text-[#2563EB] hover:underline"
+                  className="text-sm font-medium text-[#A855F7] hover:underline"
                 >
                   Upgrade for more
                 </Link>
@@ -625,7 +625,7 @@ export default function DashboardPage() {
             <div className="mt-3 h-2 bg-gray-100 rounded-full overflow-hidden">
               <div
                 className={`h-full rounded-full transition-all ${
-                  subscription.lecturesRemaining === 0 ? 'bg-yellow-500' : 'bg-[#2563EB]'
+                  subscription.lecturesRemaining === 0 ? 'bg-yellow-500' : 'bg-[#A855F7]'
                 }`}
                 style={{
                   width: `${((subscription.lectureLimit - subscription.lecturesRemaining) / subscription.lectureLimit) * 100}%`
@@ -636,9 +636,9 @@ export default function DashboardPage() {
         )}
 
         {/* Upload Section */}
-        <div className="bg-white rounded-xl border-2 border-dashed border-[#E5E7EB] p-6 sm:p-8 mb-6 text-center hover:border-[#2563EB] transition-colors">
-          <div className="w-12 h-12 bg-[#2563EB]/10 rounded-xl flex items-center justify-center mx-auto mb-4">
-            <svg className="w-6 h-6 text-[#2563EB]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="bg-white rounded-xl border-2 border-dashed border-[#E5E7EB] p-6 sm:p-8 mb-6 text-center hover:border-[#A855F7] transition-colors">
+          <div className="w-12 h-12 bg-[#A855F7]/10 rounded-xl flex items-center justify-center mx-auto mb-4">
+            <svg className="w-6 h-6 text-[#A855F7]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
             </svg>
           </div>
@@ -657,7 +657,7 @@ export default function DashboardPage() {
 
           <label
             className={`inline-flex items-center gap-2 px-6 py-3 rounded-lg font-medium text-white transition-colors cursor-pointer
-              ${uploading ? 'bg-blue-300 cursor-not-allowed' : 'bg-[#2563EB] hover:bg-[#1d4ed8]'}`}
+              ${uploading ? 'bg-violet-300 cursor-not-allowed' : 'bg-[#A855F7] hover:bg-[#9333EA]'}`}
           >
             {uploading ? (
               <>
@@ -744,8 +744,8 @@ export default function DashboardPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* Step 1 */}
               <div className="flex flex-col items-center text-center p-4">
-                <div className="w-12 h-12 bg-[#2563EB]/10 rounded-full flex items-center justify-center mb-4">
-                  <span className="text-[#2563EB] font-bold text-lg">1</span>
+                <div className="w-12 h-12 bg-[#A855F7]/10 rounded-full flex items-center justify-center mb-4">
+                  <span className="text-[#A855F7] font-bold text-lg">1</span>
                 </div>
                 <h4 className="font-semibold text-[#0F172A] mb-2">Upload Recording</h4>
                 <p className="text-sm text-gray-500">
@@ -755,8 +755,8 @@ export default function DashboardPage() {
 
               {/* Step 2 */}
               <div className="flex flex-col items-center text-center p-4">
-                <div className="w-12 h-12 bg-[#2563EB]/10 rounded-full flex items-center justify-center mb-4">
-                  <span className="text-[#2563EB] font-bold text-lg">2</span>
+                <div className="w-12 h-12 bg-[#A855F7]/10 rounded-full flex items-center justify-center mb-4">
+                  <span className="text-[#A855F7] font-bold text-lg">2</span>
                 </div>
                 <h4 className="font-semibold text-[#0F172A] mb-2">AI Processing</h4>
                 <p className="text-sm text-gray-500">
@@ -766,8 +766,8 @@ export default function DashboardPage() {
 
               {/* Step 3 */}
               <div className="flex flex-col items-center text-center p-4">
-                <div className="w-12 h-12 bg-[#2563EB]/10 rounded-full flex items-center justify-center mb-4">
-                  <span className="text-[#2563EB] font-bold text-lg">3</span>
+                <div className="w-12 h-12 bg-[#A855F7]/10 rounded-full flex items-center justify-center mb-4">
+                  <span className="text-[#A855F7] font-bold text-lg">3</span>
                 </div>
                 <h4 className="font-semibold text-[#0F172A] mb-2">Review & Study</h4>
                 <p className="text-sm text-gray-500">

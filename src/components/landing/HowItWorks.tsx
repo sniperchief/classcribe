@@ -64,12 +64,12 @@ function Step({
   return (
     <div className="relative text-center">
       {/* Step Number */}
-      <div className="inline-flex items-center justify-center w-16 h-16 bg-[#2563EB]/10 rounded-2xl text-[#2563EB] mb-5 sm:mb-6">
+      <div className="inline-flex items-center justify-center w-16 h-16 bg-[#A855F7]/10 rounded-2xl text-[#A855F7] mb-5 sm:mb-6">
         {icon}
       </div>
 
       {/* Number Badge */}
-      <div className="absolute top-0 left-1/2 translate-x-6 -translate-y-1 w-6 h-6 bg-[#2563EB] text-white text-xs font-bold rounded-full flex items-center justify-center">
+      <div className="absolute top-0 left-1/2 translate-x-6 -translate-y-1 w-6 h-6 bg-[#A855F7] text-white text-xs font-bold rounded-full flex items-center justify-center">
         {number}
       </div>
 

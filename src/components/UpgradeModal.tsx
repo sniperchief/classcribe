@@ -73,32 +73,32 @@ export default function UpgradeModal({ isOpen, onClose, lecturesUsed, lectureLim
         </div>
 
         {/* Student Plan Highlight */}
-        <div className="bg-[#2563EB]/5 border border-[#2563EB]/20 rounded-xl p-4 mb-6">
+        <div className="bg-[#A855F7]/5 border border-[#A855F7]/20 rounded-xl p-4 mb-6">
           <div className="flex items-center justify-between mb-3">
             <span className="font-semibold text-[#0F172A]">Student Plan</span>
-            <span className="text-[#2563EB] font-bold">{price}/month</span>
+            <span className="text-[#A855F7] font-bold">{price}/month</span>
           </div>
           <ul className="space-y-2">
             <li className="flex items-center gap-2 text-sm text-gray-600">
-              <svg className="w-4 h-4 text-[#2563EB]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 text-[#A855F7]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
               20 lectures per month
             </li>
             <li className="flex items-center gap-2 text-sm text-gray-600">
-              <svg className="w-4 h-4 text-[#2563EB]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 text-[#A855F7]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
               PDF export
             </li>
             <li className="flex items-center gap-2 text-sm text-gray-600">
-              <svg className="w-4 h-4 text-[#2563EB]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 text-[#A855F7]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
               Priority processing
             </li>
             <li className="flex items-center gap-2 text-sm text-gray-600">
-              <svg className="w-4 h-4 text-[#2563EB]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 text-[#A855F7]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
               Advanced formatting
@@ -110,7 +110,7 @@ export default function UpgradeModal({ isOpen, onClose, lecturesUsed, lectureLim
         <div className="space-y-3">
           <Link
             href="/pricing"
-            className="block w-full py-3 bg-[#2563EB] text-white rounded-lg font-medium text-center hover:bg-[#1d4ed8] transition-colors"
+            className="block w-full py-3 bg-[#A855F7] text-white rounded-lg font-medium text-center hover:bg-[#9333EA] transition-colors"
           >
             Upgrade Now
           </Link>
