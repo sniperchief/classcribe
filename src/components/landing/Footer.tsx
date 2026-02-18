@@ -4,64 +4,26 @@ export default function Footer() {
   return (
     <footer className="bg-white border-t border-[#E5E7EB]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12 lg:py-16">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-12">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-8 lg:gap-12">
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
-            <Link href="/" className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 bg-[#A855F7] rounded-lg flex items-center justify-center">
-                <svg
-                  className="w-5 h-5 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                  />
-                </svg>
-              </div>
-              <span className="text-lg font-semibold text-[#0F172A]">Classcribe</span>
+            <Link href="/" className="flex items-center mb-4">
+              <span className="text-lg font-semibold text-[#A855F7]">Classcribe</span>
             </Link>
             <p className="text-sm text-gray-600 leading-relaxed">
               Transform lecture recordings into exam-ready study notes with AI.
             </p>
           </div>
 
-          {/* Product */}
-          <div>
-            <h3 className="font-semibold text-[#0F172A] mb-3 sm:mb-4 text-sm sm:text-base">Product</h3>
-            <ul className="space-y-2 sm:space-y-3">
-              <li>
-                <a href="#how-it-works" className="text-sm text-gray-600 hover:text-[#4F6B5C] transition-colors">
-                  How It Works
-                </a>
-              </li>
-              <li>
-                <a href="#features" className="text-sm text-gray-600 hover:text-[#4F6B5C] transition-colors">
-                  Features
-                </a>
-              </li>
-              <li>
-                <Link href="/signup" className="text-sm text-gray-600 hover:text-[#4F6B5C] transition-colors">
-                  Pricing
-                </Link>
-              </li>
-              <li>
-                <a href="#testimonials" className="text-sm text-gray-600 hover:text-[#4F6B5C] transition-colors">
-                  Testimonials
-                </a>
-              </li>
-            </ul>
-          </div>
-
           {/* Support */}
           <div>
             <h3 className="font-semibold text-[#0F172A] mb-3 sm:mb-4 text-sm sm:text-base">Support</h3>
             <ul className="space-y-2 sm:space-y-3">
+              <li>
+                <a href="#pricing" className="text-sm text-gray-600 hover:text-[#4F6B5C] transition-colors">
+                  Pricing
+                </a>
+              </li>
               <li>
                 <a href="#" className="text-sm text-gray-600 hover:text-[#4F6B5C] transition-colors">
                   Help Center

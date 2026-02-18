@@ -5,6 +5,7 @@ import {
   HowItWorks,
   Stats,
   Testimonials,
+  Pricing,
   FinalCTA,
   Footer,
 } from '@/components/landing';
@@ -34,6 +35,7 @@ export default function Home() {
         <Stats />
         <Problem />
         <Testimonials />
+        <Pricing />
         <FinalCTA />
       </main>
       <Footer />
