@@ -59,13 +59,6 @@ export default function Testimonials() {
           />
         </div>
 
-        {/* Stats */}
-        <div className="mt-12 sm:mt-16 grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 max-w-4xl mx-auto text-center">
-          <Stat value="2,000+" label="Active Students" />
-          <Stat value="15,000+" label="Lectures Processed" />
-          <Stat value="50+" label="Universities" />
-          <Stat value="4.8/5" label="Average Rating" />
-        </div>
       </div>
       </div>
     </section>
@@ -115,11 +108,3 @@ function Testimonial({
   );
 }
 
-function Stat({ value, label }: { value: string; label: string }) {
-  return (
-    <div className="p-2">
-      <p className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#3D4A38] mb-1">{value}</p>
-      <p className="text-[#5A6654] text-xs sm:text-sm">{label}</p>
-    </div>
-  );
-}

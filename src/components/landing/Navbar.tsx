@@ -143,7 +143,7 @@ export default function Navbar() {
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
           <div className="md:hidden py-4 border-t border-[#E5E7EB]">
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col items-center gap-4 text-center">
               <Link
                 href="/"
                 className="text-sm text-gray-600 hover:text-[#4F6B5C] transition-colors"
@@ -151,9 +151,9 @@ export default function Navbar() {
               >
                 Home
               </Link>
-              <div>
+              <div className="flex flex-col items-center">
                 <button
-                  className="text-sm text-gray-600 hover:text-[#4F6B5C] transition-colors flex items-center gap-1 w-full"
+                  className="text-sm text-gray-600 hover:text-[#4F6B5C] transition-colors flex items-center justify-center gap-1"
                   onClick={() => setIsMobileToolsOpen(!isMobileToolsOpen)}
                 >
                   Tools
@@ -167,7 +167,7 @@ export default function Navbar() {
                   </svg>
                 </button>
                 {isMobileToolsOpen && (
-                  <div className="pl-4 mt-2">
+                  <div className="mt-2">
                     <Link
                       href="/signup"
                       className="block text-sm text-gray-600 hover:text-[#4F6B5C] transition-colors py-1"
@@ -185,7 +185,7 @@ export default function Navbar() {
               >
                 Pricing
               </Link>
-              <hr className="border-[#E5E7EB]" />
+              <hr className="border-[#E5E7EB] w-full" />
               {!checkingAuth && (
                 isLoggedIn ? (
                   <Link
@@ -197,7 +197,10 @@ export default function Navbar() {
                   </Link>
                 ) : (
                   <>
-                    <Link href="/login" className="text-sm font-medium text-gray-600 hover:text-[#4F6B5C]">
+                    <Link
+                      href="/login"
+                      className="text-sm font-medium text-gray-600 hover:text-[#4F6B5C] border border-gray-300 py-2 px-6 rounded-lg shadow-md shadow-black/20 hover:shadow-lg hover:shadow-black/30 transition-all"
+                    >
                       Log In
                     </Link>
                     <Link

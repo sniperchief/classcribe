@@ -3,6 +3,7 @@ import {
   Hero,
   Problem,
   HowItWorks,
+  Stats,
   Testimonials,
   FinalCTA,
   Footer,
@@ -30,6 +31,7 @@ export default function Home() {
       <main className="overflow-x-hidden">
         <Hero />
         <HowItWorks />
+        <Stats />
         <Problem />
         <Testimonials />
         <FinalCTA />
