@@ -6,6 +6,101 @@ import Link from 'next/link';
 import ReactMarkdown from 'react-markdown';
 import type { Lecture } from '@/lib/types';
 
+// Parse Cornell notes format
+function parseCornellNotes(notes: string): {
+  title: string;
+  cornellPairs: { cue: string; note: string }[];
+  otherContent: string;
+} {
+  const result = {
+    title: '',
+    cornellPairs: [] as { cue: string; note: string }[],
+    otherContent: '',
+  };
+
+  // Extract title (first # heading)
+  const titleMatch = notes.match(/^#\s+(.+)$/m);
+  if (titleMatch) {
+    result.title = titleMatch[1];
+  }
+
+  // Extract Cornell section
+  const cornellMatch = notes.match(/:::cornell\n([\s\S]*?):::/);
+  if (cornellMatch) {
+    const cornellContent = cornellMatch[1];
+
+    // Parse cue/note pairs
+    const pairs = cornellContent.split('::cue').filter(Boolean);
+
+    for (const pair of pairs) {
+      const parts = pair.split('::note');
+      if (parts.length === 2) {
+        result.cornellPairs.push({
+          cue: parts[0].trim(),
+          note: parts[1].trim(),
+        });
+      }
+    }
+
+    // Get content after Cornell section (Summary, Practice Questions, etc.)
+    const afterCornell = notes.split(':::cornell')[0] + notes.split(':::').slice(-1)[0];
+    // Remove the title from otherContent
+    result.otherContent = afterCornell.replace(/^#\s+.+$/m, '').trim();
+  } else {
+    // No Cornell format, return all content as otherContent
+    result.otherContent = notes.replace(/^#\s+.+$/m, '').trim();
+  }
+
+  return result;
+}
+
+// Cornell Notes component
+function CornellNotes({ pairs }: { pairs: { cue: string; note: string }[] }) {
+  if (pairs.length === 0) return null;
+
+  return (
+    <div className="border border-[#E5E7EB] rounded-lg overflow-hidden mb-8">
+      {/* Cornell Header */}
+      <div className="bg-[#A855F7] text-white px-4 py-2 text-sm font-medium flex">
+        <div className="w-1/4 border-r border-white/20 pr-2">Cues / Keywords</div>
+        <div className="w-3/4 pl-4">Notes</div>
+      </div>
+
+      {/* Cornell Rows */}
+      {pairs.map((pair, index) => (
+        <div
+          key={index}
+          className={`flex border-b border-[#E5E7EB] last:border-b-0 ${
+            index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
+          }`}
+        >
+          {/* Cue Column */}
+          <div className="w-1/4 p-4 border-r border-[#E5E7EB] bg-violet-50/50">
+            <p className="text-sm font-medium text-[#A855F7]">{pair.cue}</p>
+          </div>
+
+          {/* Note Column */}
+          <div className="w-3/4 p-4">
+            <div className="prose prose-sm max-w-none prose-p:my-2 prose-ul:my-2 prose-li:my-0.5">
+              <ReactMarkdown
+                components={{
+                  p: ({children}) => <p className="text-gray-700 text-sm leading-relaxed my-2">{children}</p>,
+                  strong: ({children}) => <strong className="font-semibold text-[#0F172A]">{children}</strong>,
+                  ul: ({children}) => <ul className="list-disc list-inside my-2 space-y-1">{children}</ul>,
+                  ol: ({children}) => <ol className="list-decimal list-inside my-2 space-y-1">{children}</ol>,
+                  li: ({children}) => <li className="text-gray-700 text-sm">{children}</li>,
+                }}
+              >
+                {pair.note}
+              </ReactMarkdown>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function LecturePage() {
   const params = useParams();
   const router = useRouter();
@@ -169,29 +264,58 @@ export default function LecturePage() {
         {/* Content Area */}
         <div className="bg-white rounded-xl border border-[#E5E7EB] p-5 sm:p-8 min-h-[400px]">
           {activeTab === 'notes' ? (
-            <div className="prose prose-slate max-w-none
-              prose-headings:text-[#0F172A] prose-headings:font-semibold
-              prose-h1:text-2xl prose-h1:border-b prose-h1:border-gray-200 prose-h1:pb-3 prose-h1:mb-6
-              prose-h2:text-xl prose-h2:mt-8 prose-h2:mb-4 prose-h2:text-[#A855F7]
-              prose-h3:text-lg prose-h3:mt-6 prose-h3:mb-3 prose-h3:text-[#0F172A]
-              prose-p:text-gray-700 prose-p:leading-7 prose-p:mb-4
-              prose-li:text-gray-700 prose-li:my-1
-              prose-ul:my-4 prose-ol:my-4
-              prose-strong:text-[#0F172A] prose-strong:font-semibold
-              prose-blockquote:border-l-4 prose-blockquote:border-[#A855F7] prose-blockquote:bg-blue-50 prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:rounded-r-lg prose-blockquote:not-italic
-              prose-hr:my-8 prose-hr:border-gray-200">
+            <div>
               {lecture.notes ? (
-                <ReactMarkdown
-                  components={{
-                    h1: ({children}) => <h1 className="text-2xl font-bold text-[#0F172A] border-b border-gray-200 pb-3 mb-6">{children}</h1>,
-                    h2: ({children}) => <h2 className="text-xl font-semibold text-[#A855F7] mt-8 mb-4">{children}</h2>,
-                    h3: ({children}) => <h3 className="text-lg font-semibold text-[#0F172A] mt-6 mb-3">{children}</h3>,
-                    strong: ({children}) => <strong className="font-semibold text-[#0F172A]">{children}</strong>,
-                    blockquote: ({children}) => <blockquote className="border-l-4 border-[#A855F7] bg-blue-50 py-2 px-4 rounded-r-lg my-4">{children}</blockquote>,
-                  }}
-                >
-                  {lecture.notes}
-                </ReactMarkdown>
+                (() => {
+                  const parsed = parseCornellNotes(lecture.notes);
+                  const hasCornell = parsed.cornellPairs.length > 0;
+
+                  return (
+                    <>
+                      {/* Title */}
+                      {parsed.title && (
+                        <h1 className="text-2xl font-bold text-[#0F172A] border-b border-gray-200 pb-3 mb-6">
+                          {parsed.title}
+                        </h1>
+                      )}
+
+                      {/* Cornell Notes Table */}
+                      {hasCornell && <CornellNotes pairs={parsed.cornellPairs} />}
+
+                      {/* Other Content (Summary, Practice Questions, etc.) */}
+                      {parsed.otherContent && (
+                        <div className="prose prose-slate max-w-none
+                          prose-headings:text-[#0F172A] prose-headings:font-semibold
+                          prose-h2:text-xl prose-h2:mt-8 prose-h2:mb-4 prose-h2:text-[#A855F7]
+                          prose-h3:text-lg prose-h3:mt-6 prose-h3:mb-3 prose-h3:text-[#0F172A]
+                          prose-p:text-gray-700 prose-p:leading-7 prose-p:mb-4
+                          prose-li:text-gray-700 prose-li:my-1
+                          prose-ul:my-4 prose-ol:my-4
+                          prose-strong:text-[#0F172A] prose-strong:font-semibold
+                          prose-blockquote:border-l-4 prose-blockquote:border-[#A855F7] prose-blockquote:bg-violet-50 prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:rounded-r-lg prose-blockquote:not-italic
+                          prose-hr:my-8 prose-hr:border-gray-200">
+                          <ReactMarkdown
+                            components={{
+                              h2: ({children}) => <h2 className="text-xl font-semibold text-[#A855F7] mt-8 mb-4">{children}</h2>,
+                              h3: ({children}) => <h3 className="text-lg font-semibold text-[#0F172A] mt-6 mb-3">{children}</h3>,
+                              strong: ({children}) => <strong className="font-semibold text-[#0F172A]">{children}</strong>,
+                              blockquote: ({children}) => <blockquote className="border-l-4 border-[#A855F7] bg-violet-50 py-2 px-4 rounded-r-lg my-4">{children}</blockquote>,
+                            }}
+                          >
+                            {parsed.otherContent}
+                          </ReactMarkdown>
+                        </div>
+                      )}
+
+                      {/* Fallback for non-Cornell notes */}
+                      {!hasCornell && !parsed.otherContent && (
+                        <div className="prose prose-slate max-w-none">
+                          <ReactMarkdown>{lecture.notes}</ReactMarkdown>
+                        </div>
+                      )}
+                    </>
+                  );
+                })()
               ) : (
                 <div className="text-center py-12">
                   <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">

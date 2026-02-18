@@ -1,22 +1,29 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 
-export default function LoginPage() {
+function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
   const supabase = createClient();
+
+  // Check for redirect param
+  const redirectTo = searchParams.get('redirect');
 
   // Prefetch dashboard page while user is on login
   useEffect(() => {
     router.prefetch('/dashboard');
-  }, [router]);
+    if (redirectTo) {
+      router.prefetch(`/${redirectTo}`);
+    }
+  }, [router, redirectTo]);
 
   // Check if form is complete
   const isFormComplete = email.trim() !== '' && password.trim() !== '';
@@ -35,13 +42,16 @@ export default function LoginPage() {
       setError(error.message);
       setLoading(false);
     } else {
-      router.push('/dashboard');
+      // Refresh to sync session with server, then redirect
+      router.refresh();
+      // Use hard navigation to ensure cookies are properly sent
+      const destination = redirectTo ? `/${redirectTo}` : '/dashboard';
+      window.location.href = destination;
     }
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center px-4 py-8 sm:py-12 bg-[#F8FAFC]">
-      <div className="w-full max-w-md">
+    <div className="w-full max-w-md">
         {/* Logo */}
         <div className="flex justify-center mb-6">
           <Link href="/" className="flex items-center gap-2">
@@ -140,11 +150,20 @@ export default function LoginPage() {
         {/* Signup Link */}
         <div className="mt-6 text-center">
           <span className="text-gray-600 text-sm">Don&apos;t have an account?</span>{' '}
-          <Link href="/signup" className="text-[#A855F7] text-sm font-bold hover:underline">
+          <Link href={redirectTo ? `/signup?redirect=${redirectTo}` : '/signup'} className="text-[#A855F7] text-sm font-bold hover:underline">
             Sign up
           </Link>
         </div>
       </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <main className="min-h-screen flex items-center justify-center px-4 py-8 sm:py-12 bg-[#F8FAFC]">
+      <Suspense fallback={<div className="text-center">Loading...</div>}>
+        <LoginForm />
+      </Suspense>
     </main>
   );
 }

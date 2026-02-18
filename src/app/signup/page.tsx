@@ -16,14 +16,18 @@ function SignupForm() {
   const searchParams = useSearchParams();
   const supabase = createClient();
 
-  // Check for guest token
+  // Check for guest token and redirect param
   const guestToken = searchParams.get('token');
+  const redirectTo = searchParams.get('redirect');
 
   // Prefetch onboarding and dashboard pages
   useEffect(() => {
     router.prefetch('/onboarding');
     router.prefetch('/dashboard');
-  }, [router]);
+    if (redirectTo) {
+      router.prefetch(`/${redirectTo}`);
+    }
+  }, [router, redirectTo]);
 
   // Check if form is complete
   const isFormComplete = fullName.trim() !== '' && email.trim() !== '' && password.trim() !== '' && confirmPassword.trim() !== '';
@@ -60,6 +64,9 @@ function SignupForm() {
         setError(error.message);
         setLoading(false);
       } else {
+        // Refresh to sync session with server
+        router.refresh();
+
         // If there's a guest token, claim the lecture
         if (guestToken) {
           try {
@@ -71,8 +78,8 @@ function SignupForm() {
 
             if (claimResponse.ok) {
               const { lectureId } = await claimResponse.json();
-              // Redirect to view the claimed lecture
-              router.push(`/lectures/${lectureId}`);
+              // Use hard navigation to ensure cookies are properly sent
+              window.location.href = `/lectures/${lectureId}`;
               return;
             }
           } catch (claimError) {
@@ -80,8 +87,9 @@ function SignupForm() {
           }
         }
 
-        // Redirect to onboarding for new users
-        router.push('/onboarding');
+        // Use hard navigation to ensure cookies are properly sent
+        const destination = redirectTo ? `/${redirectTo}` : '/onboarding';
+        window.location.href = destination;
       }
     } catch (err) {
       setError('Network error. Please check your connection and try again.');
@@ -235,7 +243,7 @@ function SignupForm() {
       {/* Login Link */}
       <div className="mt-6 text-center">
         <span className="text-gray-600 text-sm">Already have an account?</span>{' '}
-        <Link href="/login" className="text-[#A855F7] text-sm font-bold hover:underline">
+        <Link href={redirectTo ? `/login?redirect=${redirectTo}` : '/login'} className="text-[#A855F7] text-sm font-bold hover:underline">
           Sign in
         </Link>
       </div>
