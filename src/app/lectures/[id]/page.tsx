@@ -6,6 +6,11 @@ import Link from 'next/link';
 import ReactMarkdown from 'react-markdown';
 import type { Lecture } from '@/lib/types';
 
+type Flashcard = {
+  front: string;
+  back: string;
+};
+
 // Check if notes are in old Cornell format
 function isOldCornellFormat(notes: string): boolean {
   return notes.includes(':::cornell') && notes.includes('::cue') && notes.includes('::note');
@@ -13,11 +18,9 @@ function isOldCornellFormat(notes: string): boolean {
 
 // Convert old Cornell format to plain format for display
 function convertCornellToPlain(notes: string): string {
-  // Extract title
   const titleMatch = notes.match(/^#\s+(.+)$/m);
   const title = titleMatch ? `# ${titleMatch[1]}\n\n` : '';
 
-  // Extract Cornell section and convert to plain format
   const cornellMatch = notes.match(/:::cornell\n([\s\S]*?):::/);
   let plainContent = '';
 
@@ -30,25 +33,139 @@ function convertCornellToPlain(notes: string): string {
       if (parts.length === 2) {
         const cue = parts[0].trim();
         const note = parts[1].trim();
-        // Convert cue to a heading and note to content
         plainContent += `## ${cue}\n\n${note}\n\n`;
       }
     }
   }
 
-  // Get content after Cornell section (Summary, Practice Questions, etc.)
   const afterCornell = notes.split(':::').slice(-1)[0] || '';
   const otherContent = afterCornell.replace(/^#\s+.+$/m, '').trim();
 
   return title + plainContent + otherContent;
 }
 
-// Process notes - convert old format if needed
 function processNotes(notes: string): string {
   if (isOldCornellFormat(notes)) {
     return convertCornellToPlain(notes);
   }
   return notes;
+}
+
+// Flashcard Component with flip animation
+function FlashcardViewer({ flashcards }: { flashcards: Flashcard[] }) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isFlipped, setIsFlipped] = useState(false);
+
+  const currentCard = flashcards[currentIndex];
+
+  const goToPrevious = () => {
+    setIsFlipped(false);
+    setCurrentIndex((prev) => (prev === 0 ? flashcards.length - 1 : prev - 1));
+  };
+
+  const goToNext = () => {
+    setIsFlipped(false);
+    setCurrentIndex((prev) => (prev === flashcards.length - 1 ? 0 : prev + 1));
+  };
+
+  return (
+    <div className="w-full">
+      {/* Card counter */}
+      <div className="text-center mb-4">
+        <span className="text-sm text-gray-500">
+          Card {currentIndex + 1} of {flashcards.length}
+        </span>
+      </div>
+
+      {/* Flashcard */}
+      <div
+        className="relative w-full h-64 sm:h-80 cursor-pointer perspective-1000"
+        onClick={() => setIsFlipped(!isFlipped)}
+      >
+        <div
+          className={`absolute inset-0 w-full h-full transition-transform duration-500 transform-style-3d ${
+            isFlipped ? 'rotate-y-180' : ''
+          }`}
+          style={{
+            transformStyle: 'preserve-3d',
+            transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
+          }}
+        >
+          {/* Front */}
+          <div
+            className="absolute inset-0 w-full h-full bg-gradient-to-br from-[#A855F7] to-[#7C3AED] rounded-2xl p-6 flex flex-col items-center justify-center text-white backface-hidden"
+            style={{ backfaceVisibility: 'hidden' }}
+          >
+            <p className="text-xs uppercase tracking-wider mb-4 opacity-70">Question</p>
+            <p className="text-lg sm:text-xl font-medium text-center leading-relaxed">
+              {currentCard.front}
+            </p>
+            <p className="absolute bottom-4 text-xs opacity-50">Tap to flip</p>
+          </div>
+
+          {/* Back */}
+          <div
+            className="absolute inset-0 w-full h-full bg-white border-2 border-[#A855F7] rounded-2xl p-6 flex flex-col items-center justify-center backface-hidden"
+            style={{
+              backfaceVisibility: 'hidden',
+              transform: 'rotateY(180deg)',
+            }}
+          >
+            <p className="text-xs uppercase tracking-wider mb-4 text-[#A855F7]">Answer</p>
+            <p className="text-base sm:text-lg text-gray-700 text-center leading-relaxed">
+              {currentCard.back}
+            </p>
+            <p className="absolute bottom-4 text-xs text-gray-400">Tap to flip</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Navigation */}
+      <div className="flex items-center justify-center gap-4 mt-6">
+        <button
+          onClick={goToPrevious}
+          className="p-3 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+          aria-label="Previous card"
+        >
+          <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+
+        {/* Progress dots */}
+        <div className="flex items-center gap-1.5">
+          {flashcards.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => {
+                setIsFlipped(false);
+                setCurrentIndex(index);
+              }}
+              className={`w-2 h-2 rounded-full transition-colors ${
+                index === currentIndex ? 'bg-[#A855F7]' : 'bg-gray-300 hover:bg-gray-400'
+              }`}
+              aria-label={`Go to card ${index + 1}`}
+            />
+          ))}
+        </div>
+
+        <button
+          onClick={goToNext}
+          className="p-3 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+          aria-label="Next card"
+        >
+          <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
+
+      {/* Keyboard hint */}
+      <p className="text-center text-xs text-gray-400 mt-4">
+        Click card to flip • Use arrows to navigate
+      </p>
+    </div>
+  );
 }
 
 export default function LecturePage() {
@@ -59,17 +176,41 @@ export default function LecturePage() {
   const [activeTab, setActiveTab] = useState<'notes' | 'transcript'>('notes');
   const [deleting, setDeleting] = useState(false);
 
+  // Flashcard states
+  const [isPaidUser, setIsPaidUser] = useState(false);
+  const [flashcards, setFlashcards] = useState<Flashcard[] | null>(null);
+  const [flashcardsLoading, setFlashcardsLoading] = useState(false);
+  const [flashcardsError, setFlashcardsError] = useState<string | null>(null);
+  const [showFlashcards, setShowFlashcards] = useState(false);
+
   useEffect(() => {
     const fetchLecture = async () => {
       const response = await fetch(`/api/lectures/${params.id}`);
       const data = await response.json();
       if (data.lecture) {
         setLecture(data.lecture);
+        // Check if flashcards already exist
+        if (data.lecture.flashcards) {
+          setFlashcards(data.lecture.flashcards);
+        }
       }
       setLoading(false);
     };
 
+    const checkSubscription = async () => {
+      try {
+        const response = await fetch('/api/subscription');
+        const data = await response.json();
+        if (data.subscription?.plan === 'student' && data.subscription?.isActive) {
+          setIsPaidUser(true);
+        }
+      } catch {
+        // Not a paid user
+      }
+    };
+
     fetchLecture();
+    checkSubscription();
   }, [params.id]);
 
   const handleDelete = async () => {
@@ -84,6 +225,30 @@ export default function LecturePage() {
       router.push('/dashboard');
     } else {
       setDeleting(false);
+    }
+  };
+
+  const handleGenerateFlashcards = async () => {
+    setFlashcardsLoading(true);
+    setFlashcardsError(null);
+
+    try {
+      const response = await fetch(`/api/lectures/${params.id}/flashcards`, {
+        method: 'POST',
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to generate flashcards');
+      }
+
+      setFlashcards(data.flashcards);
+      setShowFlashcards(true);
+    } catch (error) {
+      setFlashcardsError(error instanceof Error ? error.message : 'Failed to generate flashcards');
+    } finally {
+      setFlashcardsLoading(false);
     }
   };
 
@@ -203,60 +368,50 @@ export default function LecturePage() {
               <article className="notes-content">
                 <ReactMarkdown
                   components={{
-                    // Main title - centered, large
                     h1: ({children}) => (
                       <h1 className="text-2xl sm:text-3xl font-bold text-[#0F172A] text-center mb-8 pb-4 border-b border-gray-100">
                         {children}
                       </h1>
                     ),
-                    // Section headings - centered, violet
                     h2: ({children}) => (
                       <h2 className="text-xl sm:text-2xl font-semibold text-[#0F172A] text-center mt-10 mb-6">
                         {children}
                       </h2>
                     ),
-                    // Sub-headings
                     h3: ({children}) => (
                       <h3 className="text-lg font-semibold text-[#0F172A] text-center mt-8 mb-4">
                         {children}
                       </h3>
                     ),
-                    // Paragraphs - clean, readable
                     p: ({children}) => (
                       <p className="text-gray-700 text-base sm:text-lg leading-relaxed mb-4">
                         {children}
                       </p>
                     ),
-                    // Bold text - violet color for keywords
                     strong: ({children}) => (
                       <strong className="font-semibold text-[#A855F7]">
                         {children}
                       </strong>
                     ),
-                    // Unordered lists
                     ul: ({children}) => (
                       <ul className="space-y-2 mb-6 ml-4">
                         {children}
                       </ul>
                     ),
-                    // Ordered lists
                     ol: ({children}) => (
                       <ol className="space-y-2 mb-6 ml-4 list-decimal list-inside">
                         {children}
                       </ol>
                     ),
-                    // List items
                     li: ({children}) => (
                       <li className="text-gray-700 text-base sm:text-lg leading-relaxed flex items-start gap-2">
                         <span className="text-[#A855F7] mt-2 flex-shrink-0">•</span>
                         <span>{children}</span>
                       </li>
                     ),
-                    // Horizontal rules
                     hr: () => (
                       <hr className="my-8 border-gray-100" />
                     ),
-                    // Blockquotes
                     blockquote: ({children}) => (
                       <blockquote className="border-l-4 border-[#A855F7] pl-4 my-6 text-gray-600 italic">
                         {children}
@@ -319,6 +474,78 @@ export default function LecturePage() {
               <source src={lecture.audio_url} />
               Your browser does not support the audio element.
             </audio>
+          </div>
+        )}
+
+        {/* Flashcards Section - Only for paid users */}
+        {isPaidUser && lecture.notes && (
+          <div className="max-w-4xl mx-auto mt-8 pt-8 border-t border-gray-100">
+            <div className="text-center">
+              {/* Section Header */}
+              <div className="flex items-center justify-center gap-3 mb-6">
+                <div className="w-10 h-10 bg-[#A855F7]/10 rounded-lg flex items-center justify-center">
+                  <svg className="w-5 h-5 text-[#A855F7]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="font-medium text-[#0F172A]">Study Flashcards</h3>
+                  <p className="text-sm text-gray-500">15 cards to help you memorize key concepts</p>
+                </div>
+              </div>
+
+              {/* Flashcards Content */}
+              {showFlashcards && flashcards ? (
+                <div className="mt-6">
+                  <FlashcardViewer flashcards={flashcards} />
+                  <button
+                    onClick={() => setShowFlashcards(false)}
+                    className="mt-6 text-sm text-gray-500 hover:text-[#A855F7] transition-colors"
+                  >
+                    Hide Flashcards
+                  </button>
+                </div>
+              ) : flashcards ? (
+                <button
+                  onClick={() => setShowFlashcards(true)}
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-[#A855F7] text-white rounded-lg hover:bg-[#9333EA] transition-colors font-medium"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                  View Flashcards
+                </button>
+              ) : (
+                <div>
+                  {flashcardsError && (
+                    <p className="text-red-500 text-sm mb-4">{flashcardsError}</p>
+                  )}
+                  <button
+                    onClick={handleGenerateFlashcards}
+                    disabled={flashcardsLoading}
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-[#A855F7] text-white rounded-lg hover:bg-[#9333EA] transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {flashcardsLoading ? (
+                      <>
+                        <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Generating Flashcards...
+                      </>
+                    ) : (
+                      <>
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                        Generate Flashcards
+                      </>
+                    )}
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         )}
 

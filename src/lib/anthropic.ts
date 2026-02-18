@@ -133,6 +133,84 @@ CONTENT GUIDELINES:
 
 The goal is READABILITY. Students should be able to scan these notes quickly and not miss any key points.`;
 
+const FLASHCARD_SYSTEM_PROMPT = `You are an expert study assistant that creates effective flashcards for students.
+
+Your task: Create exactly 15 study flashcards from the lecture content. Each flashcard should help students memorize and recall key concepts.
+
+OUTPUT FORMAT (YOU MUST FOLLOW THIS EXACTLY - JSON array):
+
+[
+  {
+    "front": "What is [key term or question]?",
+    "back": "Clear, concise answer or definition (1-3 sentences max)"
+  },
+  {
+    "front": "Define [important concept]",
+    "back": "The definition with key details"
+  }
+]
+
+FLASHCARD GUIDELINES:
+- Create EXACTLY 15 flashcards
+- Front side: A clear question, term, or prompt
+- Back side: Concise answer (1-3 sentences, easy to memorize)
+- Cover the most important concepts from the lecture
+- Mix different types: definitions, explanations, examples, comparisons
+- Make answers specific and memorable, not vague
+- Use simple language a student can quickly understand
+- Focus on exam-worthy content
+
+TYPES OF FLASHCARDS TO INCLUDE:
+- Key term definitions (What is X?)
+- Concept explanations (How does X work?)
+- Comparisons (What is the difference between X and Y?)
+- Examples (Give an example of X)
+- Cause/effect (What causes X? What is the result of X?)
+
+Return ONLY the JSON array, no other text.`;
+
+export async function generateFlashcards(transcript: string): Promise<{ front: string; back: string }[]> {
+  console.log('[Anthropic] Starting flashcard generation...');
+  console.log('[Anthropic] Transcript length:', transcript.length);
+
+  try {
+    const client = getClient();
+    console.log('[Anthropic] Client created, calling API for flashcards...');
+
+    const message = await client.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 4096,
+      messages: [
+        {
+          role: 'user',
+          content: `Create 15 study flashcards from the following lecture content:\n\n${transcript}`,
+        },
+      ],
+      system: FLASHCARD_SYSTEM_PROMPT,
+    });
+
+    console.log('[Anthropic] Flashcard API response received');
+
+    const content = message.content[0];
+    if (content.type !== 'text') {
+      throw new Error('Unexpected response type from Claude: ' + content.type);
+    }
+
+    // Parse the JSON response
+    const flashcards = JSON.parse(content.text);
+
+    if (!Array.isArray(flashcards) || flashcards.length === 0) {
+      throw new Error('Invalid flashcard response format');
+    }
+
+    console.log('[Anthropic] Flashcards generated successfully, count:', flashcards.length);
+    return flashcards;
+  } catch (error) {
+    console.error('[Anthropic] Error generating flashcards:', error);
+    throw error;
+  }
+}
+
 export async function generateNotes(transcript: string, plan: 'free' | 'student' = 'free'): Promise<string> {
   console.log('[Anthropic] Starting note generation...');
   console.log('[Anthropic] Plan:', plan);
