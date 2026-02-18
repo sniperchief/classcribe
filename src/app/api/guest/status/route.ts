@@ -3,8 +3,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 
 // GET /api/guest/status - Get guest lecture status
 export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
-  const token = searchParams.get('token');
+  const token = request.nextUrl.searchParams.get('token');
 
   if (!token) {
     return NextResponse.json({ error: 'Token is required' }, { status: 400 });

@@ -6,7 +6,17 @@ import { randomUUID } from 'crypto';
 
 // POST /api/guest/process - Process a lecture for guest users
 export async function POST(request: NextRequest) {
-  const adminClient = createAdminClient();
+  let adminClient;
+
+  try {
+    adminClient = createAdminClient();
+  } catch (error) {
+    console.error('Admin client creation error:', error);
+    return NextResponse.json(
+      { error: 'Server configuration error' },
+      { status: 500 }
+    );
+  }
 
   try {
     const formData = await request.formData();

@@ -48,13 +48,14 @@ export default function GuestUpload() {
         body: formData,
       });
 
+      const responseData = await response.json();
+
       if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Upload failed');
+        throw new Error(responseData.error || 'Upload failed');
       }
 
       // Poll for status
-      const { token } = await response.json();
+      const { token } = responseData;
       setStatus('transcribing');
       setProgress(50);
 
