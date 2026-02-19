@@ -477,8 +477,8 @@ export default function LecturePage() {
           </div>
         )}
 
-        {/* Flashcards Section - Only for paid users */}
-        {isPaidUser && lecture.notes && (
+        {/* Flashcards Section */}
+        {lecture.notes && (
           <div className="max-w-4xl mx-auto mt-8 pt-8 border-t border-gray-100">
             <div className="text-center">
               {/* Section Header */}

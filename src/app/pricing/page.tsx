@@ -184,16 +184,28 @@ export default function PricingPage() {
             </Link>
 
             <div className="flex items-center gap-4">
-              <Link href="/login" className="text-sm text-gray-600 hover:text-[#0F172A]">
-                Log In
-              </Link>
-              <Link
-                href="/signup"
-                className="bg-[#A855F7] text-sm font-medium py-2 px-4 rounded-lg hover:bg-[#9333EA] transition-colors"
-                style={{ color: '#FFFFFF' }}
-              >
-                Get Started
-              </Link>
+              {isLoggedIn ? (
+                <Link
+                  href="/dashboard"
+                  className="bg-[#A855F7] text-sm font-medium py-2 px-4 rounded-lg hover:bg-[#9333EA] transition-colors"
+                  style={{ color: '#FFFFFF' }}
+                >
+                  Dashboard
+                </Link>
+              ) : (
+                <>
+                  <Link href="/login" className="text-sm text-gray-600 hover:text-[#0F172A]">
+                    Log In
+                  </Link>
+                  <Link
+                    href="/signup"
+                    className="bg-[#A855F7] text-sm font-medium py-2 px-4 rounded-lg hover:bg-[#9333EA] transition-colors"
+                    style={{ color: '#FFFFFF' }}
+                  >
+                    Get Started
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -380,14 +392,14 @@ export default function PricingPage() {
             Ready to transform your study sessions?
           </h2>
           <p className="text-gray-600 mb-6">
-            Start for free. No credit card required.
+            {isLoggedIn ? 'Upgrade your plan to unlock more features.' : 'Start for free. No credit card required.'}
           </p>
           <Link
-            href="/signup"
+            href={isLoggedIn ? "/dashboard" : "/signup"}
             className="inline-block bg-[#A855F7] px-8 py-3 rounded-lg font-medium hover:bg-[#9333EA] transition-colors"
             style={{ color: '#FFFFFF' }}
           >
-            Get Started Free
+            {isLoggedIn ? 'Go to Dashboard' : 'Get Started Free'}
           </Link>
         </div>
       </div>
@@ -403,12 +415,20 @@ export default function PricingPage() {
               <Link href="/" className="text-sm text-gray-500 hover:text-[#0F172A]">
                 Home
               </Link>
-              <Link href="/login" className="text-sm text-gray-500 hover:text-[#0F172A]">
-                Log In
-              </Link>
-              <Link href="/signup" className="text-sm text-gray-500 hover:text-[#0F172A]">
-                Sign Up
-              </Link>
+              {isLoggedIn ? (
+                <Link href="/dashboard" className="text-sm text-gray-500 hover:text-[#0F172A]">
+                  Dashboard
+                </Link>
+              ) : (
+                <>
+                  <Link href="/login" className="text-sm text-gray-500 hover:text-[#0F172A]">
+                    Log In
+                  </Link>
+                  <Link href="/signup" className="text-sm text-gray-500 hover:text-[#0F172A]">
+                    Sign Up
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>
