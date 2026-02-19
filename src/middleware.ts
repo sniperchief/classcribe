@@ -41,7 +41,7 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   // Protected routes that require onboarding
-  const protectedPaths = ['/dashboard', '/lectures'];
+  const protectedPaths = ['/dashboard', '/lectures', '/settings'];
   const isProtectedPath = protectedPaths.some((path) =>
     request.nextUrl.pathname.startsWith(path)
   );
