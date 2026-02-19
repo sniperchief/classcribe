@@ -110,12 +110,9 @@ export default function Pricing() {
         <div className="max-w-5xl mx-auto relative z-10">
           {/* Section Header */}
           <div className="text-center mb-8">
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#0F172A] mb-3 sm:mb-4 px-2">
-              Simple, Transparent Pricing
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#0F172A]">
+              Select Plan
             </h2>
-            <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto px-2">
-              Choose the plan that fits your study needs. Start free, upgrade when you&apos;re ready.
-            </p>
           </div>
 
           {/* Billing Toggle */}
