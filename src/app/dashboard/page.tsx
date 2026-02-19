@@ -601,46 +601,34 @@ export default function DashboardPage() {
           Hi {profile?.full_name ? profile.full_name.split(' ')[0] : 'there'}!
         </h2>
 
-        {/* Usage Indicator */}
-        {subscription && (
-          <div className="bg-white rounded-xl border border-[#E5E7EB] p-4 mb-6">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-[#0F172A]">
-                    {subscription.lecturesRemaining} of {subscription.lectureLimit} lectures remaining
-                  </span>
-                  <span className={`px-2 py-0.5 rounded-full text-xs font-medium capitalize
-                    ${subscription.plan === 'student' ? 'bg-violet-100 text-violet-700' : 'bg-gray-100 text-gray-600'}`}>
-                    {subscription.plan}
-                  </span>
-                </div>
-                <p className="text-xs text-gray-500 mt-1">Resets at the start of each month</p>
-              </div>
-              {subscription.plan === 'free' && (
-                <Link
-                  href="/pricing"
-                  className="text-sm font-medium text-[#A855F7] hover:underline"
-                >
-                  Upgrade for more
-                </Link>
-              )}
-            </div>
-            <div className="mt-3 h-2 bg-gray-100 rounded-full overflow-hidden">
-              <div
-                className={`h-full rounded-full transition-all ${
-                  subscription.lecturesRemaining === 0 ? 'bg-yellow-500' : 'bg-[#A855F7]'
-                }`}
-                style={{
-                  width: `${((subscription.lectureLimit - subscription.lecturesRemaining) / subscription.lectureLimit) * 100}%`
-                }}
-              />
-            </div>
-          </div>
-        )}
-
         {/* Upload Section */}
-        <div className="bg-white rounded-xl border-2 border-dashed border-[#E5E7EB] p-6 sm:p-8 mb-6 text-center hover:border-[#A855F7] transition-colors">
+        {subscription?.plan === 'free' && !subscription?.canUpload ? (
+          /* Free Trial Exhausted */
+          <div className="bg-white rounded-xl border-2 border-dashed border-yellow-300 p-6 sm:p-8 mb-6 text-center">
+            <div className="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+              <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-semibold text-[#0F172A] mb-2">
+              You have exhausted your free trial
+            </h3>
+            <p className="text-gray-500 text-sm mb-6 max-w-md mx-auto">
+              You&apos;ve used all {subscription.lectureLimit} free lectures this month. Upgrade to continue generating notes from your lectures.
+            </p>
+            <Link
+              href="/pricing"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg font-medium text-white bg-[#A855F7] hover:bg-[#9333EA] transition-colors"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+              </svg>
+              Upgrade Now
+            </Link>
+          </div>
+        ) : (
+          /* Normal Upload Box */
+          <div className="bg-white rounded-xl border-2 border-dashed border-[#E5E7EB] p-6 sm:p-8 mb-6 text-center hover:border-[#A855F7] transition-colors">
           <div className="w-12 h-12 bg-[#A855F7]/10 rounded-xl flex items-center justify-center mx-auto mb-4">
             <svg className="w-6 h-6 text-[#A855F7]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
@@ -688,6 +676,7 @@ export default function DashboardPage() {
             />
           </label>
         </div>
+        )}
 
         {/* Lectures List */}
         <div className="bg-white rounded-xl border border-[#E5E7EB] overflow-hidden">
