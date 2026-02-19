@@ -266,10 +266,27 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   );
 }
 
+// Default translation function for SSR/SSG
+const defaultT = (key: string): string => {
+  const translation = translations[key];
+  if (!translation) {
+    return key;
+  }
+  return translation['en'] || key;
+};
+
+// Default context value for SSR/SSG
+const defaultContextValue: LanguageContextType = {
+  language: 'en',
+  setLanguage: () => {},
+  t: defaultT,
+};
+
 export function useLanguage() {
   const context = useContext(LanguageContext);
+  // Return default value during SSR/SSG instead of throwing
   if (context === undefined) {
-    throw new Error('useLanguage must be used within a LanguageProvider');
+    return defaultContextValue;
   }
   return context;
 }
