@@ -6,7 +6,7 @@ export default function RefundPolicyPage() {
   return (
     <main className="min-h-screen bg-[#F8FAFC]">
       {/* Header */}
-      <nav className="bg-white border-b border-[#E5E7EB]">
+      <nav className="bg-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <Link href="/" className="flex items-center gap-2">
@@ -43,9 +43,9 @@ export default function RefundPolicyPage() {
         <h1 className="text-3xl sm:text-4xl font-bold text-[#0F172A] mb-2">Refund Policy</h1>
         <p className="text-gray-500 mb-8">Last updated: {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
 
-        <div className="bg-white rounded-xl border border-[#E5E7EB] p-6 sm:p-8 space-y-8">
+        <div className="bg-white rounded-xl p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8">
           {/* Hero Section */}
-          <section className="text-center pb-6 border-b border-[#E5E7EB]">
+          <section className="text-center pb-6">
             <h2 className="text-2xl font-bold text-[#0F172A] mb-3">Try Classcribe 100% Risk-Free. Cancel Anytime.</h2>
             <p className="text-gray-600 leading-relaxed max-w-2xl mx-auto">
               We built Classcribe to help you study smarter, learn faster, and ace your exams — and we&apos;re confident
@@ -150,27 +150,27 @@ export default function RefundPolicyPage() {
           </section>
 
           {/* You're Protected */}
-          <section className="bg-[#F8FAFC] rounded-xl p-6 border border-[#E5E7EB]">
+          <section className="bg-[#F8FAFC] rounded-xl p-4 sm:p-6">
             <h2 className="text-xl font-semibold text-[#0F172A] mb-4 text-center">You&apos;re Protected — Always</h2>
             <p className="text-gray-600 text-center mb-6">With Classcribe, you&apos;re never locked in.</p>
             <div className="flex flex-wrap justify-center gap-4">
-              <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full border border-[#E5E7EB]">
-                <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="flex items-center gap-2 bg-white px-3 sm:px-4 py-2 rounded-full shadow-sm">
+                <svg className="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
-                <span className="text-sm font-medium text-[#0F172A]">3-Day Money-Back Guarantee</span>
+                <span className="text-xs sm:text-sm font-medium text-[#0F172A]">3-Day Money-Back Guarantee</span>
               </div>
-              <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full border border-[#E5E7EB]">
-                <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="flex items-center gap-2 bg-white px-3 sm:px-4 py-2 rounded-full shadow-sm">
+                <svg className="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
-                <span className="text-sm font-medium text-[#0F172A]">Cancel Anytime</span>
+                <span className="text-xs sm:text-sm font-medium text-[#0F172A]">Cancel Anytime</span>
               </div>
-              <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full border border-[#E5E7EB]">
-                <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="flex items-center gap-2 bg-white px-3 sm:px-4 py-2 rounded-full shadow-sm">
+                <svg className="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
-                <span className="text-sm font-medium text-[#0F172A]">Plan Switching Made Easy</span>
+                <span className="text-xs sm:text-sm font-medium text-[#0F172A]">Plan Switching Made Easy</span>
               </div>
             </div>
           </section>
@@ -188,7 +188,7 @@ export default function RefundPolicyPage() {
       </div>
 
       {/* Footer */}
-      <footer className="border-t border-[#E5E7EB] py-8 mt-12">
+      <footer className="py-8 mt-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-sm text-gray-500">

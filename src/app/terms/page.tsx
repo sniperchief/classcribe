@@ -6,7 +6,7 @@ export default function TermsOfServicePage() {
   return (
     <main className="min-h-screen bg-[#F8FAFC]">
       {/* Header */}
-      <nav className="bg-white border-b border-[#E5E7EB]">
+      <nav className="bg-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <Link href="/" className="flex items-center gap-2">
@@ -43,7 +43,7 @@ export default function TermsOfServicePage() {
         <h1 className="text-3xl sm:text-4xl font-bold text-[#0F172A] mb-2">Terms of Service</h1>
         <p className="text-gray-500 mb-8">Last updated: {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
 
-        <div className="bg-white rounded-xl border border-[#E5E7EB] p-6 sm:p-8 space-y-8">
+        <div className="bg-white rounded-xl p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8">
           {/* Introduction */}
           <section>
             <h2 className="text-xl font-semibold text-[#0F172A] mb-3">1. Agreement to Terms</h2>
@@ -194,7 +194,7 @@ export default function TermsOfServicePage() {
       </div>
 
       {/* Footer */}
-      <footer className="border-t border-[#E5E7EB] py-8 mt-12">
+      <footer className="py-8 mt-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-sm text-gray-500">
