@@ -196,17 +196,24 @@ export default function DashboardPage() {
 
   // Check for subscription success
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('subscription') === 'success') {
-      setShowUpgradeSuccess(true);
-      // Remove query param from URL
-      window.history.replaceState({}, '', '/dashboard');
-      // Auto-hide after 5 seconds
-      const timer = setTimeout(() => {
-        setShowUpgradeSuccess(false);
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
+    // Small delay to ensure URL is available after redirect
+    const checkSubscriptionSuccess = () => {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('subscription') === 'success') {
+        setShowUpgradeSuccess(true);
+        // Remove query param from URL
+        window.history.replaceState({}, '', '/dashboard');
+        // Auto-hide after 5 seconds
+        setTimeout(() => {
+          setShowUpgradeSuccess(false);
+        }, 5000);
+      }
+    };
+
+    // Check immediately and also after a brief delay
+    checkSubscriptionSuccess();
+    const timer = setTimeout(checkSubscriptionSuccess, 100);
+    return () => clearTimeout(timer);
   }, []);
 
   const handleSaveProfile = async () => {
