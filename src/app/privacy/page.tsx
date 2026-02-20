@@ -83,15 +83,15 @@ export default function PrivacyPolicyPage() {
           {/* Third-Party Services */}
           <section>
             <h2 className="text-xl font-semibold text-[#0F172A] mb-3">4. Third-Party Services</h2>
-            <p className="text-gray-600 leading-relaxed mb-4">We use trusted third-party services to operate our platform:</p>
+            <p className="text-gray-600 leading-relaxed mb-4">We use trusted third-party services to operate our platform, including:</p>
             <ul className="list-disc list-inside text-gray-600 space-y-2 ml-4">
-              <li><strong>Supabase:</strong> For secure data storage and user authentication.</li>
-              <li><strong>Deepgram:</strong> For audio transcription services.</li>
-              <li><strong>Anthropic (Claude AI):</strong> For generating structured notes from transcripts.</li>
-              <li><strong>Paystack:</strong> For secure payment processing.</li>
+              <li>Secure cloud infrastructure for data storage and authentication</li>
+              <li>Audio transcription services</li>
+              <li>AI services for generating structured notes</li>
+              <li>Payment processing services</li>
             </ul>
             <p className="text-gray-600 leading-relaxed mt-4">
-              Each of these services has their own privacy policies governing the use of your information.
+              These service providers are contractually obligated to protect your information and use it only for the purposes we specify.
             </p>
           </section>
 
