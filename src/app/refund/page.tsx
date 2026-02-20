@@ -115,7 +115,7 @@ export default function RefundPolicyPage() {
         <div className="space-y-6 sm:space-y-8">
           {/* Hero Section */}
           <section className="text-center pb-6">
-            <h3 className="text-xl font-bold text-[#A855F7]/70 mb-3">Try Classcribe 100% Risk-Free. Cancel Anytime.</h3>
+            <h3 className="text-xl font-bold text-emerald-800 mb-3">Try Classcribe 100% Risk-Free. Cancel Anytime.</h3>
             <p className="text-gray-600 leading-relaxed text-justify max-w-2xl mx-auto">
               We built Classcribe to help you study smarter, learn faster, and ace your exams — and we&apos;re confident
               you&apos;ll love it. But if it&apos;s not the right fit, we&apos;ve made it super easy to get your money back or cancel.
@@ -131,7 +131,7 @@ export default function RefundPolicyPage() {
                 </svg>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-[#A855F7]/70 mb-2">3-Day 100% Money-Back Guarantee</h3>
+                <h3 className="text-lg font-semibold text-emerald-800 mb-2">3-Day 100% Money-Back Guarantee</h3>
                 <p className="text-gray-600 leading-relaxed text-justify mb-4">
                   If you&apos;re not satisfied within the first 3 days of your first subscription, just contact us
                   and we&apos;ll give you a full refund — no questions asked.
@@ -178,7 +178,7 @@ export default function RefundPolicyPage() {
                 </svg>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-[#A855F7]/70 mb-2">Cancel Anytime — You&apos;re in Control</h3>
+                <h3 className="text-lg font-semibold text-emerald-800 mb-2">Cancel Anytime — You&apos;re in Control</h3>
                 <p className="text-gray-600 leading-relaxed text-justify mb-4">
                   You can cancel your subscription anytime directly from your dashboard — no support tickets, no hoops to jump through.
                 </p>
@@ -209,7 +209,7 @@ export default function RefundPolicyPage() {
                 </svg>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-[#A855F7]/70 mb-2">Switch Plans Anytime</h3>
+                <h3 className="text-lg font-semibold text-emerald-800 mb-2">Switch Plans Anytime</h3>
                 <p className="text-gray-600 leading-relaxed text-justify">
                   Want to upgrade or switch from monthly to yearly? You can change your plan anytime, and we&apos;ll
                   automatically adjust the billing so you never overpay.
@@ -220,7 +220,7 @@ export default function RefundPolicyPage() {
 
           {/* You're Protected */}
           <section>
-            <h3 className="text-lg font-semibold text-[#A855F7]/70 mb-4 text-center">You&apos;re Protected — Always</h3>
+            <h3 className="text-lg font-semibold text-emerald-800 mb-4 text-center">You&apos;re Protected — Always</h3>
             <p className="text-gray-600 text-center mb-6">With Classcribe, you&apos;re never locked in.</p>
             <div className="flex flex-wrap justify-center gap-4">
               <div className="flex items-center gap-2 px-3 sm:px-4 py-2">

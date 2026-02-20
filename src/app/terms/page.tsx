@@ -115,7 +115,7 @@ export default function TermsOfServicePage() {
         <div className="space-y-6 sm:space-y-8">
           {/* Introduction */}
           <section>
-            <h3 className="text-lg font-semibold text-[#A855F7]/70 mb-3">Agreement to Terms</h3>
+            <h3 className="text-lg font-semibold text-emerald-800 mb-3">Agreement to Terms</h3>
             <p className="text-gray-600 leading-relaxed text-justify">
               By accessing or using Classcribe at classcribe.app, you agree to be bound by these Terms of Service.
               If you do not agree to these terms, please do not use our service.
@@ -124,7 +124,7 @@ export default function TermsOfServicePage() {
 
           {/* Description of Service */}
           <section>
-            <h3 className="text-lg font-semibold text-[#A855F7]/70 mb-3">Description of Service</h3>
+            <h3 className="text-lg font-semibold text-emerald-800 mb-3">Description of Service</h3>
             <p className="text-gray-600 leading-relaxed text-justify">
               Classcribe is an AI-powered service that converts lecture recordings into structured study notes.
               Users can upload audio files, which are transcribed and processed to generate comprehensive notes,
@@ -134,7 +134,7 @@ export default function TermsOfServicePage() {
 
           {/* Account Terms */}
           <section>
-            <h3 className="text-lg font-semibold text-[#A855F7]/70 mb-3">Account Terms</h3>
+            <h3 className="text-lg font-semibold text-emerald-800 mb-3">Account Terms</h3>
             <ul className="list-disc list-inside text-gray-600 space-y-2 ml-4">
               <li>You must provide accurate and complete information when creating an account.</li>
               <li>You are responsible for maintaining the security of your account and password.</li>
@@ -146,7 +146,7 @@ export default function TermsOfServicePage() {
 
           {/* Acceptable Use */}
           <section>
-            <h3 className="text-lg font-semibold text-[#A855F7]/70 mb-3">Acceptable Use</h3>
+            <h3 className="text-lg font-semibold text-emerald-800 mb-3">Acceptable Use</h3>
             <p className="text-gray-600 leading-relaxed text-justify mb-4">You agree not to:</p>
             <ul className="list-disc list-inside text-gray-600 space-y-2 ml-4">
               <li>Upload content that infringes on intellectual property rights of others</li>
@@ -160,7 +160,7 @@ export default function TermsOfServicePage() {
 
           {/* Subscription and Payments */}
           <section>
-            <h3 className="text-lg font-semibold text-[#A855F7]/70 mb-3">Subscription and Payments</h3>
+            <h3 className="text-lg font-semibold text-emerald-800 mb-3">Subscription and Payments</h3>
             <ul className="list-disc list-inside text-gray-600 space-y-2 ml-4">
               <li>Free accounts are limited to 2 lecture uploads per month.</li>
               <li>Paid subscriptions provide additional features and higher upload limits.</li>
@@ -172,7 +172,7 @@ export default function TermsOfServicePage() {
 
           {/* Content Ownership */}
           <section>
-            <h3 className="text-lg font-semibold text-[#A855F7]/70 mb-3">Content Ownership</h3>
+            <h3 className="text-lg font-semibold text-emerald-800 mb-3">Content Ownership</h3>
             <p className="text-gray-600 leading-relaxed text-justify mb-4">
               <strong>Your Content:</strong> You retain ownership of all audio recordings and content you upload.
               By uploading content, you grant us a limited license to process it for the purpose of providing our services.
@@ -185,7 +185,7 @@ export default function TermsOfServicePage() {
 
           {/* Intellectual Property */}
           <section>
-            <h3 className="text-lg font-semibold text-[#A855F7]/70 mb-3">Intellectual Property</h3>
+            <h3 className="text-lg font-semibold text-emerald-800 mb-3">Intellectual Property</h3>
             <p className="text-gray-600 leading-relaxed text-justify">
               The Classcribe service, including its original content, features, and functionality, is owned by
               Classcribe and is protected by international copyright, trademark, and other intellectual property laws.
@@ -194,7 +194,7 @@ export default function TermsOfServicePage() {
 
           {/* Service Availability */}
           <section>
-            <h3 className="text-lg font-semibold text-[#A855F7]/70 mb-3">Service Availability</h3>
+            <h3 className="text-lg font-semibold text-emerald-800 mb-3">Service Availability</h3>
             <p className="text-gray-600 leading-relaxed text-justify">
               We strive to maintain high availability but do not guarantee uninterrupted access to the service.
               We may modify, suspend, or discontinue any part of the service at any time without prior notice.
@@ -203,7 +203,7 @@ export default function TermsOfServicePage() {
 
           {/* Limitation of Liability */}
           <section>
-            <h3 className="text-lg font-semibold text-[#A855F7]/70 mb-3">Limitation of Liability</h3>
+            <h3 className="text-lg font-semibold text-emerald-800 mb-3">Limitation of Liability</h3>
             <p className="text-gray-600 leading-relaxed text-justify">
               To the maximum extent permitted by law, Classcribe shall not be liable for any indirect, incidental,
               special, consequential, or punitive damages, including loss of profits, data, or other intangible losses
@@ -213,7 +213,7 @@ export default function TermsOfServicePage() {
 
           {/* Disclaimer of Warranties */}
           <section>
-            <h3 className="text-lg font-semibold text-[#A855F7]/70 mb-3">Disclaimer of Warranties</h3>
+            <h3 className="text-lg font-semibold text-emerald-800 mb-3">Disclaimer of Warranties</h3>
             <p className="text-gray-600 leading-relaxed text-justify">
               The service is provided &quot;as is&quot; and &quot;as available&quot; without warranties of any kind,
               either express or implied. We do not guarantee the accuracy of transcriptions or generated notes.
@@ -223,7 +223,7 @@ export default function TermsOfServicePage() {
 
           {/* Termination */}
           <section>
-            <h3 className="text-lg font-semibold text-[#A855F7]/70 mb-3">Termination</h3>
+            <h3 className="text-lg font-semibold text-emerald-800 mb-3">Termination</h3>
             <p className="text-gray-600 leading-relaxed text-justify">
               We may terminate or suspend your account at any time for violations of these terms.
               You may cancel your account at any time. Upon termination, your right to use the service will
@@ -233,7 +233,7 @@ export default function TermsOfServicePage() {
 
           {/* Changes to Terms */}
           <section>
-            <h3 className="text-lg font-semibold text-[#A855F7]/70 mb-3">Changes to Terms</h3>
+            <h3 className="text-lg font-semibold text-emerald-800 mb-3">Changes to Terms</h3>
             <p className="text-gray-600 leading-relaxed text-justify">
               We reserve the right to modify these terms at any time. We will notify users of significant changes
               by posting on our website. Continued use of the service after changes constitutes acceptance of the new terms.
@@ -242,7 +242,7 @@ export default function TermsOfServicePage() {
 
           {/* Governing Law */}
           <section>
-            <h3 className="text-lg font-semibold text-[#A855F7]/70 mb-3">Governing Law</h3>
+            <h3 className="text-lg font-semibold text-emerald-800 mb-3">Governing Law</h3>
             <p className="text-gray-600 leading-relaxed text-justify">
               These terms shall be governed by and construed in accordance with applicable laws,
               without regard to conflict of law principles.
@@ -251,7 +251,7 @@ export default function TermsOfServicePage() {
 
           {/* Contact Us */}
           <section>
-            <h3 className="text-lg font-semibold text-[#A855F7]/70 mb-3">Contact Us</h3>
+            <h3 className="text-lg font-semibold text-emerald-800 mb-3">Contact Us</h3>
             <p className="text-gray-600 leading-relaxed text-justify">
               If you have any questions about these Terms of Service, please contact us at:{' '}
               <a href="mailto:support@classcribe.app" className="text-[#A855F7] hover:underline">
