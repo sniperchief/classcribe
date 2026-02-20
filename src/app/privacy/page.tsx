@@ -1,13 +1,17 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
+import Footer from '@/components/landing/Footer';
 
 export default function PrivacyPolicyPage() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   return (
     <main className="min-h-screen bg-gray-100">
       {/* Header */}
-      <nav className="bg-gray-100">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <nav className="bg-white sticky top-0 z-50 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <Link href="/" className="flex items-center gap-2">
               <div className="w-8 h-8 bg-[#A855F7] rounded-lg flex items-center justify-center">
@@ -28,13 +32,78 @@ export default function PrivacyPolicyPage() {
               <span className="text-xl font-semibold text-[#0F172A]">Classcribe</span>
             </Link>
 
-            <Link
-              href="/"
-              className="text-sm text-gray-600 hover:text-[#0F172A]"
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center gap-6">
+              <Link href="/" className="text-sm text-gray-600 hover:text-[#A855F7] transition-colors">
+                Home
+              </Link>
+              <Link href="/#pricing" className="text-sm text-gray-600 hover:text-[#A855F7] transition-colors">
+                Pricing
+              </Link>
+              <Link href="/login" className="text-sm text-gray-600 hover:text-[#A855F7] transition-colors">
+                Login
+              </Link>
+              <Link
+                href="/signup"
+                className="px-4 py-2 bg-[#A855F7] text-white text-sm font-medium rounded-lg hover:bg-[#9333EA] transition-colors"
+              >
+                Get Started
+              </Link>
+            </div>
+
+            {/* Mobile Hamburger */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              aria-label="Toggle menu"
             >
-              Back to Home
-            </Link>
+              {mobileMenuOpen ? (
+                <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              ) : (
+                <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              )}
+            </button>
           </div>
+
+          {/* Mobile Menu Dropdown */}
+          {mobileMenuOpen && (
+            <div className="md:hidden py-4 border-t border-gray-100">
+              <div className="flex flex-col gap-3">
+                <Link
+                  href="/"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="px-3 py-2 text-gray-600 hover:text-[#A855F7] hover:bg-gray-50 rounded-lg transition-colors"
+                >
+                  Home
+                </Link>
+                <Link
+                  href="/#pricing"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="px-3 py-2 text-gray-600 hover:text-[#A855F7] hover:bg-gray-50 rounded-lg transition-colors"
+                >
+                  Pricing
+                </Link>
+                <Link
+                  href="/login"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="px-3 py-2 text-gray-600 hover:text-[#A855F7] hover:bg-gray-50 rounded-lg transition-colors"
+                >
+                  Login
+                </Link>
+                <Link
+                  href="/signup"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="px-3 py-2 bg-[#A855F7] text-white text-center font-medium rounded-lg hover:bg-[#9333EA] transition-colors"
+                >
+                  Get Started
+                </Link>
+              </div>
+            </div>
+          )}
         </div>
       </nav>
 
@@ -168,26 +237,7 @@ export default function PrivacyPolicyPage() {
       </div>
 
       {/* Footer */}
-      <footer className="py-8 mt-12">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p className="text-sm text-gray-500">
-              &copy; {new Date().getFullYear()} Classcribe. All rights reserved.
-            </p>
-            <div className="flex items-center gap-6">
-              <Link href="/privacy" className="text-sm text-[#A855F7] font-medium">
-                Privacy Policy
-              </Link>
-              <Link href="/terms" className="text-sm text-gray-500 hover:text-[#0F172A]">
-                Terms of Service
-              </Link>
-              <Link href="/refund" className="text-sm text-gray-500 hover:text-[#0F172A]">
-                Refund Policy
-              </Link>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </main>
   );
 }
