@@ -46,6 +46,7 @@ export default function DashboardPage() {
   const [showProgressModal, setShowProgressModal] = useState(false);
   const [subscription, setSubscription] = useState<SubscriptionInfo | null>(null);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [showUpgradeSuccess, setShowUpgradeSuccess] = useState(false);
   const pollingRef = useRef<NodeJS.Timeout | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -193,6 +194,20 @@ export default function DashboardPage() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Check for subscription success
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('subscription') === 'success') {
+      setShowUpgradeSuccess(true);
+      // Remove query param from URL
+      window.history.replaceState({}, '', '/dashboard');
+      // Auto-hide after 5 seconds
+      const timer = setTimeout(() => {
+        setShowUpgradeSuccess(false);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   const handleSaveProfile = async () => {
     setSavingProfile(true);
@@ -596,6 +611,29 @@ export default function DashboardPage() {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        {/* Upgrade Success Notification */}
+        {showUpgradeSuccess && (
+          <div className="mb-6 bg-gradient-to-r from-emerald-50 to-violet-50 border border-emerald-200 rounded-xl p-4 flex items-center gap-4">
+            <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-violet-500 rounded-full flex items-center justify-center flex-shrink-0">
+              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <div className="flex-1">
+              <h3 className="font-semibold text-[#0F172A]">Welcome to Student Plan!</h3>
+              <p className="text-sm text-gray-600">Your upgrade was successful. You now have access to 15 lectures per month and all premium features.</p>
+            </div>
+            <button
+              onClick={() => setShowUpgradeSuccess(false)}
+              className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        )}
+
         {/* Greeting */}
         <h2 className="text-2xl sm:text-3xl font-bold text-[#0F172A] mb-6">
           Hi {profile?.full_name ? profile.full_name.split(' ')[0] : 'there'}!
