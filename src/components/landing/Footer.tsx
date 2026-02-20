@@ -2,30 +2,30 @@ import Link from 'next/link';
 
 export default function Footer() {
   return (
-    <footer className="bg-white border-t border-[#E5E7EB]">
+    <footer className="bg-emerald-600">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12 lg:py-16">
         <div className="grid grid-cols-2 md:grid-cols-3 gap-8 lg:gap-12">
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
             <Link href="/" className="flex items-center mb-4">
-              <span className="text-lg font-semibold text-[#A855F7]">Classcribe</span>
+              <span className="text-lg font-semibold text-white">Classcribe</span>
             </Link>
-            <p className="text-sm text-gray-600 leading-relaxed">
+            <p className="text-sm text-emerald-100 leading-relaxed">
               Transform lecture recordings into exam-ready study notes with AI.
             </p>
           </div>
 
           {/* Support */}
           <div>
-            <h3 className="font-semibold text-[#0F172A] mb-3 sm:mb-4 text-sm sm:text-base">Support</h3>
+            <h3 className="font-semibold text-white mb-3 sm:mb-4 text-sm sm:text-base">Support</h3>
             <ul className="space-y-2 sm:space-y-3">
               <li>
-                <a href="#pricing" className="text-sm text-gray-600 hover:text-[#4F6B5C] transition-colors">
+                <a href="#pricing" className="text-sm text-emerald-100 hover:text-white transition-colors">
                   Pricing
                 </a>
               </li>
               <li>
-                <a href="mailto:support@classcribe.app" className="text-sm text-gray-600 hover:text-[#4F6B5C] transition-colors">
+                <a href="mailto:support@classcribe.app" className="text-sm text-emerald-100 hover:text-white transition-colors">
                   support@classcribe.app
                 </a>
               </li>
@@ -34,20 +34,20 @@ export default function Footer() {
 
           {/* Legal */}
           <div>
-            <h3 className="font-semibold text-[#0F172A] mb-3 sm:mb-4 text-sm sm:text-base">Legal</h3>
+            <h3 className="font-semibold text-white mb-3 sm:mb-4 text-sm sm:text-base">Legal</h3>
             <ul className="space-y-2 sm:space-y-3">
               <li>
-                <Link href="/privacy" className="text-sm text-gray-600 hover:text-[#4F6B5C] transition-colors">
+                <Link href="/privacy" className="text-sm text-emerald-100 hover:text-white transition-colors">
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link href="/terms" className="text-sm text-gray-600 hover:text-[#4F6B5C] transition-colors">
+                <Link href="/terms" className="text-sm text-emerald-100 hover:text-white transition-colors">
                   Terms of Service
                 </Link>
               </li>
               <li>
-                <Link href="/refund" className="text-sm text-gray-600 hover:text-[#4F6B5C] transition-colors">
+                <Link href="/refund" className="text-sm text-emerald-100 hover:text-white transition-colors">
                   Refund Policy
                 </Link>
               </li>
@@ -56,8 +56,8 @@ export default function Footer() {
         </div>
 
         {/* Bottom */}
-        <div className="mt-10 sm:mt-12 pt-6 sm:pt-8 border-t border-[#E5E7EB] flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-gray-500 text-center sm:text-left">
+        <div className="mt-10 sm:mt-12 pt-6 sm:pt-8 border-t border-emerald-500 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-sm text-emerald-100 text-center sm:text-left">
             &copy; {new Date().getFullYear()} Classcribe. All rights reserved.
           </p>
 
@@ -65,7 +65,7 @@ export default function Footer() {
           <div className="flex items-center gap-3 sm:gap-4">
             <a
               href="#"
-              className="w-9 h-9 sm:w-10 sm:h-10 bg-[#F8FAFC] rounded-lg flex items-center justify-center text-gray-500 hover:text-[#4F6B5C] hover:bg-gray-100 transition-colors"
+              className="w-9 h-9 sm:w-10 sm:h-10 bg-emerald-500 rounded-lg flex items-center justify-center text-white hover:bg-emerald-400 transition-colors"
               aria-label="Twitter"
             >
               <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -74,7 +74,7 @@ export default function Footer() {
             </a>
             <a
               href="#"
-              className="w-9 h-9 sm:w-10 sm:h-10 bg-[#F8FAFC] rounded-lg flex items-center justify-center text-gray-500 hover:text-[#4F6B5C] hover:bg-gray-100 transition-colors"
+              className="w-9 h-9 sm:w-10 sm:h-10 bg-emerald-500 rounded-lg flex items-center justify-center text-white hover:bg-emerald-400 transition-colors"
               aria-label="LinkedIn"
             >
               <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -83,7 +83,7 @@ export default function Footer() {
             </a>
             <a
               href="#"
-              className="w-9 h-9 sm:w-10 sm:h-10 bg-[#F8FAFC] rounded-lg flex items-center justify-center text-gray-500 hover:text-[#4F6B5C] hover:bg-gray-100 transition-colors"
+              className="w-9 h-9 sm:w-10 sm:h-10 bg-emerald-500 rounded-lg flex items-center justify-center text-white hover:bg-emerald-400 transition-colors"
               aria-label="Instagram"
             >
               <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
