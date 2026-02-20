@@ -25,23 +25,8 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <a href="#" className="text-sm text-gray-600 hover:text-[#4F6B5C] transition-colors">
-                  Help Center
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-sm text-gray-600 hover:text-[#4F6B5C] transition-colors">
-                  Contact Us
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-sm text-gray-600 hover:text-[#4F6B5C] transition-colors">
-                  FAQs
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-sm text-gray-600 hover:text-[#4F6B5C] transition-colors">
-                  System Status
+                <a href="mailto:support@classcribe.app" className="text-sm text-gray-600 hover:text-[#4F6B5C] transition-colors">
+                  support@classcribe.app
                 </a>
               </li>
             </ul>
