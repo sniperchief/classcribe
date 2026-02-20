@@ -1,5 +1,0 @@
-ALTER TABLE profiles
-ADD COLUMN IF NOT EXISTS subscription_plan TEXT DEFAULT 'free',
-ADD COLUMN IF NOT EXISTS subscription_start_date TIMESTAMP WITH TIME ZONE,
-ADD COLUMN IF NOT EXISTS subscription_end_date TIMESTAMP WITH TIME ZONE,
-ADD COLUMN IF NOT EXISTS paystack_customer_code TEXT;
