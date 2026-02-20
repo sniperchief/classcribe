@@ -4,9 +4,9 @@ import Link from 'next/link';
 
 export default function RefundPolicyPage() {
   return (
-    <main className="min-h-screen bg-[#F8FAFC]">
+    <main className="min-h-screen bg-gray-100">
       {/* Header */}
-      <nav className="bg-white">
+      <nav className="bg-gray-100">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <Link href="/" className="flex items-center gap-2">
@@ -150,7 +150,7 @@ export default function RefundPolicyPage() {
           </section>
 
           {/* You're Protected */}
-          <section className="bg-[#F8FAFC] rounded-xl p-4 sm:p-6">
+          <section className="bg-gray-50 rounded-xl p-4 sm:p-6">
             <h2 className="text-xl font-semibold text-[#0F172A] mb-4 text-center">You&apos;re Protected — Always</h2>
             <p className="text-gray-600 text-center mb-6">With Classcribe, you&apos;re never locked in.</p>
             <div className="flex flex-wrap justify-center gap-4">

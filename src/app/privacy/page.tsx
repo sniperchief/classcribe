@@ -4,9 +4,9 @@ import Link from 'next/link';
 
 export default function PrivacyPolicyPage() {
   return (
-    <main className="min-h-screen bg-[#F8FAFC]">
+    <main className="min-h-screen bg-gray-100">
       {/* Header */}
-      <nav className="bg-white">
+      <nav className="bg-gray-100">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <Link href="/" className="flex items-center gap-2">
@@ -46,7 +46,7 @@ export default function PrivacyPolicyPage() {
         <div className="bg-white rounded-xl p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8">
           {/* Introduction */}
           <section>
-            <h2 className="text-xl font-semibold text-[#0F172A] mb-3">1. Introduction</h2>
+            <h2 className="text-xl font-semibold text-[#0F172A] mb-3">Introduction</h2>
             <p className="text-gray-600 leading-relaxed">
               Welcome to Classcribe. We are committed to protecting your personal information and your right to privacy.
               This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our
@@ -56,7 +56,7 @@ export default function PrivacyPolicyPage() {
 
           {/* Information We Collect */}
           <section>
-            <h2 className="text-xl font-semibold text-[#0F172A] mb-3">2. Information We Collect</h2>
+            <h2 className="text-xl font-semibold text-[#0F172A] mb-3">Information We Collect</h2>
             <p className="text-gray-600 leading-relaxed mb-4">We collect information that you provide directly to us:</p>
             <ul className="list-disc list-inside text-gray-600 space-y-2 ml-4">
               <li><strong>Account Information:</strong> Email address, full name, country, university, and course of study when you create an account.</li>
@@ -68,7 +68,7 @@ export default function PrivacyPolicyPage() {
 
           {/* How We Use Your Information */}
           <section>
-            <h2 className="text-xl font-semibold text-[#0F172A] mb-3">3. How We Use Your Information</h2>
+            <h2 className="text-xl font-semibold text-[#0F172A] mb-3">How We Use Your Information</h2>
             <p className="text-gray-600 leading-relaxed mb-4">We use the information we collect to:</p>
             <ul className="list-disc list-inside text-gray-600 space-y-2 ml-4">
               <li>Provide, maintain, and improve our services</li>
@@ -82,7 +82,7 @@ export default function PrivacyPolicyPage() {
 
           {/* Third-Party Services */}
           <section>
-            <h2 className="text-xl font-semibold text-[#0F172A] mb-3">4. Third-Party Services</h2>
+            <h2 className="text-xl font-semibold text-[#0F172A] mb-3">Third-Party Services</h2>
             <p className="text-gray-600 leading-relaxed mb-4">We use trusted third-party services to operate our platform, including:</p>
             <ul className="list-disc list-inside text-gray-600 space-y-2 ml-4">
               <li>Secure cloud infrastructure for data storage and authentication</li>
@@ -97,7 +97,7 @@ export default function PrivacyPolicyPage() {
 
           {/* Data Storage and Security */}
           <section>
-            <h2 className="text-xl font-semibold text-[#0F172A] mb-3">5. Data Storage and Security</h2>
+            <h2 className="text-xl font-semibold text-[#0F172A] mb-3">Data Storage and Security</h2>
             <p className="text-gray-600 leading-relaxed">
               We implement appropriate technical and organizational security measures to protect your personal information.
               Your data is stored securely using industry-standard encryption. However, no method of transmission over the
@@ -107,7 +107,7 @@ export default function PrivacyPolicyPage() {
 
           {/* Data Retention */}
           <section>
-            <h2 className="text-xl font-semibold text-[#0F172A] mb-3">6. Data Retention</h2>
+            <h2 className="text-xl font-semibold text-[#0F172A] mb-3">Data Retention</h2>
             <p className="text-gray-600 leading-relaxed">
               We retain your personal information for as long as your account is active or as needed to provide you services.
               You may request deletion of your account and associated data at any time by contacting us at support@classcribe.app.
@@ -116,7 +116,7 @@ export default function PrivacyPolicyPage() {
 
           {/* Your Rights */}
           <section>
-            <h2 className="text-xl font-semibold text-[#0F172A] mb-3">7. Your Rights</h2>
+            <h2 className="text-xl font-semibold text-[#0F172A] mb-3">Your Rights</h2>
             <p className="text-gray-600 leading-relaxed mb-4">You have the right to:</p>
             <ul className="list-disc list-inside text-gray-600 space-y-2 ml-4">
               <li>Access the personal information we hold about you</li>
@@ -129,7 +129,7 @@ export default function PrivacyPolicyPage() {
 
           {/* Cookies */}
           <section>
-            <h2 className="text-xl font-semibold text-[#0F172A] mb-3">8. Cookies</h2>
+            <h2 className="text-xl font-semibold text-[#0F172A] mb-3">Cookies</h2>
             <p className="text-gray-600 leading-relaxed">
               We use essential cookies to maintain your session and remember your preferences.
               These cookies are necessary for the service to function properly.
@@ -138,7 +138,7 @@ export default function PrivacyPolicyPage() {
 
           {/* Children's Privacy */}
           <section>
-            <h2 className="text-xl font-semibold text-[#0F172A] mb-3">9. Children&apos;s Privacy</h2>
+            <h2 className="text-xl font-semibold text-[#0F172A] mb-3">Children&apos;s Privacy</h2>
             <p className="text-gray-600 leading-relaxed">
               Our service is not intended for children under 13 years of age. We do not knowingly collect personal
               information from children under 13.
@@ -147,7 +147,7 @@ export default function PrivacyPolicyPage() {
 
           {/* Changes to This Policy */}
           <section>
-            <h2 className="text-xl font-semibold text-[#0F172A] mb-3">10. Changes to This Policy</h2>
+            <h2 className="text-xl font-semibold text-[#0F172A] mb-3">Changes to This Policy</h2>
             <p className="text-gray-600 leading-relaxed">
               We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new
               Privacy Policy on this page and updating the &quot;Last updated&quot; date.
@@ -156,7 +156,7 @@ export default function PrivacyPolicyPage() {
 
           {/* Contact Us */}
           <section>
-            <h2 className="text-xl font-semibold text-[#0F172A] mb-3">11. Contact Us</h2>
+            <h2 className="text-xl font-semibold text-[#0F172A] mb-3">Contact Us</h2>
             <p className="text-gray-600 leading-relaxed">
               If you have any questions about this Privacy Policy, please contact us at:{' '}
               <a href="mailto:support@classcribe.app" className="text-[#A855F7] hover:underline">
