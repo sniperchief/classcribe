@@ -43,7 +43,7 @@ export default function RefundPolicyPage() {
         <h1 className="text-3xl sm:text-4xl font-bold text-[#0F172A] mb-2">Refund Policy</h1>
         <p className="text-gray-500 mb-8">Last updated: {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
 
-        <div className="bg-white rounded-xl p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8">
+        <div className="space-y-6 sm:space-y-8">
           {/* Hero Section */}
           <section className="text-center pb-6">
             <h3 className="text-xl font-bold text-[#A855F7]/70 mb-3">Try Classcribe 100% Risk-Free. Cancel Anytime.</h3>
@@ -150,23 +150,23 @@ export default function RefundPolicyPage() {
           </section>
 
           {/* You're Protected */}
-          <section className="bg-gray-50 rounded-xl p-4 sm:p-6">
+          <section>
             <h3 className="text-lg font-semibold text-[#A855F7]/70 mb-4 text-center">You&apos;re Protected — Always</h3>
             <p className="text-gray-600 text-center text-justify mb-6">With Classcribe, you&apos;re never locked in.</p>
             <div className="flex flex-wrap justify-center gap-4">
-              <div className="flex items-center gap-2 bg-white px-3 sm:px-4 py-2 rounded-full shadow-sm">
+              <div className="flex items-center gap-2 px-3 sm:px-4 py-2">
                 <svg className="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
                 <span className="text-xs sm:text-sm font-medium text-[#0F172A]">3-Day Money-Back Guarantee</span>
               </div>
-              <div className="flex items-center gap-2 bg-white px-3 sm:px-4 py-2 rounded-full shadow-sm">
+              <div className="flex items-center gap-2 px-3 sm:px-4 py-2">
                 <svg className="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
                 <span className="text-xs sm:text-sm font-medium text-[#0F172A]">Cancel Anytime</span>
               </div>
-              <div className="flex items-center gap-2 bg-white px-3 sm:px-4 py-2 rounded-full shadow-sm">
+              <div className="flex items-center gap-2 px-3 sm:px-4 py-2">
                 <svg className="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>

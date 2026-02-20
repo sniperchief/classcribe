@@ -43,7 +43,7 @@ export default function PrivacyPolicyPage() {
         <h1 className="text-3xl sm:text-4xl font-bold text-[#0F172A] mb-2">Privacy Policy</h1>
         <p className="text-gray-500 mb-8">Last updated: {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
 
-        <div className="bg-white rounded-xl p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8">
+        <div className="space-y-6 sm:space-y-8">
           {/* Introduction */}
           <section>
             <h3 className="text-lg font-semibold text-[#A855F7]/70 mb-3">Introduction</h3>
