@@ -34,13 +34,13 @@ export default function RefundPolicyPage() {
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center gap-6">
-              <Link href="/" className="text-sm text-gray-600 hover:text-[#A855F7] transition-colors">
+              <Link href="/" className="text-sm text-gray-800 hover:text-[#A855F7] transition-colors">
                 Home
               </Link>
-              <Link href="/#pricing" className="text-sm text-gray-600 hover:text-[#A855F7] transition-colors">
+              <Link href="/#pricing" className="text-sm text-gray-800 hover:text-[#A855F7] transition-colors">
                 Pricing
               </Link>
-              <Link href="/login" className="text-sm text-gray-600 hover:text-[#A855F7] transition-colors">
+              <Link href="/login" className="text-sm text-gray-800 hover:text-[#A855F7] transition-colors">
                 Login
               </Link>
               <Link
@@ -58,11 +58,11 @@ export default function RefundPolicyPage() {
               aria-label="Toggle menu"
             >
               {mobileMenuOpen ? (
-                <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               ) : (
-                <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
               )}
@@ -76,21 +76,21 @@ export default function RefundPolicyPage() {
                 <Link
                   href="/"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="px-3 py-2 text-gray-600 hover:text-[#A855F7] hover:bg-gray-50 rounded-lg transition-colors"
+                  className="px-3 py-2 text-gray-800 hover:text-[#A855F7] hover:bg-gray-50 rounded-lg transition-colors"
                 >
                   Home
                 </Link>
                 <Link
                   href="/#pricing"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="px-3 py-2 text-gray-600 hover:text-[#A855F7] hover:bg-gray-50 rounded-lg transition-colors"
+                  className="px-3 py-2 text-gray-800 hover:text-[#A855F7] hover:bg-gray-50 rounded-lg transition-colors"
                 >
                   Pricing
                 </Link>
                 <Link
                   href="/login"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="px-3 py-2 text-gray-600 hover:text-[#A855F7] hover:bg-gray-50 rounded-lg transition-colors"
+                  className="px-3 py-2 text-gray-800 hover:text-[#A855F7] hover:bg-gray-50 rounded-lg transition-colors"
                 >
                   Login
                 </Link>
@@ -116,7 +116,7 @@ export default function RefundPolicyPage() {
           {/* Hero Section */}
           <section className="text-center pb-6">
             <h3 className="text-xl font-bold text-emerald-800 mb-3">Try Classcribe 100% Risk-Free. Cancel Anytime.</h3>
-            <p className="text-gray-600 leading-relaxed text-justify max-w-2xl mx-auto">
+            <p className="text-gray-800 leading-relaxed text-justify max-w-2xl mx-auto">
               We built Classcribe to help you study smarter, learn faster, and ace your exams — and we&apos;re confident
               you&apos;ll love it. But if it&apos;s not the right fit, we&apos;ve made it super easy to get your money back or cancel.
             </p>
@@ -132,11 +132,11 @@ export default function RefundPolicyPage() {
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-emerald-800 mb-2">3-Day 100% Money-Back Guarantee</h3>
-                <p className="text-gray-600 leading-relaxed text-justify mb-4">
+                <p className="text-gray-800 leading-relaxed text-justify mb-4">
                   If you&apos;re not satisfied within the first 3 days of your first subscription, just contact us
                   and we&apos;ll give you a full refund — no questions asked.
                 </p>
-                <ul className="space-y-2 text-gray-600">
+                <ul className="space-y-2 text-gray-800">
                   <li className="flex items-center gap-2">
                     <svg className="w-4 h-4 text-[#A855F7]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -179,10 +179,10 @@ export default function RefundPolicyPage() {
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-emerald-800 mb-2">Cancel Anytime — You&apos;re in Control</h3>
-                <p className="text-gray-600 leading-relaxed text-justify mb-4">
+                <p className="text-gray-800 leading-relaxed text-justify mb-4">
                   You can cancel your subscription anytime directly from your dashboard — no support tickets, no hoops to jump through.
                 </p>
-                <ul className="space-y-2 text-gray-600">
+                <ul className="space-y-2 text-gray-800">
                   <li className="flex items-center gap-2">
                     <svg className="w-4 h-4 text-[#A855F7]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -210,7 +210,7 @@ export default function RefundPolicyPage() {
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-emerald-800 mb-2">Switch Plans Anytime</h3>
-                <p className="text-gray-600 leading-relaxed text-justify">
+                <p className="text-gray-800 leading-relaxed text-justify">
                   Want to upgrade or switch from monthly to yearly? You can change your plan anytime, and we&apos;ll
                   automatically adjust the billing so you never overpay.
                 </p>
@@ -221,7 +221,7 @@ export default function RefundPolicyPage() {
           {/* You're Protected */}
           <section>
             <h3 className="text-lg font-semibold text-emerald-800 mb-4 text-center">You&apos;re Protected — Always</h3>
-            <p className="text-gray-600 text-center mb-6">With Classcribe, you&apos;re never locked in.</p>
+            <p className="text-gray-800 text-center mb-6">With Classcribe, you&apos;re never locked in.</p>
             <div className="flex flex-wrap justify-center gap-4">
               <div className="flex items-center gap-2 px-3 sm:px-4 py-2">
                 <svg className="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -246,7 +246,7 @@ export default function RefundPolicyPage() {
 
           {/* Contact */}
           <section className="text-center pt-4">
-            <p className="text-gray-600">
+            <p className="text-gray-800">
               Questions about refunds or cancellations? Contact us at{' '}
               <a href="mailto:support@classcribe.app" className="text-[#A855F7] hover:underline font-medium">
                 support@classcribe.app

@@ -34,13 +34,13 @@ export default function PrivacyPolicyPage() {
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center gap-6">
-              <Link href="/" className="text-sm text-gray-600 hover:text-[#A855F7] transition-colors">
+              <Link href="/" className="text-sm text-gray-800 hover:text-[#A855F7] transition-colors">
                 Home
               </Link>
-              <Link href="/#pricing" className="text-sm text-gray-600 hover:text-[#A855F7] transition-colors">
+              <Link href="/#pricing" className="text-sm text-gray-800 hover:text-[#A855F7] transition-colors">
                 Pricing
               </Link>
-              <Link href="/login" className="text-sm text-gray-600 hover:text-[#A855F7] transition-colors">
+              <Link href="/login" className="text-sm text-gray-800 hover:text-[#A855F7] transition-colors">
                 Login
               </Link>
               <Link
@@ -58,11 +58,11 @@ export default function PrivacyPolicyPage() {
               aria-label="Toggle menu"
             >
               {mobileMenuOpen ? (
-                <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               ) : (
-                <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
               )}
@@ -76,21 +76,21 @@ export default function PrivacyPolicyPage() {
                 <Link
                   href="/"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="px-3 py-2 text-gray-600 hover:text-[#A855F7] hover:bg-gray-50 rounded-lg transition-colors"
+                  className="px-3 py-2 text-gray-800 hover:text-[#A855F7] hover:bg-gray-50 rounded-lg transition-colors"
                 >
                   Home
                 </Link>
                 <Link
                   href="/#pricing"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="px-3 py-2 text-gray-600 hover:text-[#A855F7] hover:bg-gray-50 rounded-lg transition-colors"
+                  className="px-3 py-2 text-gray-800 hover:text-[#A855F7] hover:bg-gray-50 rounded-lg transition-colors"
                 >
                   Pricing
                 </Link>
                 <Link
                   href="/login"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="px-3 py-2 text-gray-600 hover:text-[#A855F7] hover:bg-gray-50 rounded-lg transition-colors"
+                  className="px-3 py-2 text-gray-800 hover:text-[#A855F7] hover:bg-gray-50 rounded-lg transition-colors"
                 >
                   Login
                 </Link>
@@ -116,7 +116,7 @@ export default function PrivacyPolicyPage() {
           {/* Introduction */}
           <section>
             <h3 className="text-lg font-semibold text-emerald-800 mb-3">Introduction</h3>
-            <p className="text-gray-600 leading-relaxed text-justify">
+            <p className="text-gray-800 leading-relaxed text-justify">
               Welcome to Classcribe. We are committed to protecting your personal information and your right to privacy.
               This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our
               service at classcribe.app.
@@ -126,8 +126,8 @@ export default function PrivacyPolicyPage() {
           {/* Information We Collect */}
           <section>
             <h3 className="text-lg font-semibold text-emerald-800 mb-3">Information We Collect</h3>
-            <p className="text-gray-600 leading-relaxed text-justify mb-4">We collect information that you provide directly to us:</p>
-            <ul className="list-disc list-inside text-gray-600 space-y-2 ml-4">
+            <p className="text-gray-800 leading-relaxed text-justify mb-4">We collect information that you provide directly to us:</p>
+            <ul className="list-disc list-inside text-gray-800 space-y-2 ml-4">
               <li><strong>Account Information:</strong> Email address, full name, country, university, and course of study when you create an account.</li>
               <li><strong>Audio Content:</strong> Lecture recordings that you upload for transcription and note generation.</li>
               <li><strong>Payment Information:</strong> Billing details processed securely through our payment provider, Paystack. We do not store your full payment card details.</li>
@@ -138,8 +138,8 @@ export default function PrivacyPolicyPage() {
           {/* How We Use Your Information */}
           <section>
             <h3 className="text-lg font-semibold text-emerald-800 mb-3">How We Use Your Information</h3>
-            <p className="text-gray-600 leading-relaxed text-justify mb-4">We use the information we collect to:</p>
-            <ul className="list-disc list-inside text-gray-600 space-y-2 ml-4">
+            <p className="text-gray-800 leading-relaxed text-justify mb-4">We use the information we collect to:</p>
+            <ul className="list-disc list-inside text-gray-800 space-y-2 ml-4">
               <li>Provide, maintain, and improve our services</li>
               <li>Process your lecture recordings and generate notes</li>
               <li>Process payments and manage your subscription</li>
@@ -152,14 +152,14 @@ export default function PrivacyPolicyPage() {
           {/* Third-Party Services */}
           <section>
             <h3 className="text-lg font-semibold text-emerald-800 mb-3">Third-Party Services</h3>
-            <p className="text-gray-600 leading-relaxed text-justify mb-4">We use trusted third-party services to operate our platform, including:</p>
-            <ul className="list-disc list-inside text-gray-600 space-y-2 ml-4">
+            <p className="text-gray-800 leading-relaxed text-justify mb-4">We use trusted third-party services to operate our platform, including:</p>
+            <ul className="list-disc list-inside text-gray-800 space-y-2 ml-4">
               <li>Secure cloud infrastructure for data storage and authentication</li>
               <li>Audio transcription services</li>
               <li>AI services for generating structured notes</li>
               <li>Payment processing services</li>
             </ul>
-            <p className="text-gray-600 leading-relaxed text-justify mt-4">
+            <p className="text-gray-800 leading-relaxed text-justify mt-4">
               These service providers are contractually obligated to protect your information and use it only for the purposes we specify.
             </p>
           </section>
@@ -167,7 +167,7 @@ export default function PrivacyPolicyPage() {
           {/* Data Storage and Security */}
           <section>
             <h3 className="text-lg font-semibold text-emerald-800 mb-3">Data Storage and Security</h3>
-            <p className="text-gray-600 leading-relaxed text-justify">
+            <p className="text-gray-800 leading-relaxed text-justify">
               We implement appropriate technical and organizational security measures to protect your personal information.
               Your data is stored securely using industry-standard encryption. However, no method of transmission over the
               Internet or electronic storage is 100% secure, and we cannot guarantee absolute security.
@@ -177,7 +177,7 @@ export default function PrivacyPolicyPage() {
           {/* Data Retention */}
           <section>
             <h3 className="text-lg font-semibold text-emerald-800 mb-3">Data Retention</h3>
-            <p className="text-gray-600 leading-relaxed text-justify">
+            <p className="text-gray-800 leading-relaxed text-justify">
               We retain your personal information for as long as your account is active or as needed to provide you services.
               You may request deletion of your account and associated data at any time by contacting us at support@classcribe.app.
             </p>
@@ -186,8 +186,8 @@ export default function PrivacyPolicyPage() {
           {/* Your Rights */}
           <section>
             <h3 className="text-lg font-semibold text-emerald-800 mb-3">Your Rights</h3>
-            <p className="text-gray-600 leading-relaxed text-justify mb-4">You have the right to:</p>
-            <ul className="list-disc list-inside text-gray-600 space-y-2 ml-4">
+            <p className="text-gray-800 leading-relaxed text-justify mb-4">You have the right to:</p>
+            <ul className="list-disc list-inside text-gray-800 space-y-2 ml-4">
               <li>Access the personal information we hold about you</li>
               <li>Request correction of inaccurate information</li>
               <li>Request deletion of your personal information</li>
@@ -199,7 +199,7 @@ export default function PrivacyPolicyPage() {
           {/* Cookies */}
           <section>
             <h3 className="text-lg font-semibold text-emerald-800 mb-3">Cookies</h3>
-            <p className="text-gray-600 leading-relaxed text-justify">
+            <p className="text-gray-800 leading-relaxed text-justify">
               We use essential cookies to maintain your session and remember your preferences.
               These cookies are necessary for the service to function properly.
             </p>
@@ -208,7 +208,7 @@ export default function PrivacyPolicyPage() {
           {/* Children's Privacy */}
           <section>
             <h3 className="text-lg font-semibold text-emerald-800 mb-3">Children&apos;s Privacy</h3>
-            <p className="text-gray-600 leading-relaxed text-justify">
+            <p className="text-gray-800 leading-relaxed text-justify">
               Our service is not intended for children under 13 years of age. We do not knowingly collect personal
               information from children under 13.
             </p>
@@ -217,7 +217,7 @@ export default function PrivacyPolicyPage() {
           {/* Changes to This Policy */}
           <section>
             <h3 className="text-lg font-semibold text-emerald-800 mb-3">Changes to This Policy</h3>
-            <p className="text-gray-600 leading-relaxed text-justify">
+            <p className="text-gray-800 leading-relaxed text-justify">
               We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new
               Privacy Policy on this page and updating the &quot;Last updated&quot; date.
             </p>
@@ -226,7 +226,7 @@ export default function PrivacyPolicyPage() {
           {/* Contact Us */}
           <section>
             <h3 className="text-lg font-semibold text-emerald-800 mb-3">Contact Us</h3>
-            <p className="text-gray-600 leading-relaxed text-justify">
+            <p className="text-gray-800 leading-relaxed text-justify">
               If you have any questions about this Privacy Policy, please contact us at:{' '}
               <a href="mailto:support@classcribe.app" className="text-[#A855F7] hover:underline">
                 support@classcribe.app
