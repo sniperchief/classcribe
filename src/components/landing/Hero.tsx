@@ -109,14 +109,39 @@ export default function Hero() {
       <div className="max-w-7xl mx-auto text-center relative z-10">
         {/* Headline */}
         <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-[#0F172A] leading-tight max-w-4xl mx-auto mb-4 sm:mb-6 px-2">
-          Turn Lecture Recordings Into
+          Listen in class. Make note later.
           <br />
-          <span className="text-[#A855F7]">Exam-Ready Notes</span>
+          <span className="relative inline-block mt-2">
+            <span className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-[#A855F7]">Score A+</span>
+            {/* Hand-drawn red circle */}
+            <svg
+              className="absolute -inset-2 sm:-inset-3 md:-inset-4 w-[calc(100%+16px)] h-[calc(100%+16px)] sm:w-[calc(100%+24px)] sm:h-[calc(100%+24px)] md:w-[calc(100%+32px)] md:h-[calc(100%+32px)]"
+              viewBox="0 0 200 100"
+              fill="none"
+              preserveAspectRatio="none"
+              style={{ top: '-8px', left: '-8px' }}
+            >
+              <ellipse
+                cx="100"
+                cy="50"
+                rx="95"
+                ry="45"
+                stroke="#EF4444"
+                strokeWidth="6"
+                strokeLinecap="round"
+                style={{
+                  strokeDashoffset: 0,
+                  transform: 'rotate(-2deg)',
+                  transformOrigin: 'center',
+                }}
+              />
+            </svg>
+          </span>
         </h1>
 
         {/* Subtext */}
         <p className="text-base sm:text-lg lg:text-xl text-gray-600 max-w-2xl mx-auto mb-8 sm:mb-10 leading-relaxed px-2">
-          Upload your lecture audio and get clean, structured notes you can actually study from.
+          Convert lecture recordings into exam note and smart flashcard and smash your papers.
         </p>
 
         {/* Upload Section */}
