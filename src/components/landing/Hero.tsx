@@ -106,9 +106,9 @@ export default function Hero() {
         ))}
       </div>
 
-      <div className="max-w-7xl mx-auto text-center relative z-10">
+      <div className="max-w-7xl mx-auto text-left relative z-10 px-4 sm:px-6 lg:px-8">
         {/* Headline */}
-        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-[#0F172A] leading-tight max-w-4xl mx-auto mb-4 sm:mb-6 px-2">
+        <h1 className="font-[family-name:var(--font-montserrat)] text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-[#0F172A] leading-normal max-w-4xl mb-4 sm:mb-6">
           Listen in class.
           <br />
           Make note later.
@@ -140,7 +140,7 @@ export default function Hero() {
         </h1>
 
         {/* Subtext */}
-        <p className="text-base sm:text-lg lg:text-xl text-gray-600 max-w-2xl mx-auto mb-8 sm:mb-10 leading-relaxed px-2">
+        <p className="text-base sm:text-lg lg:text-xl text-gray-600 max-w-2xl mb-8 sm:mb-10 leading-relaxed">
           Convert lecture recordings into exam note and smart flashcard and smash your papers.
         </p>
 
