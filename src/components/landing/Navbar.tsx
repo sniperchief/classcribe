@@ -194,7 +194,8 @@ export default function Navbar() {
                 isLoggedIn ? (
                   <Link
                     href="/dashboard"
-                    className="text-xl text-center bg-[#A855F7] text-white font-medium border-2 border-[#A855F7] rounded-lg hover:bg-[#9333EA] hover:border-[#9333EA] transition-colors py-4 px-6"
+                    className="text-xl text-center bg-[#A855F7] font-medium border-2 border-[#A855F7] rounded-lg hover:bg-[#9333EA] hover:border-[#9333EA] transition-colors py-4 px-6"
+                    style={{ color: '#FFFFFF' }}
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Dashboard
@@ -210,7 +211,8 @@ export default function Navbar() {
                     </Link>
                     <Link
                       href="/signup"
-                      className="text-xl text-center bg-[#A855F7] text-white font-medium border-2 border-[#A855F7] rounded-lg hover:bg-[#9333EA] hover:border-[#9333EA] transition-colors py-4 px-6"
+                      className="text-xl text-center bg-[#A855F7] font-medium border-2 border-[#A855F7] rounded-lg hover:bg-[#9333EA] hover:border-[#9333EA] transition-colors py-4 px-6"
+                      style={{ color: '#FFFFFF' }}
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       Get Started Free

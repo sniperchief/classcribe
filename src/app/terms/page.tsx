@@ -115,7 +115,8 @@ export default function TermsOfServicePage() {
                 <Link
                   href="/signup"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="text-xl text-center bg-[#A855F7] text-white font-medium border-2 border-[#A855F7] rounded-lg hover:bg-[#9333EA] hover:border-[#9333EA] transition-colors py-4 px-6"
+                  className="text-xl text-center bg-[#A855F7] font-medium border-2 border-[#A855F7] rounded-lg hover:bg-[#9333EA] hover:border-[#9333EA] transition-colors py-4 px-6"
+                  style={{ color: '#FFFFFF' }}
                 >
                   Get Started
                 </Link>

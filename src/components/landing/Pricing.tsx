@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { createClient } from '@/lib/supabase/client';
 
 type Currency = 'NGN' | 'USD';
 
@@ -56,6 +58,9 @@ export default function Pricing() {
   const [currency, setCurrency] = useState<Currency>('USD');
   const [isYearly, setIsYearly] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [checkingOut, setCheckingOut] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const detectLocation = async () => {
@@ -75,8 +80,59 @@ export default function Pricing() {
       }
     };
 
+    const checkAuth = async () => {
+      try {
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        setIsLoggedIn(!!user);
+      } catch {
+        setIsLoggedIn(false);
+      }
+    };
+
     detectLocation();
+    checkAuth();
   }, []);
+
+  const handleCheckout = async (planName: string) => {
+    if (planName === 'Free') {
+      router.push('/signup');
+      return;
+    }
+
+    // If not logged in, redirect to login
+    if (!isLoggedIn) {
+      router.push('/login');
+      return;
+    }
+
+    setCheckingOut(true);
+
+    try {
+      const response = await fetch('/api/payments/initialize', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          plan: 'student',
+          billingCycle: isYearly ? 'yearly' : 'monthly',
+          currency,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.authorization_url) {
+        window.location.href = data.authorization_url;
+      } else {
+        alert('Failed to initialize payment. Please try again.');
+      }
+    } catch (error) {
+      console.error('Checkout error:', error);
+      alert('Something went wrong. Please try again.');
+    } finally {
+      setCheckingOut(false);
+    }
+  };
 
   const formatPrice = (price: number, curr: Currency) => {
     if (price === 0) return 'Free';
@@ -187,17 +243,18 @@ export default function Pricing() {
                   )}
                 </div>
 
-                <Link
-                  href={plan.name === 'Free' ? '/signup' : '/pricing'}
+                <button
+                  onClick={() => handleCheckout(plan.name)}
+                  disabled={checkingOut && plan.highlighted}
                   className={`block w-full py-3 rounded-lg text-center font-medium transition-colors ${
                     plan.highlighted
                       ? 'bg-[#A855F7] hover:bg-[#9333EA]'
                       : 'bg-[#0F172A] hover:bg-[#1e293b]'
-                  }`}
+                  } ${checkingOut && plan.highlighted ? 'opacity-50 cursor-not-allowed' : ''}`}
                   style={{ color: '#FFFFFF' }}
                 >
-                  {plan.buttonText}
-                </Link>
+                  {checkingOut && plan.highlighted ? 'Processing...' : plan.buttonText}
+                </button>
 
                 <div className="mt-8">
                   <p className="text-sm font-medium text-[#0F172A] mb-4">What&apos;s included:</p>

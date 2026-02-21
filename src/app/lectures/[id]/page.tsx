@@ -182,6 +182,8 @@ export default function LecturePage() {
   const [flashcardsLoading, setFlashcardsLoading] = useState(false);
   const [flashcardsError, setFlashcardsError] = useState<string | null>(null);
   const [showFlashcards, setShowFlashcards] = useState(false);
+  const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
+  const [checkingOut, setCheckingOut] = useState(false);
 
   useEffect(() => {
     const fetchLecture = async () => {
@@ -229,6 +231,12 @@ export default function LecturePage() {
   };
 
   const handleGenerateFlashcards = async () => {
+    // If free user, show upgrade prompt instead
+    if (!isPaidUser) {
+      setShowUpgradePrompt(true);
+      return;
+    }
+
     setFlashcardsLoading(true);
     setFlashcardsError(null);
 
@@ -249,6 +257,35 @@ export default function LecturePage() {
       setFlashcardsError(error instanceof Error ? error.message : 'Failed to generate flashcards');
     } finally {
       setFlashcardsLoading(false);
+    }
+  };
+
+  const handleUpgradeToPremium = async () => {
+    setCheckingOut(true);
+
+    try {
+      const response = await fetch('/api/payments/initialize', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          plan: 'student',
+          billingCycle: 'monthly',
+          currency: 'NGN',
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.authorization_url) {
+        window.location.href = data.authorization_url;
+      } else {
+        alert('Failed to initialize payment. Please try again.');
+      }
+    } catch (error) {
+      console.error('Checkout error:', error);
+      alert('Something went wrong. Please try again.');
+    } finally {
+      setCheckingOut(false);
     }
   };
 
@@ -521,9 +558,25 @@ export default function LecturePage() {
                   {flashcardsError && (
                     <p className="text-red-500 text-sm mb-4">{flashcardsError}</p>
                   )}
+
+                  {/* Upgrade prompt for free users */}
+                  {showUpgradePrompt && (
+                    <div className="mb-4 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                      <div className="flex items-center gap-2 text-amber-800 mb-2">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                        <span className="font-medium">Premium Feature</span>
+                      </div>
+                      <p className="text-sm text-amber-700">
+                        Study flashcards are available for premium users. Upgrade now to generate flashcards and boost your learning!
+                      </p>
+                    </div>
+                  )}
+
                   <button
-                    onClick={handleGenerateFlashcards}
-                    disabled={flashcardsLoading}
+                    onClick={showUpgradePrompt ? handleUpgradeToPremium : handleGenerateFlashcards}
+                    disabled={flashcardsLoading || checkingOut}
                     className="inline-flex items-center gap-2 px-6 py-3 bg-[#A855F7] text-white rounded-lg hover:bg-[#9333EA] transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {flashcardsLoading ? (
@@ -533,6 +586,21 @@ export default function LecturePage() {
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
                         Generating Flashcards...
+                      </>
+                    ) : checkingOut ? (
+                      <>
+                        <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Processing...
+                      </>
+                    ) : showUpgradePrompt ? (
+                      <>
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                        </svg>
+                        Upgrade to Premium
                       </>
                     ) : (
                       <>
