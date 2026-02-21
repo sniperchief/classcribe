@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { createClient } from '@/lib/supabase/client';
 
 export default function Navbar() {
@@ -10,10 +10,28 @@ export default function Navbar() {
   const [isMobileToolsOpen, setIsMobileToolsOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [checkingAuth, setCheckingAuth] = useState(true);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     checkAuth();
   }, []);
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    if (isMobileMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isMobileMenuOpen]);
 
   const checkAuth = async () => {
     try {
@@ -28,7 +46,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-[#E5E7EB]">
+    <nav ref={menuRef} className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-[#E5E7EB]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -127,22 +145,22 @@ export default function Navbar() {
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
           <div className="md:hidden py-4 border-t border-[#E5E7EB]">
-            <div className="flex flex-col items-center gap-4 text-center">
+            <div className="flex flex-col gap-3">
               <Link
                 href="/"
-                className="text-sm text-gray-600 hover:text-[#4F6B5C] transition-colors"
+                className="text-xl text-left text-gray-800 hover:text-[#A855F7] hover:bg-gray-50 rounded-lg transition-colors py-2"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Home
               </Link>
-              <div className="flex flex-col items-center">
+              <div className="flex flex-col">
                 <button
-                  className="text-sm text-gray-600 hover:text-[#4F6B5C] transition-colors flex items-center justify-center gap-1"
+                  className="text-xl text-left text-gray-800 hover:text-[#A855F7] hover:bg-gray-50 rounded-lg transition-colors py-2 flex items-center gap-1"
                   onClick={() => setIsMobileToolsOpen(!isMobileToolsOpen)}
                 >
                   Tools
                   <svg
-                    className={`w-4 h-4 transition-transform ${isMobileToolsOpen ? 'rotate-180' : ''}`}
+                    className={`w-5 h-5 transition-transform ${isMobileToolsOpen ? 'rotate-180' : ''}`}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -151,10 +169,10 @@ export default function Navbar() {
                   </svg>
                 </button>
                 {isMobileToolsOpen && (
-                  <div className="mt-2">
+                  <div className="ml-4 mt-1">
                     <Link
                       href="/signup"
-                      className="block text-sm text-gray-600 hover:text-[#4F6B5C] transition-colors py-1"
+                      className="block text-lg text-gray-600 hover:text-[#A855F7] transition-colors py-2"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       Exam Ready Notes
@@ -164,18 +182,20 @@ export default function Navbar() {
               </div>
               <Link
                 href="/pricing"
-                className="text-sm text-gray-600 hover:text-[#4F6B5C] transition-colors"
+                className="text-xl text-left text-gray-800 hover:text-[#A855F7] hover:bg-gray-50 rounded-lg transition-colors py-2"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Pricing
               </Link>
-              <hr className="border-[#E5E7EB] w-full" />
+
+              <hr className="border-[#E5E7EB] my-2" />
+
               {!checkingAuth && (
                 isLoggedIn ? (
                   <Link
                     href="/dashboard"
-                    className="bg-[#A855F7] text-sm font-medium py-2 px-4 rounded-lg text-center hover:bg-[#9333EA] transition-colors"
-                    style={{ color: '#FFFFFF' }}
+                    className="text-xl text-center bg-[#A855F7] text-white font-medium border-2 border-[#A855F7] rounded-lg hover:bg-[#9333EA] hover:border-[#9333EA] transition-colors py-4 px-6"
+                    onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Dashboard
                   </Link>
@@ -183,14 +203,15 @@ export default function Navbar() {
                   <>
                     <Link
                       href="/login"
-                      className="text-sm font-medium text-gray-600 hover:text-[#4F6B5C] border border-gray-300 py-2 px-6 rounded-lg shadow-md shadow-black/20 hover:shadow-lg hover:shadow-black/30 transition-all"
+                      className="text-xl text-center text-gray-800 hover:text-[#A855F7] border-2 border-gray-300 rounded-lg transition-colors py-4 px-6"
+                      onClick={() => setIsMobileMenuOpen(false)}
                     >
                       Log In
                     </Link>
                     <Link
                       href="/signup"
-                      className="bg-[#A855F7] text-sm font-medium py-2 px-4 rounded-lg text-center hover:bg-[#9333EA] transition-colors"
-                      style={{ color: '#FFFFFF' }}
+                      className="text-xl text-center bg-[#A855F7] text-white font-medium border-2 border-[#A855F7] rounded-lg hover:bg-[#9333EA] hover:border-[#9333EA] transition-colors py-4 px-6"
+                      onClick={() => setIsMobileMenuOpen(false)}
                     >
                       Get Started Free
                     </Link>
