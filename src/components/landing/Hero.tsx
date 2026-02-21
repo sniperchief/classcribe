@@ -84,7 +84,7 @@ const microphoneIcons = [
 
 export default function Hero() {
   return (
-    <section className="relative pt-16 pb-12 sm:pt-20 sm:pb-16 lg:pt-24 lg:pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[600px]">
+    <section className="relative pt-24 pb-12 sm:pt-32 sm:pb-16 lg:pt-40 lg:pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[600px]">
       {/* Violet gradient background */}
       <div className="absolute inset-0 bg-gradient-to-br from-violet-100 via-purple-50 to-fuchsia-100"></div>
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_rgba(139,92,246,0.3)_0%,_transparent_50%)]"></div>
@@ -115,7 +115,7 @@ export default function Hero() {
           <br />
           <span className="text-[#A855F7]">Score{' '}
             <span className="relative inline-block">
-              A+
+              A<sup className="text-[0.6em]">+</sup>
               {/* Hand-drawn rough red circle */}
               <svg
                 className="absolute -inset-1 sm:-inset-2 w-[calc(100%+8px)] h-[calc(100%+8px)] sm:w-[calc(100%+16px)] sm:h-[calc(100%+16px)]"
