@@ -108,34 +108,34 @@ export default function Hero() {
 
       <div className="max-w-7xl mx-auto text-center relative z-10">
         {/* Headline */}
-        <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-[#0F172A] leading-tight max-w-4xl mx-auto mb-4 sm:mb-6 px-2">
-          Listen in class. Make note later.
+        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-[#0F172A] leading-tight max-w-4xl mx-auto mb-4 sm:mb-6 px-2">
+          Listen in class.
           <br />
-          <span className="relative inline-block mt-2">
-            <span className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-[#A855F7]">Score A+</span>
-            {/* Hand-drawn red circle */}
-            <svg
-              className="absolute -inset-2 sm:-inset-3 md:-inset-4 w-[calc(100%+16px)] h-[calc(100%+16px)] sm:w-[calc(100%+24px)] sm:h-[calc(100%+24px)] md:w-[calc(100%+32px)] md:h-[calc(100%+32px)]"
-              viewBox="0 0 200 100"
-              fill="none"
-              preserveAspectRatio="none"
-              style={{ top: '-8px', left: '-8px' }}
-            >
-              <ellipse
-                cx="100"
-                cy="50"
-                rx="95"
-                ry="45"
-                stroke="#EF4444"
-                strokeWidth="6"
-                strokeLinecap="round"
-                style={{
-                  strokeDashoffset: 0,
-                  transform: 'rotate(-2deg)',
-                  transformOrigin: 'center',
-                }}
-              />
-            </svg>
+          Make note later.
+          <br />
+          <span className="text-[#A855F7]">Score{' '}
+            <span className="relative inline-block">
+              A+
+              {/* Hand-drawn rough red circle */}
+              <svg
+                className="absolute -inset-1 sm:-inset-2 w-[calc(100%+8px)] h-[calc(100%+8px)] sm:w-[calc(100%+16px)] sm:h-[calc(100%+16px)]"
+                viewBox="0 0 100 100"
+                fill="none"
+                preserveAspectRatio="none"
+              >
+                <path
+                  d="M 50,10 C 75,8 92,25 94,50 C 96,75 78,92 50,94 C 22,96 6,78 8,50 C 10,22 28,12 50,10"
+                  stroke="#EF4444"
+                  strokeWidth="5"
+                  strokeLinecap="round"
+                  fill="none"
+                  style={{
+                    transform: 'rotate(-3deg)',
+                    transformOrigin: 'center',
+                  }}
+                />
+              </svg>
+            </span>
           </span>
         </h1>
 
