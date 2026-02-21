@@ -27,9 +27,9 @@ export async function POST(request: NextRequest) {
 
   let amount: number;
   if (billingCycle === 'yearly') {
-    amount = currency === 'NGN' ? 6500000 : 6000; // In kobo/cents (₦65,000 or $60)
+    amount = currency === 'NGN' ? 6500000 : 9999; // In kobo/cents (₦65,000 or $99.99)
   } else {
-    amount = currency === 'NGN' ? 650000 : 600; // In kobo/cents (₦6,500 or $6)
+    amount = currency === 'NGN' ? 650000 : 999; // In kobo/cents (₦6,500 or $9.99)
   }
 
   const paystackSecretKey = process.env.PAYSTACK_SECRET_KEY;

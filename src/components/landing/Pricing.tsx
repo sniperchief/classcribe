@@ -36,8 +36,8 @@ const plans: PricingPlan[] = [
   {
     name: 'Student',
     description: 'Best for regular student',
-    monthlyPrice: { NGN: 6500, USD: 6 },
-    yearlyPrice: { NGN: 65000, USD: 60 },
+    monthlyPrice: { NGN: 6500, USD: 9.99 },
+    yearlyPrice: { NGN: 65000, USD: 99.99 },
     features: [
       'Up to 60 mins per lecture',
       '10-15 lectures per month',
