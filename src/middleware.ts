@@ -84,8 +84,8 @@ export async function middleware(request: NextRequest) {
     isEmailVerified = profile?.email_verified === true;
   }
 
-  // Redirect unverified users to verify-email page (except for allowed paths)
-  if (user && !isEmailVerified && !isVerifyEmailPath && !isAuthCallbackPath && !isAuthPath && !isAuthErrorPath) {
+  // Redirect unverified users to verify-email page ONLY for protected routes and onboarding
+  if (user && !isEmailVerified && (isProtectedPath || isOnboardingPath)) {
     const url = request.nextUrl.clone();
     url.pathname = '/verify-email';
     return NextResponse.redirect(url);

@@ -65,21 +65,22 @@ function SignupForm() {
         setLoading(false);
       } else {
         // Send OTP code to user's email
-        try {
-          await fetch('/api/auth/send-otp', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email }),
-          });
-        } catch {
-          // Continue even if OTP send fails - user can resend from verify page
+        const otpResponse = await fetch('/api/auth/send-otp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email }),
+        });
+
+        if (!otpResponse.ok) {
+          const otpData = await otpResponse.json();
+          setError(otpData.error || 'Failed to send verification code. Please try again.');
+          setLoading(false);
+          return;
         }
 
-        // Set flag in sessionStorage to indicate user came from signup
+        // Set flag in sessionStorage and redirect to verify email page
         sessionStorage.setItem('pendingVerification', email);
-
-        // Redirect to verify email page
-        window.location.href = '/verify-email';
+        router.push('/verify-email');
       }
     } catch (err) {
       setError('Network error. Please check your connection and try again.');
