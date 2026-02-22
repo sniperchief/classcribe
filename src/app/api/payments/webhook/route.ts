@@ -34,13 +34,13 @@ export async function POST(request: NextRequest) {
         const { metadata, customer } = event.data;
 
         if (metadata?.user_id && metadata?.billing_cycle) {
-          const startDate = new Date();
-          const endDate = new Date(startDate);
+          const now = new Date();
+          let endDate: Date;
 
           if (metadata.billing_cycle === 'yearly') {
-            endDate.setFullYear(endDate.getFullYear() + 1);
+            endDate = new Date(now.setFullYear(now.getFullYear() + 1));
           } else {
-            endDate.setMonth(endDate.getMonth() + 1);
+            endDate = new Date(now.setMonth(now.getMonth() + 1));
           }
 
           await adminClient

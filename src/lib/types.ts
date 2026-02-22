@@ -5,11 +5,6 @@ export type LectureStatus =
   | 'completed'
   | 'failed';
 
-export interface Flashcard {
-  front: string;
-  back: string;
-}
-
 export interface Lecture {
   id: string;
   user_id: string;
@@ -18,7 +13,6 @@ export interface Lecture {
   audio_duration: number | null;
   transcript: string | null;
   notes: string | null;
-  flashcards: Flashcard[] | null;
   status: LectureStatus;
   error_message: string | null;
   created_at: string;
