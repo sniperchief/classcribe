@@ -35,28 +35,27 @@ export async function POST(request: Request) {
       .update({ used: true })
       .eq('id', verificationCode.id);
 
-    // Get the user by email and update their email_confirmed_at
-    // We need to use the admin API for this, so we'll use a workaround
-    // by updating through the auth.users table via service role
+    // Get the user by email and update their email_verified status
     const { data: { user } } = await supabase.auth.getUser();
 
-    if (user && user.email === email) {
-      // User is logged in and email matches - confirm the email
-      // Note: In production, you'd use Supabase Admin API to update email_confirmed_at
-      // For now, we'll create a profile entry to mark verification
-      const { error: updateError } = await supabase
-        .from('profiles')
-        .upsert({
-          id: user.id,
-          email_verified: true,
-          updated_at: new Date().toISOString(),
-        }, {
-          onConflict: 'id',
-        });
+    if (!user || user.email !== email) {
+      return NextResponse.json({ error: 'User not found or email mismatch' }, { status: 400 });
+    }
 
-      if (updateError) {
-        console.error('Failed to update profile:', updateError);
-      }
+    // Update profile to mark email as verified
+    const { error: updateError } = await supabase
+      .from('profiles')
+      .upsert({
+        id: user.id,
+        email_verified: true,
+        updated_at: new Date().toISOString(),
+      }, {
+        onConflict: 'id',
+      });
+
+    if (updateError) {
+      console.error('Failed to update profile:', updateError);
+      return NextResponse.json({ error: 'Failed to verify email. Please try again.' }, { status: 500 });
     }
 
     return NextResponse.json({

@@ -34,14 +34,14 @@ export async function GET(request: NextRequest) {
     // Extract metadata
     const { user_id, plan, billing_cycle } = data.data.metadata;
 
-    // Calculate subscription end date
-    const now = new Date();
-    let endDate: Date;
+    // Calculate subscription dates
+    const startDate = new Date();
+    const endDate = new Date(startDate);
 
     if (billing_cycle === 'yearly') {
-      endDate = new Date(now.setFullYear(now.getFullYear() + 1));
+      endDate.setFullYear(endDate.getFullYear() + 1);
     } else {
-      endDate = new Date(now.setMonth(now.getMonth() + 1));
+      endDate.setMonth(endDate.getMonth() + 1);
     }
 
     // Update user's subscription in database
@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
       .from('profiles')
       .update({
         subscription_plan: plan,
-        subscription_start_date: new Date().toISOString(),
+        subscription_start_date: startDate.toISOString(),
         subscription_end_date: endDate.toISOString(),
         paystack_customer_code: data.data.customer.customer_code,
       })

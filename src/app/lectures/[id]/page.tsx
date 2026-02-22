@@ -184,6 +184,7 @@ export default function LecturePage() {
   const [showFlashcards, setShowFlashcards] = useState(false);
   const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
   const [checkingOut, setCheckingOut] = useState(false);
+  const [currency, setCurrency] = useState<'NGN' | 'USD'>('USD');
 
   useEffect(() => {
     const fetchLecture = async () => {
@@ -203,7 +204,8 @@ export default function LecturePage() {
       try {
         const response = await fetch('/api/subscription');
         const data = await response.json();
-        if (data.subscription?.plan === 'student' && data.subscription?.isActive) {
+        // API returns plan directly, and 'student' plan means it's active (already validated by API)
+        if (data.plan === 'student') {
           setIsPaidUser(true);
         }
       } catch {
@@ -211,8 +213,21 @@ export default function LecturePage() {
       }
     };
 
+    const detectCurrency = async () => {
+      try {
+        const response = await fetch('https://ipapi.co/json/');
+        const data = await response.json();
+        if (data.country_code === 'NG') {
+          setCurrency('NGN');
+        }
+      } catch {
+        // Default to USD
+      }
+    };
+
     fetchLecture();
     checkSubscription();
+    detectCurrency();
   }, [params.id]);
 
   const handleDelete = async () => {
@@ -270,7 +285,7 @@ export default function LecturePage() {
         body: JSON.stringify({
           plan: 'student',
           billingCycle: 'monthly',
-          currency: 'NGN',
+          currency: currency,
         }),
       });
 
