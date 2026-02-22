@@ -50,6 +50,16 @@ function SignupForm() {
     }
 
     try {
+      // Build the redirect URL for after email verification
+      let redirectUrl = `${window.location.origin}/auth/callback`;
+      if (guestToken) {
+        redirectUrl += `?next=/api/guest/claim-redirect&token=${guestToken}`;
+      } else if (redirectTo) {
+        redirectUrl += `?next=/${redirectTo}`;
+      } else {
+        redirectUrl += '?next=/onboarding';
+      }
+
       const { error } = await supabase.auth.signUp({
         email,
         password,
@@ -57,6 +67,7 @@ function SignupForm() {
           data: {
             full_name: fullName,
           },
+          emailRedirectTo: redirectUrl,
         },
       });
 
@@ -64,32 +75,19 @@ function SignupForm() {
         setError(error.message);
         setLoading(false);
       } else {
-        // Refresh to sync session with server
-        router.refresh();
-
-        // If there's a guest token, claim the lecture
-        if (guestToken) {
-          try {
-            const claimResponse = await fetch('/api/guest/claim', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ token: guestToken }),
-            });
-
-            if (claimResponse.ok) {
-              const { lectureId } = await claimResponse.json();
-              // Use hard navigation to ensure cookies are properly sent
-              window.location.href = `/lectures/${lectureId}`;
-              return;
-            }
-          } catch (claimError) {
-            console.error('Failed to claim lecture:', claimError);
-          }
+        // Send OTP code to user's email
+        try {
+          await fetch('/api/auth/send-otp', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email }),
+          });
+        } catch {
+          // Continue even if OTP send fails - user can resend from verify page
         }
 
-        // Use hard navigation to ensure cookies are properly sent
-        const destination = redirectTo ? `/${redirectTo}` : '/onboarding';
-        window.location.href = destination;
+        // Redirect to verify email page
+        window.location.href = '/verify-email';
       }
     } catch (err) {
       setError('Network error. Please check your connection and try again.');

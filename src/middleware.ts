@@ -55,6 +55,15 @@ export async function middleware(request: NextRequest) {
   // Onboarding route
   const isOnboardingPath = request.nextUrl.pathname.startsWith('/onboarding');
 
+  // Verify email route
+  const isVerifyEmailPath = request.nextUrl.pathname.startsWith('/verify-email');
+
+  // Auth callback route (for email verification)
+  const isAuthCallbackPath = request.nextUrl.pathname.startsWith('/auth/callback');
+
+  // Auth error route
+  const isAuthErrorPath = request.nextUrl.pathname.startsWith('/auth/auth-error');
+
   // Redirect unauthenticated users to login
   if ((isProtectedPath || isOnboardingPath) && !user) {
     const url = request.nextUrl.clone();
@@ -62,8 +71,38 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
+  // Check if user's email is verified (via Supabase link or OTP)
+  let isEmailVerified = user?.email_confirmed_at != null;
+
+  // Also check our custom email_verified flag in profiles (for OTP verification)
+  if (user && !isEmailVerified) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('email_verified')
+      .eq('id', user.id)
+      .single();
+
+    if (profile?.email_verified) {
+      isEmailVerified = true;
+    }
+  }
+
+  // Redirect unverified users to verify-email page (except for allowed paths)
+  if (user && !isEmailVerified && !isVerifyEmailPath && !isAuthCallbackPath && !isAuthPath && !isAuthErrorPath) {
+    const url = request.nextUrl.clone();
+    url.pathname = '/verify-email';
+    return NextResponse.redirect(url);
+  }
+
+  // Redirect verified users away from verify-email page
+  if (isVerifyEmailPath && user && isEmailVerified) {
+    const url = request.nextUrl.clone();
+    url.pathname = '/onboarding';
+    return NextResponse.redirect(url);
+  }
+
   // Redirect authenticated users away from auth pages
-  if (isAuthPath && user) {
+  if (isAuthPath && user && isEmailVerified) {
     const url = request.nextUrl.clone();
     url.pathname = '/dashboard';
     return NextResponse.redirect(url);
