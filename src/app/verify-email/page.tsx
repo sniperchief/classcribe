@@ -1,11 +1,10 @@
 'use client';
 
-import { useState, useEffect, useRef, Suspense } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { createClient } from '@/lib/supabase/client';
+import { useRouter } from 'next/navigation';
 
-function VerifyEmailContent() {
+export default function VerifyEmailPage() {
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [email, setEmail] = useState('');
   const [resending, setResending] = useState(false);
@@ -13,28 +12,25 @@ function VerifyEmailContent() {
   const [resendSuccess, setResendSuccess] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [isValidSession, setIsValidSession] = useState(false);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   useEffect(() => {
-    // First try to get email from URL params
-    const emailParam = searchParams.get('email');
-    if (emailParam) {
-      setEmail(emailParam);
-      return;
-    }
+    // Check for pending verification flag from signup
+    const pendingEmail = sessionStorage.getItem('pendingVerification');
 
-    // Fallback: try to get user email from session
-    const getEmail = async () => {
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user?.email) {
-        setEmail(user.email);
-      }
-    };
-    getEmail();
-  }, [searchParams]);
+    if (pendingEmail) {
+      // Valid session - user came from signup
+      setEmail(pendingEmail);
+      setIsValidSession(true);
+      // Clear the flag immediately so refresh won't work
+      sessionStorage.removeItem('pendingVerification');
+    } else {
+      // No valid session - redirect to signup
+      router.replace('/signup');
+    }
+  }, [router]);
 
   const handleOtpChange = (index: number, value: string) => {
     // Only allow numbers
@@ -135,6 +131,18 @@ function VerifyEmailContent() {
       setResending(false);
     }
   };
+
+  // Show loading while checking session or redirecting
+  if (!isValidSession) {
+    return (
+      <main className="min-h-screen flex items-center justify-center bg-[#F8FAFC]">
+        <div className="text-center">
+          <div className="w-10 h-10 border-2 border-[#A855F7] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-500">Loading...</p>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen flex items-center justify-center px-4 py-8 sm:py-12 bg-[#F8FAFC]">
@@ -287,13 +295,5 @@ function VerifyEmailContent() {
         </Link>
       </div>
     </main>
-  );
-}
-
-export default function VerifyEmailPage() {
-  return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
-      <VerifyEmailContent />
-    </Suspense>
   );
 }
