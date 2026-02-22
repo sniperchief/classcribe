@@ -50,16 +50,6 @@ function SignupForm() {
     }
 
     try {
-      // Build the redirect URL for after email verification
-      let redirectUrl = `${window.location.origin}/auth/callback`;
-      if (guestToken) {
-        redirectUrl += `?next=/api/guest/claim-redirect&token=${guestToken}`;
-      } else if (redirectTo) {
-        redirectUrl += `?next=/${redirectTo}`;
-      } else {
-        redirectUrl += '?next=/onboarding';
-      }
-
       const { error } = await supabase.auth.signUp({
         email,
         password,
@@ -67,7 +57,6 @@ function SignupForm() {
           data: {
             full_name: fullName,
           },
-          emailRedirectTo: redirectUrl,
         },
       });
 
