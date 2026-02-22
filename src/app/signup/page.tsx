@@ -80,7 +80,7 @@ function SignupForm() {
 
         // Set flag in sessionStorage and redirect to verify email page
         sessionStorage.setItem('pendingVerification', email);
-        router.push('/verify-email');
+        window.location.href = '/verify-email';
       }
     } catch (err) {
       setError('Network error. Please check your connection and try again.');
