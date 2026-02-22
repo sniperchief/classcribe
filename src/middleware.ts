@@ -91,12 +91,8 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // Redirect verified users away from verify-email page
-  if (isVerifyEmailPath && user && isEmailVerified) {
-    const url = request.nextUrl.clone();
-    url.pathname = '/onboarding';
-    return NextResponse.redirect(url);
-  }
+  // Allow verify-email page to handle its own logic via sessionStorage
+  // Don't redirect away from it - the page will redirect if needed
 
   // Redirect authenticated users away from auth pages
   if (isAuthPath && user && isEmailVerified) {
