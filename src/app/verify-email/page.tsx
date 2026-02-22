@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 
-export default function VerifyEmailPage() {
+function VerifyEmailContent() {
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [email, setEmail] = useState('');
   const [resending, setResending] = useState(false);
@@ -15,9 +15,17 @@ export default function VerifyEmailPage() {
   const [success, setSuccess] = useState(false);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
-    // Get user email from session
+    // First try to get email from URL params
+    const emailParam = searchParams.get('email');
+    if (emailParam) {
+      setEmail(emailParam);
+      return;
+    }
+
+    // Fallback: try to get user email from session
     const getEmail = async () => {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
@@ -26,7 +34,7 @@ export default function VerifyEmailPage() {
       }
     };
     getEmail();
-  }, []);
+  }, [searchParams]);
 
   const handleOtpChange = (index: number, value: string) => {
     // Only allow numbers
@@ -279,5 +287,13 @@ export default function VerifyEmailPage() {
         </Link>
       </div>
     </main>
+  );
+}
+
+export default function VerifyEmailPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+      <VerifyEmailContent />
+    </Suspense>
   );
 }

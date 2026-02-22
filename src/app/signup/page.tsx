@@ -86,8 +86,8 @@ function SignupForm() {
           // Continue even if OTP send fails - user can resend from verify page
         }
 
-        // Redirect to verify email page
-        window.location.href = '/verify-email';
+        // Redirect to verify email page with email parameter
+        window.location.href = `/verify-email?email=${encodeURIComponent(email)}`;
       }
     } catch (err) {
       setError('Network error. Please check your connection and try again.');

@@ -71,20 +71,17 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // Check if user's email is verified (via Supabase link or OTP)
-  let isEmailVerified = user?.email_confirmed_at != null;
+  // Check if user's email is verified using our custom email_verified flag in profiles
+  let isEmailVerified = false;
 
-  // Also check our custom email_verified flag in profiles (for OTP verification)
-  if (user && !isEmailVerified) {
+  if (user) {
     const { data: profile } = await supabase
       .from('profiles')
       .select('email_verified')
       .eq('id', user.id)
       .single();
 
-    if (profile?.email_verified) {
-      isEmailVerified = true;
-    }
+    isEmailVerified = profile?.email_verified === true;
   }
 
   // Redirect unverified users to verify-email page (except for allowed paths)
