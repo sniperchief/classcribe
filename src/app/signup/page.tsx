@@ -78,8 +78,7 @@ function SignupForm() {
           return;
         }
 
-        // Set flag in sessionStorage and redirect to verify email page
-        sessionStorage.setItem('pendingVerification', email);
+        // Redirect to verify email page
         window.location.href = '/verify-email';
       }
     } catch (err) {

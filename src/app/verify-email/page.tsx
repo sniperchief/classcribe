@@ -3,51 +3,67 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { createClient } from '@/lib/supabase/client';
 
 export default function VerifyEmailPage() {
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(true);
   const [resending, setResending] = useState(false);
   const [verifying, setVerifying] = useState(false);
   const [resendSuccess, setResendSuccess] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
-  const [isValidSession, setIsValidSession] = useState(false);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const router = useRouter();
+  const supabase = createClient();
 
   useEffect(() => {
-    // Check for pending verification flag from signup
-    const pendingEmail = sessionStorage.getItem('pendingVerification');
+    const checkUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
 
-    if (pendingEmail) {
-      // Valid session - user came from signup
-      setEmail(pendingEmail);
-      setIsValidSession(true);
-      // Clear the flag immediately so refresh won't work
-      sessionStorage.removeItem('pendingVerification');
-    } else {
-      // No valid session - redirect to signup
-      router.replace('/signup');
-    }
-  }, [router]);
+      if (!user) {
+        // No authenticated user - redirect to signup
+        router.replace('/signup');
+        return;
+      }
+
+      if (user.email) {
+        setEmail(user.email);
+      }
+
+      // Check if already verified
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('email_verified')
+        .eq('id', user.id)
+        .single();
+
+      if (profile?.email_verified === true) {
+        // Already verified - redirect to onboarding
+        router.replace('/onboarding');
+        return;
+      }
+
+      setLoading(false);
+    };
+
+    checkUser();
+  }, [router, supabase]);
 
   const handleOtpChange = (index: number, value: string) => {
-    // Only allow numbers
     if (value && !/^\d+$/.test(value)) return;
 
     const newOtp = [...otp];
-    newOtp[index] = value.slice(-1); // Only take last character
+    newOtp[index] = value.slice(-1);
     setOtp(newOtp);
 
-    // Auto-focus next input
     if (value && index < 5) {
       inputRefs.current[index + 1]?.focus();
     }
   };
 
   const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
-    // Handle backspace - move to previous input
     if (e.key === 'Backspace' && !otp[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
     }
@@ -61,7 +77,6 @@ export default function VerifyEmailPage() {
       newOtp[i] = pastedData[i];
     }
     setOtp(newOtp);
-    // Focus last filled input or first empty
     const lastIndex = Math.min(pastedData.length, 5);
     inputRefs.current[lastIndex]?.focus();
   };
@@ -87,9 +102,8 @@ export default function VerifyEmailPage() {
 
       if (response.ok) {
         setSuccess(true);
-        // Redirect to onboarding after short delay
         setTimeout(() => {
-          router.push('/onboarding');
+          window.location.href = '/onboarding';
         }, 1500);
       } else {
         setError(data.error || 'Verification failed');
@@ -132,8 +146,7 @@ export default function VerifyEmailPage() {
     }
   };
 
-  // Show loading while checking session or redirecting
-  if (!isValidSession) {
+  if (loading) {
     return (
       <main className="min-h-screen flex items-center justify-center bg-[#F8FAFC]">
         <div className="text-center">
@@ -195,7 +208,7 @@ export default function VerifyEmailPage() {
         {/* Description */}
         {!success && (
           <p className="text-gray-600 mb-6 px-4">
-            We&apos;ve sent a 6-digit code to <span className="font-medium">{email || 'your email'}</span>.
+            We&apos;ve sent a 6-digit code to <span className="font-medium">{email}</span>.
             Enter it below to verify your account.
           </p>
         )}
@@ -271,28 +284,18 @@ export default function VerifyEmailPage() {
                 {resending ? 'Sending...' : 'Resend code'}
               </button>
             </p>
-
-            {/* Divider */}
-            <div className="flex items-center gap-4 my-6">
-              <div className="flex-1 h-px bg-gray-200"></div>
-              <span className="text-gray-400 text-sm">or</span>
-              <div className="flex-1 h-px bg-gray-200"></div>
-            </div>
-
-            {/* Check email link info */}
-            <p className="text-gray-500 text-sm mb-6">
-              You can also click the verification link we sent to your email.
-            </p>
           </>
         )}
 
         {/* Back to Login */}
-        <Link
-          href="/login"
-          className="text-[#A855F7] text-sm font-medium hover:underline"
-        >
-          Back to login
-        </Link>
+        <div className="mt-6">
+          <Link
+            href="/login"
+            className="text-[#A855F7] text-sm font-medium hover:underline"
+          >
+            Back to login
+          </Link>
+        </div>
       </div>
     </main>
   );
