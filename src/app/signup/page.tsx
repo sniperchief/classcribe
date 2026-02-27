@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
+import { trackEvent } from '@/lib/posthog';
 
 function SignupForm() {
   const [fullName, setFullName] = useState('');
@@ -77,6 +78,9 @@ function SignupForm() {
           setLoading(false);
           return;
         }
+
+        // Track signup event
+        trackEvent('user_signed_up', { email });
 
         // Redirect to verify email page
         window.location.href = '/verify-email';

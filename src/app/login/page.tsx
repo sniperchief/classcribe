@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
+import { trackEvent, identifyUser } from '@/lib/posthog';
 
 function LoginForm() {
   const [email, setEmail] = useState('');
@@ -42,6 +43,13 @@ function LoginForm() {
       setError(error.message);
       setLoading(false);
     } else {
+      // Track login event and identify user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        identifyUser(user.id, { email: user.email });
+        trackEvent('user_logged_in', { email: user.email });
+      }
+
       // Refresh to sync session with server, then redirect
       router.refresh();
       // Use hard navigation to ensure cookies are properly sent

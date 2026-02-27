@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import { trackEvent, identifyUser } from '@/lib/posthog';
 
 export default function VerifyEmailPage() {
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
@@ -101,6 +102,13 @@ export default function VerifyEmailPage() {
       const data = await response.json();
 
       if (response.ok) {
+        // Track email verification and identify user
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          identifyUser(user.id, { email: user.email, email_verified: true });
+          trackEvent('email_verified', { email: user.email });
+        }
+
         setSuccess(true);
         setTimeout(() => {
           window.location.href = '/onboarding';

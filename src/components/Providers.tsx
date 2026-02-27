@@ -1,8 +1,15 @@
 'use client';
 
-import { ReactNode } from 'react';
+import { ReactNode, Suspense } from 'react';
 import { LanguageProvider } from '@/contexts/LanguageContext';
+import PostHogProvider from '@/components/PostHogProvider';
 
 export default function Providers({ children }: { children: ReactNode }) {
-  return <LanguageProvider>{children}</LanguageProvider>;
+  return (
+    <Suspense fallback={null}>
+      <PostHogProvider>
+        <LanguageProvider>{children}</LanguageProvider>
+      </PostHogProvider>
+    </Suspense>
+  );
 }
