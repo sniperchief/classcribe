@@ -82,7 +82,9 @@ export default function Footer() {
               </svg>
             </a>
             <a
-              href="#"
+              href="https://instagram.com/classcribe_app"
+              target="_blank"
+              rel="noopener noreferrer"
               className="w-9 h-9 sm:w-10 sm:h-10 bg-emerald-500 rounded-lg flex items-center justify-center text-white hover:bg-emerald-400 transition-colors"
               aria-label="Instagram"
             >
