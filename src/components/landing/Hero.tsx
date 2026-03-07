@@ -106,71 +106,77 @@ export default function Hero() {
         ))}
       </div>
 
-      <div className="max-w-7xl mx-auto text-left relative z-10 px-4 sm:px-6 lg:px-8">
-        {/* Headline */}
-        <h1 className="font-[family-name:var(--font-montserrat)] text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-[#0F172A] leading-tight max-w-4xl mb-4 sm:mb-6">
-          Score{' '}
-          <span className="text-[#A855F7]">
-            <span className="relative inline-block">
-              A<sup className="text-[0.6em]">+</sup>
-              {/* Hand-drawn rough red circle */}
-              <svg
-                className="absolute -inset-1 sm:-inset-2 w-[calc(100%+8px)] h-[calc(100%+8px)] sm:w-[calc(100%+16px)] sm:h-[calc(100%+16px)]"
-                viewBox="0 0 100 100"
-                fill="none"
-                preserveAspectRatio="none"
-              >
-                <path
-                  d="M 50,10 C 75,8 92,25 94,50 C 96,75 78,92 50,94 C 22,96 6,78 8,50 C 10,22 28,12 50,10"
-                  stroke="#EF4444"
-                  strokeWidth="5"
-                  strokeLinecap="round"
+      <div className="max-w-7xl mx-auto relative z-10 px-4 sm:px-6 lg:px-8">
+        {/* Side-by-side layout on large screens */}
+        <div className="flex flex-col lg:flex-row lg:items-center lg:gap-12 xl:gap-16">
+          {/* Left side - Text content */}
+          <div className="flex-1 text-left lg:max-w-xl xl:max-w-2xl">
+            {/* Headline */}
+            <h1 className="font-[family-name:var(--font-montserrat)] text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-extrabold text-[#0F172A] leading-tight mb-4 sm:mb-6">
+              Score{' '}
+              <span className="text-[#A855F7]">
+                <span className="relative inline-block">
+                  A<sup className="text-[0.6em]">+</sup>
+                  {/* Hand-drawn rough red circle */}
+                  <svg
+                    className="absolute -inset-1 sm:-inset-2 w-[calc(100%+8px)] h-[calc(100%+8px)] sm:w-[calc(100%+16px)] sm:h-[calc(100%+16px)]"
+                    viewBox="0 0 100 100"
+                    fill="none"
+                    preserveAspectRatio="none"
+                  >
+                    <path
+                      d="M 50,10 C 75,8 92,25 94,50 C 96,75 78,92 50,94 C 22,96 6,78 8,50 C 10,22 28,12 50,10"
+                      stroke="#EF4444"
+                      strokeWidth="5"
+                      strokeLinecap="round"
+                      fill="none"
+                      style={{
+                        transform: 'rotate(-3deg)',
+                        transformOrigin: 'center',
+                      }}
+                    />
+                  </svg>
+                </span>
+              </span>
+              {' '}Without
+              <br />
+              the All-Nighters
+            </h1>
+
+            {/* Subtext */}
+            <p className="text-base sm:text-lg lg:text-lg xl:text-xl text-gray-600 max-w-xl mb-8 lg:mb-0 leading-relaxed">
+              Upload any lecture, pdf, doc, ppt, or notes.{' '}
+              <span className="relative inline-block">
+                <span>Get flashcards, quizzes, MCQs and summaries instantly.</span>
+                {/* Hand-drawn underline */}
+                <svg
+                  className="absolute left-0 w-full overflow-visible"
+                  style={{ bottom: '-4px', height: '8px' }}
+                  viewBox="0 0 300 8"
                   fill="none"
-                  style={{
-                    transform: 'rotate(-3deg)',
-                    transformOrigin: 'center',
-                  }}
-                />
-              </svg>
-            </span>
-          </span>
-          {' '}Without
-          <br />
-          the All-Nighters
-        </h1>
+                  preserveAspectRatio="none"
+                >
+                  <path
+                    d="M1 5 Q 25 2, 50 5 T 100 4 T 150 5 T 200 4 T 250 5 T 299 4"
+                    stroke="#A855F7"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    fill="none"
+                  />
+                </svg>
+              </span>
+              {' '}Study smarter, not harder.
+            </p>
+          </div>
 
-        {/* Subtext */}
-        <p className="text-base sm:text-lg lg:text-xl text-gray-600 max-w-2xl mb-8 sm:mb-10 leading-relaxed">
-          Upload any lecture, pdf, doc, ppt, or notes.{' '}
-          <span className="relative inline-block">
-            <span>Get flashcards, quizzes, MCQs and summaries instantly.</span>
-            {/* Hand-drawn underline */}
-            <svg
-              className="absolute left-0 w-full overflow-visible"
-              style={{ bottom: '-4px', height: '8px' }}
-              viewBox="0 0 300 8"
-              fill="none"
-              preserveAspectRatio="none"
-            >
-              <path
-                d="M1 5 Q 25 2, 50 5 T 100 4 T 150 5 T 200 4 T 250 5 T 299 4"
-                stroke="#A855F7"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                fill="none"
-              />
-            </svg>
-          </span>
-          {' '}Study smarter, not harder.
-        </p>
+          {/* Right side - Upload box */}
+          <div className="flex-shrink-0 lg:w-[380px] xl:w-[420px] relative">
+            <GuestUpload compact />
 
-        {/* Upload Section */}
-        <div className="relative px-2 sm:px-4">
-          <GuestUpload />
-
-          {/* Decorative Elements */}
-          <div className="absolute inset-0 -z-10 flex items-center justify-center pointer-events-none">
-            <div className="w-full h-full max-w-4xl bg-gradient-to-r from-violet-50 via-transparent to-green-50 rounded-full blur-3xl opacity-60"></div>
+            {/* Decorative Elements */}
+            <div className="absolute inset-0 -z-10 flex items-center justify-center pointer-events-none">
+              <div className="w-full h-full bg-gradient-to-r from-violet-50 via-transparent to-green-50 rounded-full blur-3xl opacity-60"></div>
+            </div>
           </div>
         </div>
       </div>
