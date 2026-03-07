@@ -119,7 +119,7 @@ export default function OutputSelectionModal({
   const quantityOptions = selectedType === 'flashcards' ? flashcardQuantities : questionQuantities;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center pt-4 sm:pt-0">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
@@ -127,9 +127,9 @@ export default function OutputSelectionModal({
       />
 
       {/* Modal */}
-      <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-lg mx-4 overflow-hidden max-h-[85vh] sm:max-h-[90vh] overflow-y-auto">
-        {/* Header */}
-        <div className="px-4 py-4 sm:px-6 sm:py-5 border-b border-gray-100">
+      <div className="relative bg-white rounded-t-2xl sm:rounded-2xl shadow-xl w-full sm:max-w-lg sm:mx-4 flex flex-col max-h-[90vh] sm:max-h-[85vh]">
+        {/* Header - Fixed */}
+        <div className="flex-shrink-0 px-4 py-4 sm:px-6 sm:py-5 border-b border-gray-100">
           <h2 className="text-lg sm:text-xl font-semibold text-[#0F172A]">
             What would you like to generate?
           </h2>
@@ -140,8 +140,10 @@ export default function OutputSelectionModal({
           )}
         </div>
 
-        {/* Output Type Options */}
-        <div className="p-4 sm:p-6 space-y-2 sm:space-y-3">
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto">
+          {/* Output Type Options */}
+          <div className="p-4 sm:p-6 space-y-2 sm:space-y-3">
           {outputOptions.map((option) => (
             <button
               key={option.id}
@@ -236,9 +238,10 @@ export default function OutputSelectionModal({
             </div>
           </div>
         )}
+        </div>
 
-        {/* Footer */}
-        <div className="px-4 py-3 sm:px-6 sm:py-4 bg-gray-50 border-t border-gray-100 flex items-center justify-end gap-3">
+        {/* Footer - Fixed */}
+        <div className="flex-shrink-0 px-4 py-3 sm:px-6 sm:py-4 bg-gray-50 border-t border-gray-100 flex items-center justify-end gap-3">
           <button
             onClick={onClose}
             disabled={isProcessing}
