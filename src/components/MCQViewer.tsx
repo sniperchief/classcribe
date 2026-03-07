@@ -77,7 +77,7 @@ export default function MCQViewer({ mcqs }: MCQViewerProps) {
 
     return (
       <div className="max-w-2xl mx-auto">
-        <div className={`rounded-3xl shadow-xl p-8 text-center ${
+        <div className={`rounded-2xl sm:rounded-3xl shadow-xl p-5 sm:p-8 text-center ${
           isSuccess
             ? 'bg-gradient-to-br from-emerald-500 to-emerald-600'
             : isNeedsWork
@@ -85,12 +85,12 @@ export default function MCQViewer({ mcqs }: MCQViewerProps) {
             : 'bg-gradient-to-br from-yellow-500 to-orange-500'
         }`}>
           {/* Emoji/Icon */}
-          <div className="text-7xl mb-6">
+          <div className="text-5xl sm:text-7xl mb-4 sm:mb-6">
             {isSuccess ? '🎉' : isNeedsWork ? '😤' : '💪'}
           </div>
 
           {/* Heading */}
-          <h2 className="text-3xl font-bold text-white mb-2">
+          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-1.5 sm:mb-2">
             {isSuccess
               ? 'Congratulations!'
               : isNeedsWork
@@ -99,7 +99,7 @@ export default function MCQViewer({ mcqs }: MCQViewerProps) {
           </h2>
 
           {/* Message */}
-          <p className="text-white/90 text-lg mb-6">
+          <p className="text-white/90 text-base sm:text-lg mb-4 sm:mb-6">
             {isSuccess
               ? "You've mastered this material!"
               : isNeedsWork
@@ -108,22 +108,22 @@ export default function MCQViewer({ mcqs }: MCQViewerProps) {
           </p>
 
           {/* Score */}
-          <div className="bg-white/20 rounded-2xl p-6 mb-6">
-            <div className="text-5xl font-bold text-white mb-2">{percentage}%</div>
-            <p className="text-white/80">{score} out of {mcqs.length} correct</p>
+          <div className="bg-white/20 rounded-xl sm:rounded-2xl p-4 sm:p-6 mb-4 sm:mb-6">
+            <div className="text-4xl sm:text-5xl font-bold text-white mb-1 sm:mb-2">{percentage}%</div>
+            <p className="text-white/80 text-sm sm:text-base">{score} out of {mcqs.length} correct</p>
           </div>
 
           {/* Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 justify-center">
             <button
               onClick={handleRetry}
-              className="px-6 py-3 bg-white text-gray-800 rounded-xl hover:bg-gray-100 transition-colors font-semibold shadow-lg"
+              className="px-5 sm:px-6 py-2.5 sm:py-3 bg-white text-gray-800 rounded-lg sm:rounded-xl hover:bg-gray-100 transition-colors font-semibold shadow-lg text-sm sm:text-base"
             >
               Try Again
             </button>
             <button
               onClick={() => setShowResults(false)}
-              className="px-6 py-3 bg-white/20 text-white rounded-xl hover:bg-white/30 transition-colors font-semibold"
+              className="px-5 sm:px-6 py-2.5 sm:py-3 bg-white/20 text-white rounded-lg sm:rounded-xl hover:bg-white/30 transition-colors font-semibold text-sm sm:text-base"
             >
               Review Answers
             </button>
@@ -136,25 +136,25 @@ export default function MCQViewer({ mcqs }: MCQViewerProps) {
   return (
     <div className="max-w-2xl mx-auto">
       {/* Progress bar */}
-      <div className="mb-6">
-        <div className="flex justify-between items-center mb-2">
-          <span className="text-sm text-gray-500">
+      <div className="mb-3 sm:mb-6">
+        <div className="flex justify-between items-center mb-1.5 sm:mb-2">
+          <span className="text-xs sm:text-sm text-gray-500">
             Question {currentIndex + 1} of {mcqs.length}
           </span>
-          <span className="text-sm text-gray-500">
+          <span className="text-xs sm:text-sm text-gray-500">
             Score: {getScore()}/{Object.keys(answers).length}
           </span>
         </div>
-        <div className="w-full bg-gray-100 rounded-full h-2">
+        <div className="w-full bg-gray-100 rounded-full h-1.5 sm:h-2">
           <div
-            className="bg-emerald-500 h-2 rounded-full transition-all duration-300"
+            className="bg-emerald-500 h-1.5 sm:h-2 rounded-full transition-all duration-300"
             style={{ width: `${((currentIndex + 1) / mcqs.length) * 100}%` }}
           />
         </div>
       </div>
 
       {/* Question navigation dots */}
-      <div className="flex flex-wrap justify-center gap-2 mb-6">
+      <div className="flex flex-wrap justify-center gap-1 sm:gap-2 mb-3 sm:mb-6">
         {mcqs.map((_, index) => {
           const wasAnswered = answers[index] !== undefined;
           const wasCorrect = wasAnswered && mcqs[index].correctAnswer === answers[index];
@@ -163,7 +163,7 @@ export default function MCQViewer({ mcqs }: MCQViewerProps) {
             <button
               key={index}
               onClick={() => handleJumpTo(index)}
-              className={`w-8 h-8 rounded-full text-xs font-medium transition-all ${
+              className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full text-[10px] sm:text-xs font-medium transition-all ${
                 index === currentIndex
                   ? 'bg-emerald-500 text-white scale-110'
                   : wasAnswered
@@ -180,7 +180,7 @@ export default function MCQViewer({ mcqs }: MCQViewerProps) {
       </div>
 
       {/* Question card - Emerald design */}
-      <div className={`rounded-3xl shadow-xl p-8 mb-6 transition-all duration-300 ${
+      <div className={`rounded-2xl sm:rounded-3xl shadow-xl p-4 sm:p-8 mb-4 sm:mb-6 transition-all duration-300 ${
         isAnswered
           ? isCorrect
             ? 'bg-gradient-to-br from-emerald-500 to-emerald-600'
@@ -188,12 +188,12 @@ export default function MCQViewer({ mcqs }: MCQViewerProps) {
           : 'bg-gradient-to-br from-emerald-500 to-emerald-600'
       }`}>
         {/* Question */}
-        <p className="text-xl sm:text-2xl text-white font-medium text-center mb-8 leading-relaxed">
+        <p className="text-base sm:text-2xl text-white font-medium text-center mb-4 sm:mb-8 leading-relaxed">
           {currentQuestion.question}
         </p>
 
         {/* Options */}
-        <div className="space-y-3">
+        <div className="space-y-2 sm:space-y-3">
           {currentQuestion.options.map((option) => {
             const isSelected = selectedAnswer === option.label;
             const isCorrectOption = option.label === currentQuestion.correctAnswer;
@@ -203,7 +203,7 @@ export default function MCQViewer({ mcqs }: MCQViewerProps) {
                 key={option.label}
                 onClick={() => handleSelectAnswer(option.label)}
                 disabled={isAnswered}
-                className={`w-full p-4 rounded-2xl text-left transition-all ${
+                className={`w-full p-2.5 sm:p-4 rounded-xl sm:rounded-2xl text-left transition-all ${
                   isAnswered
                     ? isSelected
                       ? isCorrectOption
@@ -215,8 +215,8 @@ export default function MCQViewer({ mcqs }: MCQViewerProps) {
                     : 'bg-white/20 text-white hover:bg-white/30 border-2 border-white/50'
                 } ${!isAnswered ? 'cursor-pointer' : 'cursor-default'}`}
               >
-                <div className="flex items-center gap-3">
-                  <span className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0 ${
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <span className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center font-bold text-xs sm:text-sm flex-shrink-0 ${
                     isAnswered
                       ? isCorrectOption
                         ? isSelected
@@ -228,14 +228,14 @@ export default function MCQViewer({ mcqs }: MCQViewerProps) {
                       : 'bg-white/30 text-white'
                   }`}>
                     {isAnswered && isCorrectOption ? (
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                       </svg>
                     ) : (
                       option.label
                     )}
                   </span>
-                  <span className="font-medium">{option.text}</span>
+                  <span className="font-medium text-sm sm:text-base">{option.text}</span>
                 </div>
               </button>
             );
@@ -244,17 +244,17 @@ export default function MCQViewer({ mcqs }: MCQViewerProps) {
 
         {/* Feedback after answering */}
         {isAnswered && (
-          <div className="mt-6 text-center">
-            <div className="flex items-center justify-center gap-2 mb-3">
+          <div className="mt-4 sm:mt-6 text-center">
+            <div className="flex items-center justify-center gap-2 mb-2 sm:mb-3">
               {isCorrect ? (
                 <>
-                  <span className="text-2xl">✓</span>
-                  <span className="font-bold text-white text-lg">Correct!</span>
+                  <span className="text-xl sm:text-2xl">✓</span>
+                  <span className="font-bold text-white text-base sm:text-lg">Correct!</span>
                 </>
               ) : (
                 <>
-                  <span className="text-2xl">✗</span>
-                  <span className="font-bold text-white text-lg">
+                  <span className="text-xl sm:text-2xl">✗</span>
+                  <span className="font-bold text-white text-base sm:text-lg">
                     The answer is {currentQuestion.correctAnswer}
                   </span>
                 </>
@@ -264,13 +264,13 @@ export default function MCQViewer({ mcqs }: MCQViewerProps) {
             {/* Show/Hide Explanation */}
             <button
               onClick={() => setShowExplanation(!showExplanation)}
-              className="text-white/80 hover:text-white underline text-sm"
+              className="text-white/80 hover:text-white underline text-xs sm:text-sm"
             >
               {showExplanation ? 'Hide' : 'Show'} explanation
             </button>
 
             {showExplanation && (
-              <p className="mt-3 text-white/90 text-sm bg-white/10 rounded-xl p-4">
+              <p className="mt-2 sm:mt-3 text-white/90 text-xs sm:text-sm bg-white/10 rounded-lg sm:rounded-xl p-3 sm:p-4">
                 {currentQuestion.explanation}
               </p>
             )}

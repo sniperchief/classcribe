@@ -54,7 +54,7 @@ export default function DashboardPage() {
   const [subscription, setSubscription] = useState<SubscriptionInfo | null>(null);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [showUpgradeSuccess, setShowUpgradeSuccess] = useState(false);
-  const [activeTab, setActiveTab] = useState<'recordings' | 'materials'>('recordings');
+  const [activeTab, setActiveTab] = useState<'recordings' | 'materials'>('materials');
   const [showOutputModal, setShowOutputModal] = useState(false);
   const [pendingMaterial, setPendingMaterial] = useState<{ id: string; title: string } | null>(null);
   const [progressType, setProgressType] = useState<'audio' | 'document'>('audio');
@@ -1107,15 +1107,6 @@ export default function DashboardPage() {
             <h3 className="text-lg font-semibold text-[#0F172A] mb-4">Your Study Materials</h3>
             <div className="flex gap-2">
               <button
-                onClick={() => setActiveTab('recordings')}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors
-                  ${activeTab === 'recordings'
-                    ? 'bg-[#A855F7] text-white'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
-              >
-                Recordings
-              </button>
-              <button
                 onClick={() => setActiveTab('materials')}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors
                   ${activeTab === 'materials'
@@ -1124,61 +1115,20 @@ export default function DashboardPage() {
               >
                 Materials
               </button>
+              <button
+                onClick={() => setActiveTab('recordings')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors
+                  ${activeTab === 'recordings'
+                    ? 'bg-[#A855F7] text-white'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+              >
+                Recordings
+              </button>
             </div>
           </div>
 
           {/* Tab Content */}
-          {activeTab === 'recordings' ? (
-            /* Recordings Tab */
-            lectures.length === 0 ? (
-              <div className="p-8 sm:p-12 text-center">
-                <div className="w-16 h-16 bg-[#A855F7]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-[#A855F7]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-                  </svg>
-                </div>
-                <p className="text-gray-500 mb-1">No recordings yet</p>
-                <p className="text-sm text-gray-400">Upload your first audio file to get started!</p>
-              </div>
-            ) : (
-              <div className="divide-y divide-[#E5E7EB]">
-                {lectures.map((lecture) => (
-                  <div
-                    key={lecture.id}
-                    onClick={() => lecture.status === 'completed' && router.push(`/lectures/${lecture.id}`)}
-                    className={`px-4 sm:px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3
-                      ${lecture.status === 'completed' ? 'cursor-pointer hover:bg-gray-50' : ''} transition-colors`}
-                  >
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div className="w-10 h-10 bg-[#A855F7]/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <svg className="w-5 h-5 text-[#A855F7]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-                        </svg>
-                      </div>
-                      <div className="min-w-0">
-                        <h4 className="font-medium text-[#0F172A] truncate">{lecture.title}</h4>
-                        <p className="text-sm text-gray-500">
-                          {new Date(lecture.created_at).toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric',
-                          })}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      {getStatusBadge(lecture.status)}
-                      {lecture.status === 'completed' && (
-                        <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )
-          ) : (
+          {activeTab === 'materials' ? (
             /* Materials Tab */
             <>
               {/* Search and Filter Section */}
@@ -1322,6 +1272,56 @@ export default function DashboardPage() {
                 </div>
               )}
             </>
+          ) : (
+            /* Recordings Tab */
+            lectures.length === 0 ? (
+              <div className="p-8 sm:p-12 text-center">
+                <div className="w-16 h-16 bg-[#A855F7]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-[#A855F7]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                  </svg>
+                </div>
+                <p className="text-gray-500 mb-1">No recordings yet</p>
+                <p className="text-sm text-gray-400">Upload your first audio file to get started!</p>
+              </div>
+            ) : (
+              <div className="divide-y divide-[#E5E7EB]">
+                {lectures.map((lecture) => (
+                  <div
+                    key={lecture.id}
+                    onClick={() => lecture.status === 'completed' && router.push(`/lectures/${lecture.id}`)}
+                    className={`px-4 sm:px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3
+                      ${lecture.status === 'completed' ? 'cursor-pointer hover:bg-gray-50' : ''} transition-colors`}
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-10 h-10 bg-[#A855F7]/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <svg className="w-5 h-5 text-[#A855F7]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                        </svg>
+                      </div>
+                      <div className="min-w-0">
+                        <h4 className="font-medium text-[#0F172A] truncate">{lecture.title}</h4>
+                        <p className="text-sm text-gray-500">
+                          {new Date(lecture.created_at).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric',
+                          })}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      {getStatusBadge(lecture.status)}
+                      {lecture.status === 'completed' && (
+                        <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )
           )}
         </div>
 
