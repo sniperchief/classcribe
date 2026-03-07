@@ -362,15 +362,25 @@ import type { DifficultyLevel, MCQ, TrueFalseQuestion } from './types';
 const getDifficultyDescription = (difficulty: DifficultyLevel): string => {
   switch (difficulty) {
     case 'easy':
-      return 'Focus on basic recall and simple concepts. Questions should test fundamental understanding and be straightforward. Avoid tricky wording or complex scenarios.';
+      return 'Focus on core concepts and definitions, but still require understanding. Questions should test comprehension, not just recognition. Include some application of basic principles.';
     case 'medium':
-      return 'Balance between recall and application. Include questions that require understanding relationships between concepts and some analysis.';
+      return 'Balance between recall and application. Include questions that require understanding relationships between concepts, comparing ideas, and applying knowledge to new situations.';
     case 'hard':
-      return 'Focus on analysis, application, and critical thinking. Include questions that require synthesizing multiple concepts, evaluating scenarios, and solving complex problems.';
+      return 'Focus on analysis, synthesis, and critical thinking. Include questions that require combining multiple concepts, evaluating scenarios, identifying subtle distinctions, and solving complex problems. Use tricky distractors based on common misconceptions.';
   }
 };
 
-const getMCQSystemPrompt = (difficulty: DifficultyLevel, quantity: number): string => `You are an expert exam question creator. Create multiple choice questions (MCQs) from the provided document content.
+// Shuffle function using Fisher-Yates algorithm
+function shuffleArray<T>(array: T[]): T[] {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
+const getMCQSystemPrompt = (difficulty: DifficultyLevel, quantity: number): string => `You are an expert exam question creator specializing in challenging, thought-provoking questions. Create multiple choice questions (MCQs) from the provided document content.
 
 DIFFICULTY LEVEL: ${difficulty.toUpperCase()}
 ${getDifficultyDescription(difficulty)}
@@ -386,23 +396,37 @@ OUTPUT FORMAT (YOU MUST RETURN VALID JSON - NO OTHER TEXT):
       { "label": "C", "text": "Third option text" },
       { "label": "D", "text": "Fourth option text" }
     ],
-    "correctAnswer": "A",
-    "explanation": "Brief explanation of why A is correct and why other options are incorrect."
+    "correctAnswer": "C",
+    "explanation": "Brief explanation of why C is correct and why other options are incorrect."
   }
 ]
 
-GUIDELINES:
+CRITICAL REQUIREMENTS:
+1. RANDOMIZE CORRECT ANSWERS: Distribute correct answers EVENLY across A, B, C, and D. Do NOT favor any position. Roughly 25% of answers should be A, 25% B, 25% C, 25% D.
+2. CREATE CHALLENGING DISTRACTORS: Wrong options must be plausible and tempting. They should be close to correct but with subtle errors that test real understanding.
+3. AVOID OBVIOUS PATTERNS: Never put correct answers in predictable positions.
+
+QUESTION QUALITY GUIDELINES:
 - Create UP TO ${quantity} MCQs (fewer if the document doesn't have enough content)
 - All questions should be ${difficulty} difficulty level
 - Each question MUST have exactly 4 options (A, B, C, D)
 - Only ONE correct answer per question
-- Include clear explanations for why the correct answer is right
-- Cover the main concepts from the document
-- Questions should test understanding appropriate to the difficulty level
+- Make questions that require THINKING, not just memorization
+- Use scenarios, application questions, and "which of the following" formats
+- Wrong answers should be based on common misconceptions or partial truths
+- Include clear explanations for why the correct answer is right AND why others are wrong
 - Avoid "All of the above" or "None of the above" options
-- Return ONLY the JSON array, no markdown, no additional text`;
+- Avoid questions with obviously wrong answers that can be eliminated easily
 
-const getQuizSystemPrompt = (difficulty: DifficultyLevel, quantity: number): string => `You are an expert educator creating True/False practice questions for memorization and quick recall.
+DISTRACTOR STRATEGIES:
+- Use partially correct statements that miss a key detail
+- Include options that would be true in different contexts
+- Add plausible-sounding options that contain subtle errors
+- Use common student misconceptions as wrong answers
+
+Return ONLY the JSON array, no markdown, no additional text`;
+
+const getQuizSystemPrompt = (difficulty: DifficultyLevel, quantity: number): string => `You are an expert educator creating challenging True/False questions that really test student understanding.
 
 DIFFICULTY LEVEL: ${difficulty.toUpperCase()}
 ${getDifficultyDescription(difficulty)}
@@ -422,16 +446,35 @@ OUTPUT FORMAT (YOU MUST RETURN VALID JSON - NO OTHER TEXT):
   }
 ]
 
-GUIDELINES:
+CRITICAL REQUIREMENTS:
+1. RANDOMIZE ANSWERS: Distribute true and false answers in a RANDOM, UNPREDICTABLE pattern. Do NOT alternate predictably (T,F,T,F) or group them (T,T,T,F,F,F). Mix them randomly like: T,F,F,T,F,T,T,F,T,F,F,T...
+2. EXACT 50/50 SPLIT: Ensure roughly half are TRUE and half are FALSE.
+3. NO PREDICTABLE PATTERNS: Students should not be able to guess based on position.
+
+QUESTION QUALITY GUIDELINES:
 - Create UP TO ${quantity} True/False questions (fewer if document doesn't have enough content)
 - All questions should be ${difficulty} difficulty level
-- Make statements clear and unambiguous
-- Mix of true and false answers (roughly 50/50)
-- Cover the main concepts from the document
-- Explanations should help students understand and memorize the correct information
-- Avoid tricky wording or double negatives
-- Focus on key facts, definitions, and concepts that are good for memorization
-- Return ONLY the JSON array, no markdown, no additional text`;
+- Create statements that CHALLENGE students to think critically
+- Use subtle distinctions that test real understanding, not surface recall
+- Include statements with common misconceptions (marked as FALSE)
+- Include precise correct statements that seem like they might be wrong (marked as TRUE)
+- Explanations should teach why the answer is what it is
+
+CHALLENGING STATEMENT STRATEGIES:
+- Use "always", "never", "all", "none" carefully - sometimes true, sometimes false
+- Include statements that are ALMOST correct but have one wrong detail
+- Test understanding of exceptions and edge cases
+- Include counterintuitive truths that seem false
+- Include plausible-sounding falsehoods that seem true
+- Focus on relationships between concepts, not just definitions
+
+AVOID:
+- Obvious statements that anyone could guess
+- Simple definition checks with no nuance
+- Predictable true/false patterns
+- Double negatives or confusing wording
+
+Return ONLY the JSON array, no markdown, no additional text`;
 
 export async function generateMCQs(
   documentText: string,
@@ -469,8 +512,36 @@ export async function generateMCQs(
       throw new Error('Invalid MCQ response format');
     }
 
-    console.log('[Anthropic] MCQs generated successfully, count:', mcqs.length);
-    return mcqs;
+    // Shuffle options for each MCQ to ensure random correct answer positions
+    const shuffledMCQs = mcqs.map(mcq => {
+      // Find the correct answer text
+      const correctOption = mcq.options.find(opt => opt.label === mcq.correctAnswer);
+      if (!correctOption) return mcq;
+
+      const correctText = correctOption.text;
+
+      // Shuffle the options
+      const shuffledOptions = shuffleArray(mcq.options.map(opt => opt.text));
+
+      // Create new options with new labels
+      const labels = ['A', 'B', 'C', 'D'];
+      const newOptions = shuffledOptions.map((text, index) => ({
+        label: labels[index],
+        text
+      }));
+
+      // Find new correct answer label
+      const newCorrectLabel = newOptions.find(opt => opt.text === correctText)?.label || mcq.correctAnswer;
+
+      return {
+        ...mcq,
+        options: newOptions,
+        correctAnswer: newCorrectLabel
+      };
+    });
+
+    console.log('[Anthropic] MCQs generated and shuffled successfully, count:', shuffledMCQs.length);
+    return shuffledMCQs;
   } catch (error) {
     console.error('[Anthropic] Error generating MCQs:', error);
     throw error;
@@ -513,8 +584,11 @@ export async function generateQuiz(
       throw new Error('Invalid quiz response format');
     }
 
-    console.log('[Anthropic] Quiz generated successfully, count:', quiz.length);
-    return quiz;
+    // Shuffle the order of questions to randomize true/false distribution
+    const shuffledQuiz = shuffleArray(quiz);
+
+    console.log('[Anthropic] Quiz generated and shuffled successfully, count:', shuffledQuiz.length);
+    return shuffledQuiz;
   } catch (error) {
     console.error('[Anthropic] Error generating quiz:', error);
     throw error;
