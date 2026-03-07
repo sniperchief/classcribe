@@ -23,10 +23,14 @@ const OutputSelectionModal = dynamic(() => import('@/components/OutputSelectionM
 
 type SubscriptionInfo = {
   plan: string;
-  lectureLimit: number;
+  materialsLimit: number;
+  materialsUsed: number;
+  materialsRemaining: number;
+  canUploadMaterial: boolean;
+  lecturesLimit: number;
   lecturesUsed: number;
   lecturesRemaining: number;
-  canUpload: boolean;
+  canUploadLecture: boolean;
 };
 
 export default function DashboardPage() {
@@ -285,12 +289,12 @@ export default function DashboardPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Check if user can upload - TODO: Uncomment after testing
-    // if (subscription && !subscription.canUpload) {
-    //   setShowUpgradeModal(true);
-    //   e.target.value = '';
-    //   return;
-    // }
+    // Check if user can upload audio
+    if (subscription && !subscription.canUploadLecture) {
+      setShowUpgradeModal(true);
+      e.target.value = '';
+      return;
+    }
 
     // Validate file type
     const allowedTypes = [
@@ -433,12 +437,12 @@ export default function DashboardPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Check if user can upload - TODO: Uncomment after testing
-    // if (subscription && !subscription.canUpload) {
-    //   setShowUpgradeModal(true);
-    //   e.target.value = '';
-    //   return;
-    // }
+    // Check if user can upload materials
+    if (subscription && !subscription.canUploadMaterial) {
+      setShowUpgradeModal(true);
+      e.target.value = '';
+      return;
+    }
 
     // Validate file type - PDF, Word, PowerPoint
     const allowedTypes = [
@@ -927,7 +931,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Free Trial Exhausted Banner */}
-        {false && subscription?.plan === 'free' && !subscription?.canUpload && ( // TODO: Remove 'false &&' after testing
+        {subscription?.plan === 'free' && !subscription?.canUploadMaterial && (
           <div className="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl border border-yellow-200 p-6 mb-6">
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
               <div className="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center flex-shrink-0">
@@ -937,10 +941,10 @@ export default function DashboardPage() {
               </div>
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-[#0F172A] mb-1">
-                  You&apos;ve used all {subscription?.lectureLimit ?? 2} free lectures
+                  You&apos;ve used all {subscription?.materialsLimit ?? 3} free materials
                 </h3>
                 <p className="text-gray-600 text-sm">
-                  Upgrade to continue generating study materials from your lectures.
+                  Upgrade to continue uploading and generating study materials.
                 </p>
               </div>
               <Link
@@ -1002,7 +1006,7 @@ export default function DashboardPage() {
 
             <label
               className={`flex items-center justify-center gap-2 w-full py-3 rounded-xl font-medium transition-all cursor-pointer
-                ${uploadingDocument // TODO: Add back || (subscription?.plan === 'free' && !subscription?.canUpload)
+                ${uploadingDocument || (subscription?.plan === 'free' && !subscription?.canUploadMaterial)
                   ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                   : 'bg-emerald-500 text-white hover:bg-emerald-600'}`}
             >
@@ -1026,7 +1030,7 @@ export default function DashboardPage() {
                 type="file"
                 accept=".pdf,.docx,.pptx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.presentationml.presentation"
                 onChange={handleDocumentUpload}
-                disabled={uploadingDocument} // TODO: Add back (subscription?.plan === 'free' && !subscription?.canUpload) after testing
+                disabled={uploadingDocument || (subscription?.plan === 'free' && !subscription?.canUploadMaterial)}
                 className="hidden"
               />
             </label>
@@ -1069,7 +1073,7 @@ export default function DashboardPage() {
 
             <label
               className={`flex items-center justify-center gap-2 w-full py-3 rounded-xl font-medium transition-all cursor-pointer
-                ${uploading // TODO: Add back || (subscription?.plan === 'free' && !subscription?.canUpload)
+                ${uploading || (subscription?.plan === 'free' && !subscription?.canUploadLecture)
                   ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                   : 'bg-[#A855F7] text-white hover:bg-[#9333EA]'}`}
             >
@@ -1093,7 +1097,7 @@ export default function DashboardPage() {
                 type="file"
                 accept=".mp3,.wav,.m4a,.mp4,audio/mpeg,audio/wav,audio/x-m4a,video/mp4"
                 onChange={handleUpload}
-                disabled={uploading} // TODO: Add back (subscription?.plan === 'free' && !subscription?.canUpload) after testing
+                disabled={uploading || (subscription?.plan === 'free' && !subscription?.canUploadLecture)}
                 className="hidden"
               />
             </label>
@@ -1104,7 +1108,45 @@ export default function DashboardPage() {
         <div className="bg-white rounded-xl border border-[#E5E7EB] overflow-hidden">
           {/* Header with Tabs */}
           <div className="px-4 sm:px-6 py-4 border-b border-[#E5E7EB]">
-            <h3 className="text-lg font-semibold text-[#0F172A] mb-4">Your Study Materials</h3>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+              <h3 className="text-lg font-semibold text-[#0F172A]">Your Study Materials</h3>
+              {/* Quota Display for Free Users */}
+              {subscription?.plan === 'free' && (
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
+                      <div
+                        className={`h-full rounded-full transition-all ${
+                          subscription.materialsRemaining === 0
+                            ? 'bg-red-500'
+                            : subscription.materialsRemaining === 1
+                            ? 'bg-yellow-500'
+                            : 'bg-emerald-500'
+                        }`}
+                        style={{ width: `${(subscription.materialsUsed / subscription.materialsLimit) * 100}%` }}
+                      />
+                    </div>
+                    <span className={`text-sm font-medium ${
+                      subscription.materialsRemaining === 0
+                        ? 'text-red-600'
+                        : subscription.materialsRemaining === 1
+                        ? 'text-yellow-600'
+                        : 'text-gray-600'
+                    }`}>
+                      {subscription.materialsUsed}/{subscription.materialsLimit} used
+                    </span>
+                  </div>
+                  {subscription.materialsRemaining === 0 && (
+                    <Link
+                      href="/pricing"
+                      className="text-xs px-2.5 py-1 bg-[#A855F7] text-white rounded-full font-medium hover:bg-[#9333EA] transition-colors"
+                    >
+                      Upgrade
+                    </Link>
+                  )}
+                </div>
+              )}
+            </div>
             <div className="flex gap-2">
               <button
                 onClick={() => setActiveTab('materials')}
@@ -1384,8 +1426,8 @@ export default function DashboardPage() {
       <UpgradeModal
         isOpen={showUpgradeModal}
         onClose={() => setShowUpgradeModal(false)}
-        lecturesUsed={subscription?.lecturesUsed || 0}
-        lectureLimit={subscription?.lectureLimit || 2}
+        materialsUsed={subscription?.materialsUsed || 0}
+        materialsLimit={subscription?.materialsLimit || 3}
       />
 
       {/* Output Selection Modal */}

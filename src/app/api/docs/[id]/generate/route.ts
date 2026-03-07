@@ -109,14 +109,10 @@ export async function POST(
     return NextResponse.json({ error: 'Material not found' }, { status: 404 });
   }
 
-  if (material.status === 'completed') {
-    return NextResponse.json({ error: 'Material already processed' }, { status: 400 });
-  }
-
   // Get user's subscription plan
   const { data: profile } = await supabase
     .from('profiles')
-    .select('subscription_plan, subscription_end_date, lectures_used_this_month, usage_reset_date')
+    .select('subscription_plan, subscription_end_date')
     .eq('id', user.id)
     .single();
 
@@ -126,6 +122,18 @@ export async function POST(
     if (endDate && endDate > new Date()) {
       userPlan = 'student';
     }
+  }
+
+  // Free users: only 1 generation per material
+  if (material.status === 'completed') {
+    if (userPlan === 'free') {
+      return NextResponse.json(
+        { error: 'Free users can only generate one output per material. Upgrade to Student plan for unlimited generations.', limitReached: true },
+        { status: 403 }
+      );
+    }
+    // Paid users can regenerate - reset status for reprocessing
+    console.log('[Process] Paid user regenerating content...');
   }
 
   try {
@@ -266,34 +274,6 @@ export async function POST(
         updated_at: new Date().toISOString(),
       })
       .eq('id', id);
-
-    // Increment usage counter for free users
-    if (userPlan === 'free') {
-      console.log('[Process] Step 7: Updating usage counter...');
-      const today = new Date();
-      const resetDate = profile?.usage_reset_date ? new Date(profile.usage_reset_date) : null;
-
-      let newUsageCount = (profile?.lectures_used_this_month || 0) + 1;
-
-      if (resetDate) {
-        const resetMonth = resetDate.getMonth();
-        const resetYear = resetDate.getFullYear();
-        const currentMonth = today.getMonth();
-        const currentYear = today.getFullYear();
-
-        if (currentYear > resetYear || (currentYear === resetYear && currentMonth > resetMonth)) {
-          newUsageCount = 1;
-        }
-      }
-
-      await supabase
-        .from('profiles')
-        .update({
-          lectures_used_this_month: newUsageCount,
-          usage_reset_date: today.toISOString().split('T')[0],
-        })
-        .eq('id', user.id);
-    }
 
     console.log('[Process] Processing completed successfully!');
 

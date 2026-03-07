@@ -8,11 +8,11 @@ type Currency = 'NGN' | 'USD';
 type UpgradeModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  lecturesUsed: number;
-  lectureLimit: number;
+  materialsUsed: number;
+  materialsLimit: number;
 };
 
-export default function UpgradeModal({ isOpen, onClose, lecturesUsed, lectureLimit }: UpgradeModalProps) {
+export default function UpgradeModal({ isOpen, onClose, materialsUsed, materialsLimit }: UpgradeModalProps) {
   const [currency, setCurrency] = useState<Currency>('USD');
 
   useEffect(() => {
@@ -50,19 +50,19 @@ export default function UpgradeModal({ isOpen, onClose, lecturesUsed, lectureLim
         {/* Content */}
         <div className="text-center mb-6">
           <h2 className="text-xl sm:text-2xl font-bold text-[#0F172A] mb-2">
-            You&apos;ve used your free lectures this month
+            You&apos;ve used all your free materials
           </h2>
           <p className="text-gray-500">
-            You&apos;ve processed {lecturesUsed} of {lectureLimit} lectures available on the free plan.
-            Upgrade to continue generating notes.
+            You&apos;ve used {materialsUsed} of {materialsLimit} materials on the free plan.
+            Upgrade to unlock unlimited uploads and generations.
           </p>
         </div>
 
         {/* Usage Bar */}
         <div className="mb-6">
           <div className="flex justify-between text-sm mb-2">
-            <span className="text-gray-600">Lectures used</span>
-            <span className="font-medium text-[#0F172A]">{lecturesUsed}/{lectureLimit}</span>
+            <span className="text-gray-600">Materials used</span>
+            <span className="font-medium text-[#0F172A]">{materialsUsed}/{materialsLimit}</span>
           </div>
           <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
             <div
@@ -83,25 +83,25 @@ export default function UpgradeModal({ isOpen, onClose, lecturesUsed, lectureLim
               <svg className="w-4 h-4 text-[#A855F7]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
-              20 lectures per month
+              Unlimited material uploads
             </li>
             <li className="flex items-center gap-2 text-sm text-gray-600">
               <svg className="w-4 h-4 text-[#A855F7]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
-              PDF export
+              Unlimited generations per material
             </li>
             <li className="flex items-center gap-2 text-sm text-gray-600">
               <svg className="w-4 h-4 text-[#A855F7]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
-              Priority processing
+              Flashcards, MCQs, Quizzes & Summaries
             </li>
             <li className="flex items-center gap-2 text-sm text-gray-600">
               <svg className="w-4 h-4 text-[#A855F7]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
-              Advanced formatting
+              Faster AI processing
             </li>
           </ul>
         </div>
@@ -121,11 +121,6 @@ export default function UpgradeModal({ isOpen, onClose, lecturesUsed, lectureLim
             Maybe Later
           </button>
         </div>
-
-        {/* Reset Info */}
-        <p className="text-center text-xs text-gray-400 mt-4">
-          Your free lectures will reset at the start of next month.
-        </p>
       </div>
     </div>
   );

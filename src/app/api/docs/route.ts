@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
   // Check usage limit for free users
   const { data: profile } = await supabase
     .from('profiles')
-    .select('subscription_plan, subscription_end_date, lectures_used_this_month, usage_reset_date')
+    .select('subscription_plan, subscription_end_date')
     .eq('id', user.id)
     .single();
 
@@ -75,27 +75,19 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  // Check monthly limit for free users (materials count towards same limit as lectures)
+  // Check lifetime limit for free users (3 materials total)
   if (!isPaidUser) {
-    const FREE_MONTHLY_LIMIT = 100; // TODO: Change back to 2 after testing
-    const today = new Date();
-    const resetDate = profile?.usage_reset_date ? new Date(profile.usage_reset_date) : null;
+    const FREE_MATERIALS_LIMIT = 3;
 
-    let currentUsage = profile?.lectures_used_this_month || 0;
-    if (resetDate) {
-      const resetMonth = resetDate.getMonth();
-      const resetYear = resetDate.getFullYear();
-      const currentMonth = today.getMonth();
-      const currentYear = today.getFullYear();
+    // Count total materials ever uploaded by this user
+    const { count: totalMaterials } = await supabase
+      .from('materials')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', user.id);
 
-      if (currentYear > resetYear || (currentYear === resetYear && currentMonth > resetMonth)) {
-        currentUsage = 0;
-      }
-    }
-
-    if (currentUsage >= FREE_MONTHLY_LIMIT) {
+    if ((totalMaterials || 0) >= FREE_MATERIALS_LIMIT) {
       return NextResponse.json(
-        { error: 'Monthly limit reached. Upgrade to Student plan for more uploads.' },
+        { error: 'Free limit reached. Upgrade to Student plan for unlimited uploads.', limitReached: true },
         { status: 403 }
       );
     }

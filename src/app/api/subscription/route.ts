@@ -2,10 +2,8 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
 // Plan limits
-const PLAN_LIMITS = {
-  free: 100, // TODO: Change back to 2 after testing
-  student: 15,
-};
+const FREE_MATERIALS_LIMIT = 3; // Lifetime limit for free users
+const FREE_LECTURES_LIMIT = 1; // Lifetime limit for free users
 
 // GET /api/subscription - Get current user's subscription status and usage
 export async function GET() {
@@ -36,28 +34,40 @@ export async function GET() {
     }
   }
 
-  // Get lectures created this month
-  const startOfMonth = new Date();
-  startOfMonth.setDate(1);
-  startOfMonth.setHours(0, 0, 0, 0);
+  // Get total materials ever uploaded (lifetime for free users)
+  const { count: totalMaterials } = await supabase
+    .from('materials')
+    .select('*', { count: 'exact', head: true })
+    .eq('user_id', user.id);
 
-  const { count: lecturesThisMonth } = await supabase
+  // Get total lectures ever uploaded (lifetime for free users)
+  const { count: totalLectures } = await supabase
     .from('lectures')
     .select('*', { count: 'exact', head: true })
-    .eq('user_id', user.id)
-    .gte('created_at', startOfMonth.toISOString());
+    .eq('user_id', user.id);
 
-  const lectureLimit = PLAN_LIMITS[activePlan as keyof typeof PLAN_LIMITS];
-  const lecturesUsed = lecturesThisMonth || 0;
-  const lecturesRemaining = Math.max(0, lectureLimit - lecturesUsed);
-  const canUpload = lecturesUsed < lectureLimit;
+  const materialsUsed = totalMaterials || 0;
+  const materialsLimit = activePlan === 'free' ? FREE_MATERIALS_LIMIT : 999;
+  const materialsRemaining = activePlan === 'free' ? Math.max(0, FREE_MATERIALS_LIMIT - materialsUsed) : 999;
+  const canUploadMaterial = activePlan === 'student' || materialsUsed < FREE_MATERIALS_LIMIT;
+
+  const lecturesUsed = totalLectures || 0;
+  const lecturesLimit = activePlan === 'free' ? FREE_LECTURES_LIMIT : 999;
+  const lecturesRemaining = activePlan === 'free' ? Math.max(0, FREE_LECTURES_LIMIT - lecturesUsed) : 999;
+  const canUploadLecture = activePlan === 'student' || lecturesUsed < FREE_LECTURES_LIMIT;
 
   return NextResponse.json({
     plan: activePlan,
-    lectureLimit,
+    // Material info (lifetime for free, unlimited for paid)
+    materialsLimit,
+    materialsUsed,
+    materialsRemaining,
+    canUploadMaterial,
+    // Lecture info (lifetime for free, unlimited for paid)
+    lecturesLimit,
     lecturesUsed,
     lecturesRemaining,
-    canUpload,
+    canUploadLecture,
     subscriptionEndDate: profile?.subscription_end_date || null,
   });
 }
