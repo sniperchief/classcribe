@@ -330,7 +330,7 @@ export async function generateDocumentSummary(documentText: string): Promise<str
     console.log('[Anthropic] Client created, calling API for document summary...');
 
     const message = await client.messages.create({
-      model: 'claude-3-5-sonnet-20241022',
+      model: 'claude-sonnet-4-20250514',
       max_tokens: 4000,
       messages: [
         {
@@ -446,7 +446,7 @@ export async function generateMCQs(
     const client = getClient();
 
     const message = await client.messages.create({
-      model: 'claude-3-5-sonnet-20241022',
+      model: 'claude-sonnet-4-20250514',
       max_tokens: 6000,
       messages: [
         {
@@ -490,7 +490,7 @@ export async function generateQuiz(
     const client = getClient();
 
     const message = await client.messages.create({
-      model: 'claude-3-5-sonnet-20241022',
+      model: 'claude-sonnet-4-20250514',
       max_tokens: 5000,
       messages: [
         {
@@ -534,7 +534,7 @@ export async function generateDocumentFlashcards(
     const client = getClient();
 
     const message = await client.messages.create({
-      model: 'claude-3-5-sonnet-20241022',
+      model: 'claude-sonnet-4-20250514',
       max_tokens: 4096,
       messages: [
         {
