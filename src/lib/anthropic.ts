@@ -447,7 +447,7 @@ export async function generateMCQs(
 
     const message = await client.messages.create({
       model: 'claude-3-haiku-20240307',
-      max_tokens: 6000,
+      max_tokens: 10000,
       messages: [
         {
           role: 'user',
@@ -491,7 +491,7 @@ export async function generateQuiz(
 
     const message = await client.messages.create({
       model: 'claude-3-haiku-20240307',
-      max_tokens: 4000,
+      max_tokens: 8000,
       messages: [
         {
           role: 'user',
@@ -535,7 +535,7 @@ export async function generateDocumentFlashcards(
 
     const message = await client.messages.create({
       model: 'claude-3-haiku-20240307',
-      max_tokens: 2048,
+      max_tokens: 4096,
       messages: [
         {
           role: 'user',
