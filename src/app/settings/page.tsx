@@ -54,9 +54,10 @@ export default function SettingsPage() {
     fetchUserData();
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     router.push('/login');
-    supabase.auth.signOut();
+    router.refresh();
   };
 
   const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {

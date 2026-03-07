@@ -28,10 +28,11 @@ export default function MobileMenu({ isPremium = false }: MobileMenuProps) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     setIsOpen(false);
+    await supabase.auth.signOut();
     router.push('/login');
-    supabase.auth.signOut();
+    router.refresh();
   };
 
   return (

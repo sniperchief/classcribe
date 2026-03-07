@@ -275,10 +275,10 @@ export default function DashboardPage() {
     }
   };
 
-  const handleLogout = () => {
-    // Navigate immediately for responsive UI, sign out in background
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     router.push('/login');
-    supabase.auth.signOut();
+    router.refresh();
   };
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
