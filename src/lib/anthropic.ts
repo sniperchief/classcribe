@@ -330,7 +330,7 @@ export async function generateDocumentSummary(documentText: string): Promise<str
     console.log('[Anthropic] Client created, calling API for document summary...');
 
     const message = await client.messages.create({
-      model: 'claude-3-haiku-20240307',
+      model: 'claude-3-5-sonnet-20241022',
       max_tokens: 4000,
       messages: [
         {
@@ -446,8 +446,8 @@ export async function generateMCQs(
     const client = getClient();
 
     const message = await client.messages.create({
-      model: 'claude-3-haiku-20240307',
-      max_tokens: 10000,
+      model: 'claude-3-5-sonnet-20241022',
+      max_tokens: 6000,
       messages: [
         {
           role: 'user',
@@ -490,8 +490,8 @@ export async function generateQuiz(
     const client = getClient();
 
     const message = await client.messages.create({
-      model: 'claude-3-haiku-20240307',
-      max_tokens: 8000,
+      model: 'claude-3-5-sonnet-20241022',
+      max_tokens: 5000,
       messages: [
         {
           role: 'user',
@@ -534,7 +534,7 @@ export async function generateDocumentFlashcards(
     const client = getClient();
 
     const message = await client.messages.create({
-      model: 'claude-3-haiku-20240307',
+      model: 'claude-3-5-sonnet-20241022',
       max_tokens: 4096,
       messages: [
         {
