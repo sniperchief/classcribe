@@ -119,7 +119,7 @@ export default function OutputSelectionModal({
   const quantityOptions = selectedType === 'flashcards' ? flashcardQuantities : questionQuantities;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center pt-4 sm:pt-0">
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
@@ -127,10 +127,10 @@ export default function OutputSelectionModal({
       />
 
       {/* Modal */}
-      <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-lg mx-4 overflow-hidden max-h-[90vh] overflow-y-auto">
+      <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-lg mx-4 overflow-hidden max-h-[85vh] sm:max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="px-6 py-5 border-b border-gray-100">
-          <h2 className="text-xl font-semibold text-[#0F172A]">
+        <div className="px-4 py-4 sm:px-6 sm:py-5 border-b border-gray-100">
+          <h2 className="text-lg sm:text-xl font-semibold text-[#0F172A]">
             What would you like to generate?
           </h2>
           {materialTitle && (
@@ -141,13 +141,13 @@ export default function OutputSelectionModal({
         </div>
 
         {/* Output Type Options */}
-        <div className="p-6 space-y-3">
+        <div className="p-4 sm:p-6 space-y-2 sm:space-y-3">
           {outputOptions.map((option) => (
             <button
               key={option.id}
               onClick={() => setSelectedType(option.id)}
               disabled={isProcessing}
-              className={`w-full p-4 rounded-xl border-2 text-left transition-all flex items-start gap-4
+              className={`w-full p-3 sm:p-4 rounded-xl border-2 text-left transition-all flex items-start gap-3 sm:gap-4
                 ${selectedType === option.id
                   ? 'border-emerald-500 bg-emerald-50'
                   : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
@@ -155,7 +155,7 @@ export default function OutputSelectionModal({
                 ${isProcessing ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
               `}
             >
-              <div className={`w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0
+              <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-lg flex items-center justify-center flex-shrink-0
                 ${selectedType === option.id ? 'bg-emerald-500 text-white' : 'bg-gray-100 text-gray-600'}
               `}>
                 {option.icon}
@@ -177,10 +177,10 @@ export default function OutputSelectionModal({
 
         {/* Difficulty & Quantity Options */}
         {showOptions && (
-          <div className="px-6 pb-6 space-y-5 border-t border-gray-100 pt-5">
+          <div className="px-4 pb-4 sm:px-6 sm:pb-6 space-y-4 sm:space-y-5 border-t border-gray-100 pt-4 sm:pt-5">
             {/* Difficulty Selection */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-3">
+              <label className="block text-sm font-medium text-gray-700 mb-2 sm:mb-3">
                 Difficulty Level
               </label>
               <div className="flex gap-2">
@@ -189,7 +189,7 @@ export default function OutputSelectionModal({
                     key={level}
                     onClick={() => setDifficulty(level)}
                     disabled={isProcessing}
-                    className={`flex-1 py-2.5 px-4 rounded-lg font-medium text-sm transition-all capitalize
+                    className={`flex-1 py-2 px-3 sm:py-2.5 sm:px-4 rounded-lg font-medium text-sm transition-all capitalize
                       ${difficulty === level
                         ? level === 'easy'
                           ? 'bg-green-500 text-white'
@@ -209,7 +209,7 @@ export default function OutputSelectionModal({
 
             {/* Quantity Selection */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-3">
+              <label className="block text-sm font-medium text-gray-700 mb-2 sm:mb-3">
                 Number of {selectedType === 'flashcards' ? 'Cards' : 'Questions'}
               </label>
               <div className="flex gap-2">
@@ -218,7 +218,7 @@ export default function OutputSelectionModal({
                     key={num}
                     onClick={() => setQuantity(num)}
                     disabled={isProcessing}
-                    className={`flex-1 py-2.5 px-4 rounded-lg font-medium text-sm transition-all
+                    className={`flex-1 py-2 px-3 sm:py-2.5 sm:px-4 rounded-lg font-medium text-sm transition-all
                       ${quantity === num
                         ? 'bg-emerald-500 text-white'
                         : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -230,7 +230,7 @@ export default function OutputSelectionModal({
                   </button>
                 ))}
               </div>
-              <p className="text-xs text-gray-400 mt-2">
+              <p className="text-xs text-gray-400 mt-1.5 sm:mt-2">
                 * If the document is short, fewer items may be generated
               </p>
             </div>
@@ -238,18 +238,18 @@ export default function OutputSelectionModal({
         )}
 
         {/* Footer */}
-        <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex items-center justify-end gap-3">
+        <div className="px-4 py-3 sm:px-6 sm:py-4 bg-gray-50 border-t border-gray-100 flex items-center justify-end gap-3">
           <button
             onClick={onClose}
             disabled={isProcessing}
-            className="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium transition-colors disabled:opacity-50"
+            className="px-3 py-2 sm:px-4 text-gray-600 hover:text-gray-800 font-medium transition-colors disabled:opacity-50 text-sm sm:text-base"
           >
             Cancel
           </button>
           <button
             onClick={handleGenerate}
             disabled={!selectedType || isProcessing}
-            className={`px-6 py-2 rounded-lg font-medium transition-all flex items-center gap-2
+            className={`px-4 py-2 sm:px-6 rounded-lg font-medium transition-all flex items-center gap-2 text-sm sm:text-base
               ${selectedType && !isProcessing
                 ? 'bg-emerald-500 text-white hover:bg-emerald-600'
                 : 'bg-gray-200 text-gray-400 cursor-not-allowed'
