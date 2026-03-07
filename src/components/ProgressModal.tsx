@@ -14,22 +14,41 @@ type ProgressModalProps = {
   uploadProgress?: number;
   onRetry?: () => void;
   onClose?: () => void;
+  type?: 'audio' | 'document';
 };
 
-const STEPS = [
+const AUDIO_STEPS = [
   { id: 'uploading', label: 'Uploading audio' },
   { id: 'transcribing', label: 'Processing lecture' },
-  { id: 'generating', label: 'Structuring note' },
-  { id: 'completed', label: 'Note ready' },
+  { id: 'generating', label: 'Structuring notes' },
+  { id: 'completed', label: 'Notes ready' },
 ];
 
-const STATUS_ORDER = ['uploading', 'transcribing', 'generating', 'completed'];
+const DOCUMENT_STEPS = [
+  { id: 'uploading', label: 'Uploading document' },
+  { id: 'processing', label: 'Extracting content' },
+  { id: 'generating', label: 'Generating output' },
+  { id: 'completed', label: 'Ready to view' },
+];
 
-export default function ProgressModal({ isOpen, currentStatus, uploadProgress = 0, onRetry, onClose }: ProgressModalProps) {
+const AUDIO_STATUS_ORDER = ['uploading', 'transcribing', 'generating', 'completed'];
+const DOCUMENT_STATUS_ORDER = ['uploading', 'processing', 'generating', 'completed'];
+
+export default function ProgressModal({
+  isOpen,
+  currentStatus,
+  uploadProgress = 0,
+  onRetry,
+  onClose,
+  type = 'audio'
+}: ProgressModalProps) {
   const [steps, setSteps] = useState<ProgressStep[]>([]);
   const isFailed = currentStatus === 'failed';
   const isCompleted = currentStatus === 'completed';
   const isUploading = currentStatus === 'uploading';
+
+  const STEPS = type === 'document' ? DOCUMENT_STEPS : AUDIO_STEPS;
+  const STATUS_ORDER = type === 'document' ? DOCUMENT_STATUS_ORDER : AUDIO_STATUS_ORDER;
 
   useEffect(() => {
     const currentIndex = STATUS_ORDER.indexOf(currentStatus);
@@ -54,9 +73,25 @@ export default function ProgressModal({ isOpen, currentStatus, uploadProgress = 
     });
 
     setSteps(updatedSteps);
-  }, [currentStatus, isFailed, isCompleted]);
+  }, [currentStatus, isFailed, isCompleted, STEPS, STATUS_ORDER]);
 
   if (!isOpen) return null;
+
+  const headlineText = type === 'document'
+    ? "We're processing your document"
+    : "We're turning your lecture into study ready notes";
+
+  const completedText = type === 'document'
+    ? "Your content is ready!"
+    : "Your notes are ready!";
+
+  const errorText = type === 'document'
+    ? "Something went wrong while processing your document"
+    : "Something went wrong while processing your lecture";
+
+  const buttonText = type === 'document'
+    ? "View Content"
+    : "View Notes";
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
@@ -74,7 +109,7 @@ export default function ProgressModal({ isOpen, currentStatus, uploadProgress = 
                 Something went wrong
               </h2>
               <p className="text-gray-500 mt-2">
-                Something went wrong while processing your lecture
+                {errorText}
               </p>
             </>
           ) : isCompleted ? (
@@ -85,18 +120,22 @@ export default function ProgressModal({ isOpen, currentStatus, uploadProgress = 
                 </svg>
               </div>
               <h2 className="text-xl sm:text-2xl font-bold text-[#0F172A]">
-                Your notes are ready!
+                {completedText}
               </h2>
             </>
           ) : (
             <>
-              <div className="w-16 h-16 bg-[#A855F7]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-[#A855F7] animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 ${
+                type === 'document' ? 'bg-emerald-100' : 'bg-[#A855F7]/10'
+              }`}>
+                <svg className={`w-8 h-8 animate-pulse ${
+                  type === 'document' ? 'text-emerald-500' : 'text-[#A855F7]'
+                }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
               </div>
               <h2 className="text-xl sm:text-2xl font-bold text-[#0F172A]">
-                We&apos;re turning your lecture into study ready notes
+                {headlineText}
               </h2>
             </>
           )}
@@ -115,7 +154,9 @@ export default function ProgressModal({ isOpen, currentStatus, uploadProgress = 
                     </svg>
                   </div>
                 ) : step.status === 'active' ? (
-                  <div className="w-8 h-8 bg-[#A855F7] rounded-full flex items-center justify-center">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                    type === 'document' ? 'bg-emerald-500' : 'bg-[#A855F7]'
+                  }`}>
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                   </div>
                 ) : step.status === 'failed' ? (
@@ -137,7 +178,7 @@ export default function ProgressModal({ isOpen, currentStatus, uploadProgress = 
                   step.status === 'completed'
                     ? 'text-green-600'
                     : step.status === 'active'
-                    ? 'text-[#A855F7]'
+                    ? type === 'document' ? 'text-emerald-500' : 'text-[#A855F7]'
                     : step.status === 'failed'
                     ? 'text-red-600'
                     : 'text-gray-400'
@@ -161,7 +202,11 @@ export default function ProgressModal({ isOpen, currentStatus, uploadProgress = 
           <div className="flex flex-col gap-3">
             <button
               onClick={onRetry}
-              className="w-full py-3 bg-[#A855F7] text-white rounded-lg font-medium hover:bg-[#9333EA] transition-colors"
+              className={`w-full py-3 text-white rounded-lg font-medium transition-colors ${
+                type === 'document'
+                  ? 'bg-emerald-500 hover:bg-emerald-600'
+                  : 'bg-[#A855F7] hover:bg-[#9333EA]'
+              }`}
             >
               Retry
             </button>
@@ -175,9 +220,13 @@ export default function ProgressModal({ isOpen, currentStatus, uploadProgress = 
         ) : isCompleted ? (
           <button
             onClick={onClose}
-            className="w-full py-3 bg-[#A855F7] text-white rounded-lg font-medium hover:bg-[#9333EA] transition-colors"
+            className={`w-full py-3 text-white rounded-lg font-medium transition-colors ${
+              type === 'document'
+                ? 'bg-emerald-500 hover:bg-emerald-600'
+                : 'bg-[#A855F7] hover:bg-[#9333EA]'
+            }`}
           >
-            View Notes
+            {buttonText}
           </button>
         ) : (
           <p className="text-center text-gray-500 text-sm">

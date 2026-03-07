@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { createClient } from '@/lib/supabase/client';
-import type { Lecture, Profile } from '@/lib/types';
+import type { Lecture, Profile, Material, OutputType } from '@/lib/types';
+import type { GenerationOptions, DifficultyLevel } from '@/components/OutputSelectionModal';
 import DashboardSkeleton from '@/components/DashboardSkeleton';
 import MobileMenu from '@/components/MobileMenu';
 
@@ -14,6 +15,9 @@ const ProgressModal = dynamic(() => import('@/components/ProgressModal'), {
   ssr: false,
 });
 const UpgradeModal = dynamic(() => import('@/components/UpgradeModal'), {
+  ssr: false,
+});
+const OutputSelectionModal = dynamic(() => import('@/components/OutputSelectionModal'), {
   ssr: false,
 });
 
@@ -27,8 +31,10 @@ type SubscriptionInfo = {
 
 export default function DashboardPage() {
   const [lectures, setLectures] = useState<Lecture[]>([]);
+  const [materials, setMaterials] = useState<Material[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [uploadingDocument, setUploadingDocument] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [error, setError] = useState('');
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -42,11 +48,18 @@ export default function DashboardPage() {
   });
   const [savingProfile, setSavingProfile] = useState(false);
   const [processingLectureId, setProcessingLectureId] = useState<string | null>(null);
+  const [processingMaterialId, setProcessingMaterialId] = useState<string | null>(null);
   const [processingStatus, setProcessingStatus] = useState<string>('');
   const [showProgressModal, setShowProgressModal] = useState(false);
   const [subscription, setSubscription] = useState<SubscriptionInfo | null>(null);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [showUpgradeSuccess, setShowUpgradeSuccess] = useState(false);
+  const [activeTab, setActiveTab] = useState<'recordings' | 'materials'>('recordings');
+  const [showOutputModal, setShowOutputModal] = useState(false);
+  const [pendingMaterial, setPendingMaterial] = useState<{ id: string; title: string } | null>(null);
+  const [progressType, setProgressType] = useState<'audio' | 'document'>('audio');
+  const [materialSearch, setMaterialSearch] = useState('');
+  const [materialFilter, setMaterialFilter] = useState<OutputType | 'all'>('all');
   const pollingRef = useRef<NodeJS.Timeout | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -143,6 +156,7 @@ export default function DashboardPage() {
         if (processingLecture) {
           setProcessingLectureId(processingLecture.id);
           setProcessingStatus(processingLecture.status);
+          setProgressType('audio');
           setShowProgressModal(true);
           startPolling(processingLecture.id);
         }
@@ -174,6 +188,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     fetchInitialData();
+    fetchMaterials(); // Also fetch materials on initial load
 
     // Cleanup polling on unmount
     return () => {
@@ -248,6 +263,18 @@ export default function DashboardPage() {
     }
   };
 
+  const fetchMaterials = async () => {
+    try {
+      const response = await fetch('/api/docs');
+      const data = await response.json();
+      if (data.materials) {
+        setMaterials(data.materials);
+      }
+    } catch (err) {
+      console.error('Failed to fetch materials:', err);
+    }
+  };
+
   const handleLogout = () => {
     // Navigate immediately for responsive UI, sign out in background
     router.push('/login');
@@ -258,12 +285,12 @@ export default function DashboardPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Check if user can upload
-    if (subscription && !subscription.canUpload) {
-      setShowUpgradeModal(true);
-      e.target.value = '';
-      return;
-    }
+    // Check if user can upload - TODO: Uncomment after testing
+    // if (subscription && !subscription.canUpload) {
+    //   setShowUpgradeModal(true);
+    //   e.target.value = '';
+    //   return;
+    // }
 
     // Validate file type
     const allowedTypes = [
@@ -292,6 +319,7 @@ export default function DashboardPage() {
     setUploadProgress(0);
     setError('');
     setProcessingStatus('uploading');
+    setProgressType('audio');
     setShowProgressModal(true);
 
     try {
@@ -401,6 +429,216 @@ export default function DashboardPage() {
     }
   };
 
+  const handleDocumentUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Check if user can upload - TODO: Uncomment after testing
+    // if (subscription && !subscription.canUpload) {
+    //   setShowUpgradeModal(true);
+    //   e.target.value = '';
+    //   return;
+    // }
+
+    // Validate file type - PDF, Word, PowerPoint
+    const allowedTypes = [
+      'application/pdf',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // .docx
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation', // .pptx
+    ];
+    const allowedExtensions = ['pdf', 'docx', 'pptx'];
+    const fileExtension = file.name.split('.').pop()?.toLowerCase();
+
+    if (!allowedTypes.includes(file.type) && !allowedExtensions.includes(fileExtension || '')) {
+      setError('Invalid file type. Supported: PDF, Word (.docx), PowerPoint (.pptx)');
+      e.target.value = '';
+      return;
+    }
+
+    // Validate file size (20MB max for documents)
+    const maxSize = 20 * 1024 * 1024;
+    if (file.size > maxSize) {
+      setError('File too large. Maximum size is 20MB.');
+      e.target.value = '';
+      return;
+    }
+
+    setUploadingDocument(true);
+    setUploadProgress(0);
+    setError('');
+
+    try {
+      // Get the current user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        throw new Error('Not authenticated');
+      }
+
+      // Generate unique filename
+      const timestamp = Date.now();
+      const extension = file.name.split('.').pop() || 'pdf';
+      const fileName = `${user.id}/${timestamp}.${extension}`;
+
+      // Upload to Supabase Storage (documents bucket)
+      const { data: signedUrlData, error: signedUrlError } = await supabase.storage
+        .from('documents')
+        .createSignedUploadUrl(fileName);
+
+      if (signedUrlError || !signedUrlData) {
+        // Fallback: direct upload
+        const { error: uploadError } = await supabase.storage
+          .from('documents')
+          .upload(fileName, file, {
+            contentType: file.type,
+            upsert: false,
+          });
+
+        if (uploadError) {
+          throw new Error(uploadError.message);
+        }
+        setUploadProgress(90);
+      } else {
+        // Upload using signed URL with progress
+        await new Promise<void>((resolve, reject) => {
+          const xhr = new XMLHttpRequest();
+
+          xhr.upload.addEventListener('progress', (event) => {
+            if (event.lengthComputable) {
+              const percent = Math.round((event.loaded / event.total) * 90);
+              setUploadProgress(percent);
+            }
+          });
+
+          xhr.addEventListener('load', () => {
+            if (xhr.status >= 200 && xhr.status < 300) {
+              resolve();
+            } else {
+              reject(new Error('Upload failed'));
+            }
+          });
+
+          xhr.addEventListener('error', () => {
+            reject(new Error('Network error during upload'));
+          });
+
+          xhr.open('PUT', signedUrlData.signedUrl);
+          xhr.setRequestHeader('Content-Type', file.type);
+          xhr.send(file);
+        });
+      }
+
+      // Get public URL
+      const { data: urlData } = supabase.storage.from('documents').getPublicUrl(fileName);
+
+      setUploadProgress(95);
+
+      // Create material record via API
+      const materialTitle = file.name.replace(/\.[^/.]+$/, '');
+      const detectedFileType = file.name.split('.').pop()?.toLowerCase() || 'pdf';
+      const response = await fetch('/api/docs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: materialTitle,
+          file_url: urlData.publicUrl,
+          file_type: detectedFileType,
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        await supabase.storage.from('documents').remove([fileName]);
+        throw new Error(data.error || 'Failed to create material');
+      }
+
+      const data = await response.json();
+      setUploadProgress(100);
+
+      // Refresh materials list
+      await fetchMaterials();
+      await fetchSubscription();
+
+      // Show output selection modal
+      setPendingMaterial({ id: data.material.id, title: data.material.title });
+      setShowOutputModal(true);
+    } catch (err) {
+      console.error('Document upload error:', err);
+      setError(err instanceof Error ? err.message : 'Upload failed');
+    } finally {
+      setUploadingDocument(false);
+      e.target.value = '';
+    }
+  };
+
+  const processMaterial = async (
+    materialId: string,
+    outputType: OutputType,
+    difficulty?: DifficultyLevel,
+    quantity?: number
+  ) => {
+    setProcessingMaterialId(materialId);
+    setProcessingStatus('processing');
+    setProgressType('document');
+    setShowProgressModal(true);
+
+    try {
+      const response = await fetch(`/api/docs/${materialId}/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ outputType, difficulty, quantity }),
+      });
+
+      if (!response.ok) {
+        const text = await response.text();
+        try {
+          const data = JSON.parse(text);
+          throw new Error(data.error || 'Processing failed');
+        } catch {
+          console.error('Server returned non-JSON response:', text.substring(0, 200));
+          throw new Error('Server error. Check terminal for details.');
+        }
+      }
+
+      // Successfully processed
+      setProcessingStatus('completed');
+      await fetchMaterials();
+
+      // Auto-close modal after delay and navigate to material
+      setTimeout(() => {
+        setShowProgressModal(false);
+        setProcessingMaterialId(null);
+        setProcessingStatus('');
+        // Switch to materials tab to show result
+        setActiveTab('materials');
+        // Navigate to the material
+        router.push(`/docs/${materialId}`);
+      }, 2000);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Processing failed');
+      setProcessingStatus('failed');
+    }
+  };
+
+  const handleOutputSelection = (options: GenerationOptions) => {
+    if (pendingMaterial) {
+      setShowOutputModal(false);
+      processMaterial(
+        pendingMaterial.id,
+        options.outputType,
+        options.difficulty,
+        options.quantity
+      );
+      setPendingMaterial(null);
+    }
+  };
+
+  const handleCancelOutputSelection = () => {
+    setShowOutputModal(false);
+    setPendingMaterial(null);
+    // Switch to materials tab to show the uploaded file
+    setActiveTab('materials');
+  };
+
   const processLecture = async (lectureId: string) => {
     // Start polling for status updates
     startPolling(lectureId);
@@ -467,6 +705,45 @@ export default function DashboardPage() {
         {status}
       </span>
     );
+  };
+
+  const getOutputTypeBadge = (outputType: OutputType | null) => {
+    if (!outputType) return null;
+
+    const styles: Record<string, { bg: string; label: string }> = {
+      summary: { bg: 'bg-blue-100 text-blue-800', label: 'Summary' },
+      flashcards: { bg: 'bg-purple-100 text-purple-800', label: 'Flashcards' },
+      mcqs: { bg: 'bg-orange-100 text-orange-800', label: 'MCQs' },
+      quiz: { bg: 'bg-emerald-100 text-emerald-800', label: 'Quiz' },
+    };
+
+    const style = styles[outputType];
+    if (!style) return null;
+
+    return (
+      <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${style.bg}`}>
+        {style.label}
+      </span>
+    );
+  };
+
+  // Filter materials based on search query and output type filter
+  const filteredMaterials = materials.filter((material) => {
+    // Search filter - match title
+    const matchesSearch = materialSearch === '' ||
+      material.title.toLowerCase().includes(materialSearch.toLowerCase());
+
+    // Output type filter
+    const matchesFilter = materialFilter === 'all' ||
+      material.output_type === materialFilter;
+
+    return matchesSearch && matchesFilter;
+  });
+
+  // Get count of materials by output type
+  const getFilterCount = (filter: OutputType | 'all') => {
+    if (filter === 'all') return materials.length;
+    return materials.filter(m => m.output_type === filter).length;
   };
 
   // Show skeleton while loading initial data
@@ -641,134 +918,410 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* Greeting */}
-        <h2 className="text-2xl sm:text-3xl font-bold text-[#0F172A] mb-6">
-          Hi {profile?.full_name ? profile.full_name.split(' ')[0] : 'there'}!
-        </h2>
-
-        {/* Upload Section */}
-        {subscription?.plan === 'free' && !subscription?.canUpload ? (
-          /* Free Trial Exhausted */
-          <div className="bg-white rounded-xl border-2 border-dashed border-yellow-300 p-6 sm:p-8 mb-6 text-center">
-            <div className="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center mx-auto mb-4">
-              <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-              </svg>
-            </div>
-            <h3 className="text-lg font-semibold text-[#0F172A] mb-2">
-              You have exhausted your free trial
-            </h3>
-            <p className="text-gray-500 text-sm mb-6 max-w-md mx-auto">
-              You&apos;ve used all {subscription.lectureLimit} free lectures this month. Upgrade to continue generating notes from your lectures.
-            </p>
-            <Link
-              href="/pricing"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg font-medium text-white bg-[#A855F7] hover:bg-[#9333EA] transition-colors"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
-              </svg>
-              Upgrade Now
-            </Link>
-          </div>
-        ) : (
-          /* Normal Upload Box */
-          <div className="bg-white rounded-xl border-2 border-dashed border-[#E5E7EB] p-6 sm:p-8 mb-6 text-center hover:border-[#A855F7] transition-colors">
-          <div className="w-12 h-12 bg-[#A855F7]/10 rounded-xl flex items-center justify-center mx-auto mb-4">
-            <svg className="w-6 h-6 text-[#A855F7]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-            </svg>
-          </div>
-          <h3 className="text-lg font-semibold text-[#0F172A] mb-1">
-            Upload Lecture Recording
-          </h3>
-          <p className="text-gray-500 text-sm mb-4">
-            MP3, WAV, M4A, or MP4 (max 50MB)
-          </p>
-
-          {error && (
-            <div className="p-3 bg-red-50 text-red-600 rounded-lg text-sm mb-4 max-w-md mx-auto">
-              {error}
-            </div>
-          )}
-
-          <label
-            className={`inline-flex items-center gap-2 px-6 py-3 rounded-lg font-medium text-white transition-colors cursor-pointer
-              ${uploading ? 'bg-violet-300 cursor-not-allowed' : 'bg-[#A855F7] hover:bg-[#9333EA]'}`}
-          >
-            {uploading ? (
-              <>
-                <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Uploading...
-              </>
-            ) : (
-              <>
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-                Choose File
-              </>
-            )}
-            <input
-              type="file"
-              accept=".mp3,.wav,.m4a,.mp4,audio/mpeg,audio/wav,audio/x-m4a,video/mp4"
-              onChange={handleUpload}
-              disabled={uploading}
-              className="hidden"
-            />
-          </label>
+        {/* Greeting & Tagline */}
+        <div className="mb-8">
+          <h2 className="text-2xl sm:text-3xl font-bold text-[#0F172A] mb-2">
+            Hi {profile?.full_name ? profile.full_name.split(' ')[0] : 'there'}!
+          </h2>
+          <p className="text-gray-500">Your AI-powered exam prep engine.</p>
         </div>
+
+        {/* Free Trial Exhausted Banner */}
+        {false && subscription?.plan === 'free' && !subscription?.canUpload && ( // TODO: Remove 'false &&' after testing
+          <div className="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl border border-yellow-200 p-6 mb-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+              <div className="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold text-[#0F172A] mb-1">
+                  You&apos;ve used all {subscription?.lectureLimit ?? 2} free lectures
+                </h3>
+                <p className="text-gray-600 text-sm">
+                  Upgrade to continue generating study materials from your lectures.
+                </p>
+              </div>
+              <Link
+                href="/pricing"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg font-medium text-white bg-[#A855F7] hover:bg-[#9333EA] transition-colors whitespace-nowrap"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                </svg>
+                Upgrade Now
+              </Link>
+            </div>
+          </div>
         )}
 
-        {/* Lectures List */}
-        <div className="bg-white rounded-xl border border-[#E5E7EB] overflow-hidden">
-          <div className="px-4 sm:px-6 py-4 border-b border-[#E5E7EB]">
-            <h3 className="text-lg font-semibold text-[#0F172A]">Your Lectures</h3>
+        {/* Error Message */}
+        {error && (
+          <div className="p-4 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm mb-6">
+            {error}
+          </div>
+        )}
+
+        {/* Two Entry Points */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          {/* Upload Material Card */}
+          <div className="bg-white rounded-2xl border border-[#E5E7EB] p-6 hover:shadow-lg hover:border-emerald-300 transition-all">
+            <div className="flex items-start gap-4 mb-4">
+              <div className="w-14 h-14 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-[#0F172A] mb-1">Upload Material</h3>
+                <p className="text-gray-500 text-sm">Upload documents and images to generate study resources</p>
+              </div>
+            </div>
+
+            <div className="space-y-3 mb-5">
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <svg className="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                <span>PDF, Word, PowerPoint</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <svg className="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                <span>AI-powered text extraction</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <svg className="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                <span>Summaries, flashcards, MCQs & quizzes</span>
+              </div>
+            </div>
+
+            <label
+              className={`flex items-center justify-center gap-2 w-full py-3 rounded-xl font-medium transition-all cursor-pointer
+                ${uploadingDocument // TODO: Add back || (subscription?.plan === 'free' && !subscription?.canUpload)
+                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                  : 'bg-emerald-500 text-white hover:bg-emerald-600'}`}
+            >
+              {uploadingDocument ? (
+                <>
+                  <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Uploading...
+                </>
+              ) : (
+                <>
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                  </svg>
+                  Upload Document
+                </>
+              )}
+              <input
+                type="file"
+                accept=".pdf,.docx,.pptx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.presentationml.presentation"
+                onChange={handleDocumentUpload}
+                disabled={uploadingDocument} // TODO: Add back (subscription?.plan === 'free' && !subscription?.canUpload) after testing
+                className="hidden"
+              />
+            </label>
           </div>
 
-          {lectures.length === 0 ? (
-            <div className="p-8 sm:p-12 text-center">
-              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          {/* Record Lecture Card */}
+          <div className="bg-white rounded-2xl border border-[#E5E7EB] p-6 hover:shadow-lg hover:border-[#A855F7]/30 transition-all">
+            <div className="flex items-start gap-4 mb-4">
+              <div className="w-14 h-14 bg-gradient-to-br from-[#A855F7] to-[#9333EA] rounded-xl flex items-center justify-center flex-shrink-0">
+                <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
                 </svg>
               </div>
-              <p className="text-gray-500 mb-1">No lectures yet</p>
-              <p className="text-sm text-gray-400">Upload your first recording to get started!</p>
+              <div>
+                <h3 className="text-lg font-semibold text-[#0F172A] mb-1">Record Lecture</h3>
+                <p className="text-gray-500 text-sm">Upload audio recordings and convert them to study materials</p>
+              </div>
             </div>
-          ) : (
-            <div className="divide-y divide-[#E5E7EB]">
-              {lectures.map((lecture) => (
-                <div
-                  key={lecture.id}
-                  onClick={() => lecture.status === 'completed' && router.push(`/lectures/${lecture.id}`)}
-                  className={`px-4 sm:px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3
-                    ${lecture.status === 'completed' ? 'cursor-pointer hover:bg-gray-50' : ''} transition-colors`}
-                >
-                  <div className="min-w-0">
-                    <h4 className="font-medium text-[#0F172A] truncate">{lecture.title}</h4>
-                    <p className="text-sm text-gray-500">
-                      {new Date(lecture.created_at).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric',
-                      })}
-                    </p>
+
+            <div className="space-y-3 mb-5">
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <svg className="w-4 h-4 text-[#A855F7]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                <span>MP3, WAV, M4A, MP4 supported</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <svg className="w-4 h-4 text-[#A855F7]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                <span>AI transcription & note generation</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <svg className="w-4 h-4 text-[#A855F7]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                <span>Up to 50MB per file</span>
+              </div>
+            </div>
+
+            <label
+              className={`flex items-center justify-center gap-2 w-full py-3 rounded-xl font-medium transition-all cursor-pointer
+                ${uploading // TODO: Add back || (subscription?.plan === 'free' && !subscription?.canUpload)
+                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                  : 'bg-[#A855F7] text-white hover:bg-[#9333EA]'}`}
+            >
+              {uploading ? (
+                <>
+                  <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Uploading...
+                </>
+              ) : (
+                <>
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                  </svg>
+                  Upload Audio
+                </>
+              )}
+              <input
+                type="file"
+                accept=".mp3,.wav,.m4a,.mp4,audio/mpeg,audio/wav,audio/x-m4a,video/mp4"
+                onChange={handleUpload}
+                disabled={uploading} // TODO: Add back (subscription?.plan === 'free' && !subscription?.canUpload) after testing
+                className="hidden"
+              />
+            </label>
+          </div>
+        </div>
+
+        {/* Your Study Materials */}
+        <div className="bg-white rounded-xl border border-[#E5E7EB] overflow-hidden">
+          {/* Header with Tabs */}
+          <div className="px-4 sm:px-6 py-4 border-b border-[#E5E7EB]">
+            <h3 className="text-lg font-semibold text-[#0F172A] mb-4">Your Study Materials</h3>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setActiveTab('recordings')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors
+                  ${activeTab === 'recordings'
+                    ? 'bg-[#A855F7] text-white'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+              >
+                Recordings
+              </button>
+              <button
+                onClick={() => setActiveTab('materials')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors
+                  ${activeTab === 'materials'
+                    ? 'bg-emerald-500 text-white'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+              >
+                Materials
+              </button>
+            </div>
+          </div>
+
+          {/* Tab Content */}
+          {activeTab === 'recordings' ? (
+            /* Recordings Tab */
+            lectures.length === 0 ? (
+              <div className="p-8 sm:p-12 text-center">
+                <div className="w-16 h-16 bg-[#A855F7]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-[#A855F7]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                  </svg>
+                </div>
+                <p className="text-gray-500 mb-1">No recordings yet</p>
+                <p className="text-sm text-gray-400">Upload your first audio file to get started!</p>
+              </div>
+            ) : (
+              <div className="divide-y divide-[#E5E7EB]">
+                {lectures.map((lecture) => (
+                  <div
+                    key={lecture.id}
+                    onClick={() => lecture.status === 'completed' && router.push(`/lectures/${lecture.id}`)}
+                    className={`px-4 sm:px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3
+                      ${lecture.status === 'completed' ? 'cursor-pointer hover:bg-gray-50' : ''} transition-colors`}
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-10 h-10 bg-[#A855F7]/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <svg className="w-5 h-5 text-[#A855F7]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                        </svg>
+                      </div>
+                      <div className="min-w-0">
+                        <h4 className="font-medium text-[#0F172A] truncate">{lecture.title}</h4>
+                        <p className="text-sm text-gray-500">
+                          {new Date(lecture.created_at).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric',
+                          })}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      {getStatusBadge(lecture.status)}
+                      {lecture.status === 'completed' && (
+                        <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      )}
+                    </div>
                   </div>
-                  <div className="flex items-center gap-3">
-                    {getStatusBadge(lecture.status)}
-                    {lecture.status === 'completed' && (
-                      <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
+                ))}
+              </div>
+            )
+          ) : (
+            /* Materials Tab */
+            <>
+              {/* Search and Filter Section */}
+              {materials.length > 0 && (
+                <div className="px-4 sm:px-6 py-4 border-b border-[#E5E7EB] space-y-4">
+                  {/* Search Bar */}
+                  <div className="relative">
+                    <svg
+                      className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    <input
+                      type="text"
+                      placeholder="Search materials..."
+                      value={materialSearch}
+                      onChange={(e) => setMaterialSearch(e.target.value)}
+                      className="w-full pl-10 pr-4 py-2.5 border border-[#E5E7EB] rounded-lg text-sm
+                               focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent
+                               placeholder:text-gray-400"
+                    />
+                    {materialSearch && (
+                      <button
+                        onClick={() => setMaterialSearch('')}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
                     )}
                   </div>
+
+                  {/* Filter Chips */}
+                  <div className="flex flex-wrap gap-2">
+                    {([
+                      { id: 'all' as const, label: 'All' },
+                      { id: 'summary' as const, label: 'Summary' },
+                      { id: 'flashcards' as const, label: 'Flashcards' },
+                      { id: 'mcqs' as const, label: 'MCQs' },
+                      { id: 'quiz' as const, label: 'Quiz' },
+                    ]).map((filter) => {
+                      const count = getFilterCount(filter.id);
+                      const isActive = materialFilter === filter.id;
+
+                      return (
+                        <button
+                          key={filter.id}
+                          onClick={() => setMaterialFilter(filter.id)}
+                          className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors flex items-center gap-1.5
+                            ${isActive
+                              ? 'bg-emerald-500 text-white'
+                              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                            }`}
+                        >
+                          {filter.label}
+                          <span className={`text-xs ${isActive ? 'text-emerald-100' : 'text-gray-400'}`}>
+                            {count}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-              ))}
-            </div>
+              )}
+
+              {/* Materials List */}
+              {materials.length === 0 ? (
+                <div className="p-8 sm:p-12 text-center">
+                  <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-8 h-8 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                  </div>
+                  <p className="text-gray-500 mb-1">No materials yet</p>
+                  <p className="text-sm text-gray-400">Upload your first PDF to get started!</p>
+                </div>
+              ) : filteredMaterials.length === 0 ? (
+                <div className="p-8 sm:p-12 text-center">
+                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                  </div>
+                  <p className="text-gray-500 mb-1">No materials found</p>
+                  <p className="text-sm text-gray-400">
+                    Try a different search term or filter
+                  </p>
+                  <button
+                    onClick={() => {
+                      setMaterialSearch('');
+                      setMaterialFilter('all');
+                    }}
+                    className="mt-4 text-sm text-emerald-600 hover:text-emerald-700 font-medium"
+                  >
+                    Clear filters
+                  </button>
+                </div>
+              ) : (
+                <div className="divide-y divide-[#E5E7EB]">
+                  {filteredMaterials.map((material) => (
+                  <div
+                    key={material.id}
+                    onClick={() => material.status === 'completed' && router.push(`/docs/${material.id}`)}
+                    className={`px-4 sm:px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3
+                      ${material.status === 'completed' ? 'cursor-pointer hover:bg-gray-50' : ''} transition-colors`}
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <svg className="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                      </div>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-medium text-[#0F172A] truncate">{material.title}</h4>
+                          {material.status === 'completed' && getOutputTypeBadge(material.output_type)}
+                        </div>
+                        <p className="text-sm text-gray-500">
+                          {new Date(material.created_at).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric',
+                          })}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      {getStatusBadge(material.status)}
+                      {material.status === 'completed' && (
+                        <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      )}
+                    </div>
+                  </div>
+                  ))}
+                </div>
+              )}
+            </>
           )}
         </div>
 
@@ -785,9 +1338,9 @@ export default function DashboardPage() {
                 <div className="w-12 h-12 bg-[#A855F7]/10 rounded-full flex items-center justify-center mb-4">
                   <span className="text-[#A855F7] font-bold text-lg">1</span>
                 </div>
-                <h4 className="font-semibold text-[#0F172A] mb-2">Upload Recording</h4>
+                <h4 className="font-semibold text-[#0F172A] mb-2">Upload Content</h4>
                 <p className="text-sm text-gray-500">
-                  Upload your lecture audio file (MP3, WAV, M4A, or MP4 up to 50MB)
+                  Upload lecture recordings, PDFs, slides, or images from your course
                 </p>
               </div>
 
@@ -798,7 +1351,7 @@ export default function DashboardPage() {
                 </div>
                 <h4 className="font-semibold text-[#0F172A] mb-2">AI Processing</h4>
                 <p className="text-sm text-gray-500">
-                  Our AI transcribes your audio and generates structured, detailed notes
+                  Our AI analyzes your content and generates notes, flashcards & quizzes
                 </p>
               </div>
 
@@ -807,9 +1360,9 @@ export default function DashboardPage() {
                 <div className="w-12 h-12 bg-[#A855F7]/10 rounded-full flex items-center justify-center mb-4">
                   <span className="text-[#A855F7] font-bold text-lg">3</span>
                 </div>
-                <h4 className="font-semibold text-[#0F172A] mb-2">Review & Study</h4>
+                <h4 className="font-semibold text-[#0F172A] mb-2">Ace Your Exams</h4>
                 <p className="text-sm text-gray-500">
-                  Access your notes anytime, review key concepts, and ace your exams
+                  Study with AI-generated materials and test yourself with practice quizzes
                 </p>
               </div>
             </div>
@@ -824,6 +1377,7 @@ export default function DashboardPage() {
         uploadProgress={uploadProgress}
         onRetry={handleRetry}
         onClose={handleCloseProgressModal}
+        type={progressType}
       />
 
       {/* Upgrade Modal */}
@@ -832,6 +1386,15 @@ export default function DashboardPage() {
         onClose={() => setShowUpgradeModal(false)}
         lecturesUsed={subscription?.lecturesUsed || 0}
         lectureLimit={subscription?.lectureLimit || 2}
+      />
+
+      {/* Output Selection Modal */}
+      <OutputSelectionModal
+        isOpen={showOutputModal}
+        onClose={handleCancelOutputSelection}
+        onSelect={handleOutputSelection}
+        isProcessing={!!processingMaterialId}
+        materialTitle={pendingMaterial?.title}
       />
     </main>
   );

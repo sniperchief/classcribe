@@ -51,10 +51,10 @@ export default function Testimonials() {
           {/* Section Header */}
           <div className="text-center mb-12 sm:mb-16">
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#3D4A38] mb-3 sm:mb-4 px-2">
-              What Our Users Say
+              Students Are Scoring Higher
             </h2>
             <p className="text-base sm:text-lg text-[#5A6654] max-w-2xl mx-auto px-2">
-              Join thousands of students who are studying smarter, not harder.
+              See how Classcribe is helping students study smarter and ace their exams.
             </p>
           </div>
         </div>

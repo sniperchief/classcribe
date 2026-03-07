@@ -4,7 +4,6 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
-import { trackEvent, identifyUser } from '@/lib/posthog';
 
 export default function VerifyEmailPage() {
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
@@ -102,14 +101,58 @@ export default function VerifyEmailPage() {
       const data = await response.json();
 
       if (response.ok) {
-        // Track email verification and identify user
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-          identifyUser(user.id, { email: user.email, email_verified: true });
-          trackEvent('email_verified', { email: user.email });
+        setSuccess(true);
+
+        // Check for guest tokens to claim
+        const guestLectureToken = sessionStorage.getItem('guest_lecture_token');
+        const guestMaterialToken = sessionStorage.getItem('guest_material_token');
+
+        // Try to claim guest lecture
+        if (guestLectureToken) {
+          try {
+            const claimResponse = await fetch('/api/guest/claim', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ token: guestLectureToken }),
+            });
+
+            if (claimResponse.ok) {
+              const { lectureId } = await claimResponse.json();
+              sessionStorage.removeItem('guest_lecture_token');
+              setTimeout(() => {
+                window.location.href = `/lectures/${lectureId}`;
+              }, 1500);
+              return;
+            }
+          } catch {
+            // If claim fails, continue to onboarding
+          }
+          sessionStorage.removeItem('guest_lecture_token');
         }
 
-        setSuccess(true);
+        // Try to claim guest material
+        if (guestMaterialToken) {
+          try {
+            const claimResponse = await fetch('/api/guest/claim-material', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ token: guestMaterialToken }),
+            });
+
+            if (claimResponse.ok) {
+              const { materialId } = await claimResponse.json();
+              sessionStorage.removeItem('guest_material_token');
+              setTimeout(() => {
+                window.location.href = `/docs/${materialId}`;
+              }, 1500);
+              return;
+            }
+          } catch {
+            // If claim fails, continue to onboarding
+          }
+          sessionStorage.removeItem('guest_material_token');
+        }
+
         setTimeout(() => {
           window.location.href = '/onboarding';
         }, 1500);

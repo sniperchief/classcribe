@@ -3,10 +3,10 @@ export default function Stats() {
     <section className="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 bg-white">
       <div className="max-w-4xl mx-auto">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 text-center">
-          <Stat value="2,000+" label="Active Students" />
-          <Stat value="15,000+" label="Lectures Processed" />
+          <Stat value="2,000+" label="Students Studying Smarter" />
+          <Stat value="15,000+" label="Study Sessions Created" />
           <Stat value="50+" label="Universities" />
-          <Stat value="4.8/5" label="Average Rating" />
+          <Stat value="4.8/5" label="Student Rating" />
         </div>
       </div>
     </section>

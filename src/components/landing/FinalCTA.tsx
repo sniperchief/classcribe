@@ -15,11 +15,11 @@ export default function FinalCTA() {
           {/* Content */}
           <div className="relative z-10 max-w-2xl mx-auto">
             <h2 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-white mb-4 sm:mb-6 px-2">
-              Ready to Transform Your Study Sessions?
+              Ready to Start Scoring A&apos;s?
             </h2>
             <p className="text-base sm:text-lg lg:text-xl text-violet-100 mb-8 sm:mb-10 leading-relaxed px-2">
-              Stop struggling with note-taking. Start understanding your lectures.
-              Join thousands of students who study smarter with Classcribe.
+              Stop cramming and stressing. Start studying smarter.
+              Join thousands of students who are acing their exams with Classcribe.
             </p>
 
             {/* CTA Buttons */}
@@ -30,7 +30,7 @@ export default function FinalCTA() {
                          hover:bg-violet-50 transition-colors duration-200 text-center"
                 style={{ color: '#A855F7' }}
               >
-                Get Started Free
+                Start Acing Your Exams
               </Link>
               <Link
                 href="/login"

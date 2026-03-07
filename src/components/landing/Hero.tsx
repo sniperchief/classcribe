@@ -108,12 +108,9 @@ export default function Hero() {
 
       <div className="max-w-7xl mx-auto text-left relative z-10 px-4 sm:px-6 lg:px-8">
         {/* Headline */}
-        <h1 className="font-[family-name:var(--font-montserrat)] text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-[#0F172A] leading-normal max-w-4xl mb-4 sm:mb-6">
-          Listen in class.
-          <br />
-          Make note later.
-          <br />
-          <span className="text-[#A855F7]">Score{' '}
+        <h1 className="font-[family-name:var(--font-montserrat)] text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-[#0F172A] leading-tight max-w-4xl mb-4 sm:mb-6">
+          Score{' '}
+          <span className="text-[#A855F7]">
             <span className="relative inline-block">
               A<sup className="text-[0.6em]">+</sup>
               {/* Hand-drawn rough red circle */}
@@ -137,11 +134,34 @@ export default function Hero() {
               </svg>
             </span>
           </span>
+          {' '}Without
+          <br />
+          the All-Nighters
         </h1>
 
         {/* Subtext */}
         <p className="text-base sm:text-lg lg:text-xl text-gray-600 max-w-2xl mb-8 sm:mb-10 leading-relaxed">
-          Convert lecture recordings into exam note and smart flashcard and smash your papers.
+          Upload any lecture, pdf, doc, ppt, or notes.{' '}
+          <span className="relative inline-block">
+            <span>Get flashcards, quizzes, MCQs and summaries instantly.</span>
+            {/* Hand-drawn underline */}
+            <svg
+              className="absolute left-0 w-full overflow-visible"
+              style={{ bottom: '-4px', height: '8px' }}
+              viewBox="0 0 300 8"
+              fill="none"
+              preserveAspectRatio="none"
+            >
+              <path
+                d="M1 5 Q 25 2, 50 5 T 100 4 T 150 5 T 200 4 T 250 5 T 299 4"
+                stroke="#A855F7"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                fill="none"
+              />
+            </svg>
+          </span>
+          {' '}Study smarter, not harder.
         </p>
 
         {/* Upload Section */}

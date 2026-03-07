@@ -4,7 +4,6 @@ import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
-import { trackEvent } from '@/lib/posthog';
 
 function SignupForm() {
   const [fullName, setFullName] = useState('');
@@ -17,9 +16,11 @@ function SignupForm() {
   const searchParams = useSearchParams();
   const supabase = createClient();
 
-  // Check for guest token and redirect param
+  // Check for guest token (audio) and material token (documents), plus redirect param
   const guestToken = searchParams.get('token');
+  const materialToken = searchParams.get('material_token');
   const redirectTo = searchParams.get('redirect');
+  const hasGuestContent = guestToken || materialToken;
 
   // Prefetch onboarding and dashboard pages
   useEffect(() => {
@@ -28,7 +29,15 @@ function SignupForm() {
     if (redirectTo) {
       router.prefetch(`/${redirectTo}`);
     }
-  }, [router, redirectTo]);
+
+    // Store guest tokens in sessionStorage for claiming after verification
+    if (guestToken) {
+      sessionStorage.setItem('guest_lecture_token', guestToken);
+    }
+    if (materialToken) {
+      sessionStorage.setItem('guest_material_token', materialToken);
+    }
+  }, [router, redirectTo, guestToken, materialToken]);
 
   // Check if form is complete
   const isFormComplete = fullName.trim() !== '' && email.trim() !== '' && password.trim() !== '' && confirmPassword.trim() !== '';
@@ -79,9 +88,6 @@ function SignupForm() {
           return;
         }
 
-        // Track signup event
-        trackEvent('user_signed_up', { email });
-
         // Redirect to verify email page
         window.location.href = '/verify-email';
       }
@@ -118,27 +124,29 @@ function SignupForm() {
 
       {/* Heading */}
       <h1 className="text-2xl sm:text-3xl font-bold text-[#0F172A] text-center mb-2">
-        {guestToken ? 'Your notes are ready!' : 'Get started!'}
+        {hasGuestContent ? 'Your study materials are ready!' : 'Get started!'}
       </h1>
 
       {/* Subtext */}
       <p className="text-gray-600 text-center mb-8 text-sm sm:text-base px-4">
-        {guestToken
-          ? 'Create an account to view your generated notes'
-          : 'Join over 10,000+ students globally and start transforming recorded lectures into notes'
+        {hasGuestContent
+          ? 'Create an account to view your generated content'
+          : 'Join over 10,000+ students globally and start transforming your lectures and documents into study materials'
         }
       </p>
 
-      {/* Guest Token Notice */}
-      {guestToken && (
+      {/* Guest Content Notice */}
+      {hasGuestContent && (
         <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
           <div className="flex items-center gap-2 text-green-700">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <span className="text-sm font-medium">Your lecture has been processed!</span>
+            <span className="text-sm font-medium">
+              {guestToken ? 'Your lecture has been processed!' : 'Your document has been processed!'}
+            </span>
           </div>
-          <p className="text-xs text-green-600 mt-1">Sign up to access your notes.</p>
+          <p className="text-xs text-green-600 mt-1">Sign up to access your study materials.</p>
         </div>
       )}
 

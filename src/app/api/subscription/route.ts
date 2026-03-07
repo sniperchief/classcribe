@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 
 // Plan limits
 const PLAN_LIMITS = {
-  free: 2,
+  free: 100, // TODO: Change back to 2 after testing
   student: 15,
 };
 

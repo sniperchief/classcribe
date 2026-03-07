@@ -16,11 +16,11 @@ export const dynamic = 'force-static';
 export const revalidate = 3600; // Revalidate every hour
 
 export const metadata: Metadata = {
-  title: 'Classcribe - Transform Lectures into Study-Ready Notes',
-  description: 'Upload your lecture recordings and get AI-powered, structured notes in minutes. Perfect for students who want to ace their exams.',
+  title: 'Classcribe - Score A\'s Without the All-Nighters',
+  description: 'Turn any lecture, PDF, or notes into exam-ready flashcards, quizzes, and summaries instantly. The smart way to study and ace your exams.',
   openGraph: {
-    title: 'Classcribe - Transform Lectures into Study-Ready Notes',
-    description: 'Upload your lecture recordings and get AI-powered, structured notes in minutes.',
+    title: 'Classcribe - Score A\'s Without the All-Nighters',
+    description: 'Turn any lecture, PDF, or notes into exam-ready flashcards, quizzes, and summaries instantly. Study smarter, not harder.',
     type: 'website',
   },
 };
