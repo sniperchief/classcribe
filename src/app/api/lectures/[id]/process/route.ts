@@ -4,6 +4,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { transcribeAudio } from '@/lib/deepgram';
 import { generateNotes } from '@/lib/anthropic';
 import { enhanceAudio } from '@/lib/audio-enhance';
+import { rateLimit } from '@/lib/ratelimit';
 
 // Retry helper for external API calls
 async function withRetry<T>(
@@ -63,6 +64,10 @@ export async function POST(
   if (authError || !user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
+
+  // Rate limit check (7 requests per minute for generation)
+  const rateLimitResult = await rateLimit(user.id, 'generation');
+  if (!rateLimitResult.success) return rateLimitResult.response!;
 
   // Get the lecture
   console.log(`[Process] Starting processing for lecture ${id}`);

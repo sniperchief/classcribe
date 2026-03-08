@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { rateLimit } from '@/lib/ratelimit';
 
 // POST /api/payments/initialize - Initialize a Paystack payment
 export async function POST(request: NextRequest) {
@@ -13,6 +14,10 @@ export async function POST(request: NextRequest) {
   if (authError || !user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
+
+  // Rate limit check (7 requests per minute)
+  const rateLimitResult = await rateLimit(user.id, 'standard');
+  if (!rateLimitResult.success) return rateLimitResult.response!;
 
   const body = await request.json();
   const { plan, billingCycle } = body;

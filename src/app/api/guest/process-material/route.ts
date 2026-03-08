@@ -8,9 +8,14 @@ import {
 } from '@/lib/anthropic';
 import type { OutputType, MCQ, TrueFalseQuestion, DifficultyLevel } from '@/lib/types';
 import { randomUUID } from 'crypto';
+import { rateLimit } from '@/lib/ratelimit';
 
 // POST /api/guest/process-material - Process a document for guest users
 export async function POST(request: NextRequest) {
+  // Rate limit check (3 requests per hour for guest endpoints)
+  const rateLimitResult = await rateLimit(undefined, 'guest');
+  if (!rateLimitResult.success) return rateLimitResult.response!;
+
   let adminClient;
 
   try {

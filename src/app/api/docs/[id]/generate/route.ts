@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { rateLimit } from '@/lib/ratelimit';
 // Dynamic imports for document extractors (to avoid loading browser-only libs on server)
 import {
   generateDocumentSummary,
@@ -100,6 +101,10 @@ export async function POST(
   if (authError || !user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
+
+  // Rate limit check (7 requests per minute for generation)
+  const rateLimitResult = await rateLimit(user.id, 'generation');
+  if (!rateLimitResult.success) return rateLimitResult.response!;
 
   // Get the material
   console.log(`[Process] Starting processing for material ${id}`);
