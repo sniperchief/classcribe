@@ -236,8 +236,6 @@ export async function POST(
       .update({
         content: extractedText,
         output_type: outputType,
-        total_pages: totalPages,
-        selected_pages: selectedPages,
         status: 'generating',
         updated_at: new Date().toISOString(),
       })
