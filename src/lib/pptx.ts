@@ -1,8 +1,14 @@
 import PptxParser from 'pptx-parser';
 
+export interface SlideData {
+  slideNumber: number;
+  text: string;
+}
+
 export interface PptxResult {
   text: string;
   slideCount: number;
+  slides: SlideData[];
 }
 
 export async function extractTextFromPptx(buffer: Buffer): Promise<PptxResult> {
@@ -25,13 +31,19 @@ export async function extractTextFromPptx(buffer: Buffer): Promise<PptxResult> {
 
     // Extract text from all slides
     const slideTexts: string[] = [];
+    const slides: SlideData[] = [];
     let slideCount = 0;
 
     if (result.slides && Array.isArray(result.slides)) {
       slideCount = result.slides.length;
       result.slides.forEach((slide, index) => {
-        if (slide.text && slide.text.trim()) {
-          slideTexts.push(`--- Slide ${index + 1} ---\n${slide.text.trim()}`);
+        const slideText = slide.text ? slide.text.trim() : '';
+        slides.push({
+          slideNumber: index + 1,
+          text: slideText.replace(/\s+/g, ' ').trim()
+        });
+        if (slideText) {
+          slideTexts.push(`--- Slide ${index + 1} ---\n${slideText}`);
         }
       });
     }
@@ -52,9 +64,18 @@ export async function extractTextFromPptx(buffer: Buffer): Promise<PptxResult> {
     return {
       text: cleanedText,
       slideCount,
+      slides,
     };
   } catch (error) {
     console.error('[PPTX] Extraction error:', error);
     throw new Error('Failed to extract text from PowerPoint: ' + (error instanceof Error ? error.message : 'Unknown error'));
   }
+}
+
+// Helper to get text from selected slides only
+export function getTextFromSlides(slides: SlideData[], selectedSlides: number[]): string {
+  return slides
+    .filter(slide => selectedSlides.includes(slide.slideNumber))
+    .map(slide => `--- Slide ${slide.slideNumber} ---\n${slide.text}`)
+    .join('\n\n');
 }

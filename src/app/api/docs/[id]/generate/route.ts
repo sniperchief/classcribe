@@ -64,6 +64,7 @@ export async function POST(
   let outputType: OutputType = 'summary';
   let difficulty: 'easy' | 'medium' | 'hard' = 'medium';
   let quantity: number | undefined;
+  let selectedPages: number[] | null = null; // null means all pages
 
   try {
     const body = await request.json();
@@ -81,11 +82,15 @@ export async function POST(
         quantity = Math.min(Math.max(body.quantity, 10), 100);
       }
     }
+    // Handle page selection
+    if (body.selectedPages && Array.isArray(body.selectedPages) && body.selectedPages.length > 0) {
+      selectedPages = body.selectedPages.filter((p: unknown) => typeof p === 'number' && p > 0);
+    }
   } catch {
     // Default values if no body provided
   }
 
-  console.log(`[Process] Output type: ${outputType}, Difficulty: ${difficulty}, Quantity: ${quantity || 'default'}`);
+  console.log(`[Process] Output type: ${outputType}, Difficulty: ${difficulty}, Quantity: ${quantity || 'default'}, Pages: ${selectedPages ? selectedPages.join(',') : 'all'}`);
 
   const {
     data: { user },
@@ -162,29 +167,54 @@ export async function POST(
 
     // Extract text based on file type
     let extractedText = '';
+    let totalPages = 0;
 
     console.log(`[Process] Step 3: Extracting text from ${material.file_type.toUpperCase()}...`);
 
     switch (material.file_type) {
       case 'pdf': {
-        const { extractTextFromPDF } = await import('@/lib/pdf');
+        const { extractTextFromPDF, getTextFromPages } = await import('@/lib/pdf');
         const pdfResult = await extractTextFromPDF(fileBuffer);
-        extractedText = pdfResult.text;
-        console.log(`[Process] PDF extracted: ${pdfResult.numPages} pages, ${extractedText.length} chars`);
+        totalPages = pdfResult.numPages;
+
+        // Use selected pages if specified, otherwise use all text
+        if (selectedPages && selectedPages.length > 0) {
+          extractedText = getTextFromPages(pdfResult.pages, selectedPages);
+          console.log(`[Process] PDF extracted: ${selectedPages.length} of ${pdfResult.numPages} pages selected, ${extractedText.length} chars`);
+        } else {
+          extractedText = pdfResult.text;
+          console.log(`[Process] PDF extracted: ${pdfResult.numPages} pages (all), ${extractedText.length} chars`);
+        }
         break;
       }
       case 'docx': {
-        const { extractTextFromDocx } = await import('@/lib/docx');
+        const { extractTextFromDocx, getTextFromSections } = await import('@/lib/docx');
         const docxResult = await extractTextFromDocx(fileBuffer);
-        extractedText = docxResult.text;
-        console.log(`[Process] Word document extracted: ${extractedText.length} chars`);
+        totalPages = docxResult.sectionCount;
+
+        // Use selected sections if specified
+        if (selectedPages && selectedPages.length > 0) {
+          extractedText = getTextFromSections(docxResult.sections, selectedPages);
+          console.log(`[Process] Word document extracted: ${selectedPages.length} of ${docxResult.sectionCount} sections selected, ${extractedText.length} chars`);
+        } else {
+          extractedText = docxResult.text;
+          console.log(`[Process] Word document extracted: ${docxResult.sectionCount} sections (all), ${extractedText.length} chars`);
+        }
         break;
       }
       case 'pptx': {
-        const { extractTextFromPptx } = await import('@/lib/pptx');
+        const { extractTextFromPptx, getTextFromSlides } = await import('@/lib/pptx');
         const pptxResult = await extractTextFromPptx(fileBuffer);
-        extractedText = pptxResult.text;
-        console.log(`[Process] PowerPoint extracted: ${pptxResult.slideCount} slides, ${extractedText.length} chars`);
+        totalPages = pptxResult.slideCount;
+
+        // Use selected slides if specified
+        if (selectedPages && selectedPages.length > 0) {
+          extractedText = getTextFromSlides(pptxResult.slides, selectedPages);
+          console.log(`[Process] PowerPoint extracted: ${selectedPages.length} of ${pptxResult.slideCount} slides selected, ${extractedText.length} chars`);
+        } else {
+          extractedText = pptxResult.text;
+          console.log(`[Process] PowerPoint extracted: ${pptxResult.slideCount} slides (all), ${extractedText.length} chars`);
+        }
         break;
       }
       default:
@@ -206,6 +236,8 @@ export async function POST(
       .update({
         content: extractedText,
         output_type: outputType,
+        total_pages: totalPages,
+        selected_pages: selectedPages,
         status: 'generating',
         updated_at: new Date().toISOString(),
       })

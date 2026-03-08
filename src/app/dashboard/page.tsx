@@ -578,7 +578,8 @@ export default function DashboardPage() {
     materialId: string,
     outputType: OutputType,
     difficulty?: DifficultyLevel,
-    quantity?: number
+    quantity?: number,
+    selectedPages?: number[]
   ) => {
     setProcessingMaterialId(materialId);
     setProcessingStatus('processing');
@@ -589,7 +590,7 @@ export default function DashboardPage() {
       const response = await fetch(`/api/docs/${materialId}/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ outputType, difficulty, quantity }),
+        body: JSON.stringify({ outputType, difficulty, quantity, selectedPages }),
       });
 
       if (!response.ok) {
@@ -630,7 +631,8 @@ export default function DashboardPage() {
         pendingMaterial.id,
         options.outputType,
         options.difficulty,
-        options.quantity
+        options.quantity,
+        options.selectedPages
       );
       setPendingMaterial(null);
     }
@@ -1437,6 +1439,7 @@ export default function DashboardPage() {
         onSelect={handleOutputSelection}
         isProcessing={!!processingMaterialId}
         materialTitle={pendingMaterial?.title}
+        materialId={pendingMaterial?.id}
       />
     </main>
   );

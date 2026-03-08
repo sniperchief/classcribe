@@ -9,6 +9,12 @@ export interface GenerationOptions {
   outputType: OutputType;
   difficulty?: DifficultyLevel;
   quantity?: number;
+  selectedPages?: number[];
+}
+
+interface PageInfo {
+  pageNumber: number;
+  preview: string;
 }
 
 interface OutputOption {
@@ -75,6 +81,7 @@ interface OutputSelectionModalProps {
   onSelect: (options: GenerationOptions) => void;
   isProcessing: boolean;
   materialTitle?: string;
+  materialId?: string;
 }
 
 export default function OutputSelectionModal({
@@ -83,10 +90,38 @@ export default function OutputSelectionModal({
   onSelect,
   isProcessing,
   materialTitle,
+  materialId,
 }: OutputSelectionModalProps) {
   const [selectedType, setSelectedType] = useState<OutputType | null>(null);
   const [difficulty, setDifficulty] = useState<DifficultyLevel>('medium');
   const [quantity, setQuantity] = useState<number>(15);
+
+  // Page selection state
+  const [pageSelectionMode, setPageSelectionMode] = useState<'all' | 'custom'>('all');
+  const [pages, setPages] = useState<PageInfo[]>([]);
+  const [totalPages, setTotalPages] = useState(0);
+  const [pageLabel, setPageLabel] = useState('page');
+  const [selectedPages, setSelectedPages] = useState<number[]>([]);
+  const [pageRangeInput, setPageRangeInput] = useState('');
+  const [loadingPages, setLoadingPages] = useState(false);
+
+  // Fetch page info when modal opens
+  useEffect(() => {
+    if (isOpen && materialId) {
+      setLoadingPages(true);
+      fetch(`/api/docs/${materialId}/pages`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.pages) {
+            setPages(data.pages);
+            setTotalPages(data.totalPages);
+            setPageLabel(data.pageLabel || 'page');
+          }
+        })
+        .catch(err => console.error('Failed to fetch pages:', err))
+        .finally(() => setLoadingPages(false));
+    }
+  }, [isOpen, materialId]);
 
   // Reset options when type changes
   useEffect(() => {
@@ -98,6 +133,39 @@ export default function OutputSelectionModal({
     setDifficulty('medium');
   }, [selectedType]);
 
+  // Parse page range input (e.g., "1,3,5-8")
+  const parsePageRange = (input: string): number[] => {
+    const result: number[] = [];
+    const parts = input.split(',').map(s => s.trim()).filter(s => s);
+
+    for (const part of parts) {
+      if (part.includes('-')) {
+        const [start, end] = part.split('-').map(n => parseInt(n.trim()));
+        if (!isNaN(start) && !isNaN(end) && start <= end) {
+          for (let i = start; i <= end; i++) {
+            if (i > 0 && i <= totalPages && !result.includes(i)) {
+              result.push(i);
+            }
+          }
+        }
+      } else {
+        const num = parseInt(part);
+        if (!isNaN(num) && num > 0 && num <= totalPages && !result.includes(num)) {
+          result.push(num);
+        }
+      }
+    }
+
+    return result.sort((a, b) => a - b);
+  };
+
+  // Update selected pages when input changes
+  useEffect(() => {
+    if (pageSelectionMode === 'custom' && pageRangeInput) {
+      setSelectedPages(parsePageRange(pageRangeInput));
+    }
+  }, [pageRangeInput, pageSelectionMode, totalPages]);
+
   if (!isOpen) return null;
 
   const handleGenerate = () => {
@@ -108,6 +176,11 @@ export default function OutputSelectionModal({
       if (selectedType !== 'summary') {
         options.difficulty = difficulty;
         options.quantity = quantity;
+      }
+
+      // Include selected pages if custom selection
+      if (pageSelectionMode === 'custom' && selectedPages.length > 0) {
+        options.selectedPages = selectedPages;
       }
 
       onSelect(options);
@@ -176,6 +249,108 @@ export default function OutputSelectionModal({
             </button>
           ))}
         </div>
+
+        {/* Page Selection - Show when pages are loaded */}
+        {totalPages > 1 && (
+          <div className="px-4 pb-4 sm:px-6 sm:pb-5 border-t border-gray-100 pt-4 sm:pt-5">
+            <label className="block text-sm font-medium text-gray-700 mb-2 sm:mb-3">
+              Generate from
+            </label>
+
+            {loadingPages ? (
+              <div className="flex items-center gap-2 text-sm text-gray-500">
+                <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                </svg>
+                Loading {pageLabel}s...
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {/* All Pages Option */}
+                <button
+                  onClick={() => {
+                    setPageSelectionMode('all');
+                    setSelectedPages([]);
+                    setPageRangeInput('');
+                  }}
+                  disabled={isProcessing}
+                  className={`w-full p-3 rounded-lg border-2 text-left transition-all flex items-center gap-3
+                    ${pageSelectionMode === 'all'
+                      ? 'border-emerald-500 bg-emerald-50'
+                      : 'border-gray-200 hover:border-gray-300'
+                    }
+                    ${isProcessing ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+                  `}
+                >
+                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center
+                    ${pageSelectionMode === 'all' ? 'border-emerald-500 bg-emerald-500' : 'border-gray-300'}
+                  `}>
+                    {pageSelectionMode === 'all' && (
+                      <div className="w-2 h-2 bg-white rounded-full" />
+                    )}
+                  </div>
+                  <span className="font-medium text-[#0F172A]">
+                    All {totalPages} {pageLabel}s
+                  </span>
+                </button>
+
+                {/* Custom Selection Option */}
+                <button
+                  onClick={() => setPageSelectionMode('custom')}
+                  disabled={isProcessing}
+                  className={`w-full p-3 rounded-lg border-2 text-left transition-all
+                    ${pageSelectionMode === 'custom'
+                      ? 'border-emerald-500 bg-emerald-50'
+                      : 'border-gray-200 hover:border-gray-300'
+                    }
+                    ${isProcessing ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+                  `}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center
+                      ${pageSelectionMode === 'custom' ? 'border-emerald-500 bg-emerald-500' : 'border-gray-300'}
+                    `}>
+                      {pageSelectionMode === 'custom' && (
+                        <div className="w-2 h-2 bg-white rounded-full" />
+                      )}
+                    </div>
+                    <span className="font-medium text-[#0F172A]">
+                      Select specific {pageLabel}s
+                    </span>
+                  </div>
+
+                  {/* Page Range Input */}
+                  {pageSelectionMode === 'custom' && (
+                    <div className="mt-3 ml-8">
+                      <input
+                        type="text"
+                        value={pageRangeInput}
+                        onChange={(e) => setPageRangeInput(e.target.value)}
+                        onClick={(e) => e.stopPropagation()}
+                        placeholder={`e.g., 1, 3, 5-8`}
+                        disabled={isProcessing}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm
+                                   focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent
+                                   placeholder:text-gray-400"
+                      />
+                      {selectedPages.length > 0 && (
+                        <p className="text-xs text-emerald-600 mt-1.5">
+                          {selectedPages.length} {pageLabel}{selectedPages.length > 1 ? 's' : ''} selected: {selectedPages.join(', ')}
+                        </p>
+                      )}
+                      {pageRangeInput && selectedPages.length === 0 && (
+                        <p className="text-xs text-red-500 mt-1.5">
+                          Invalid format. Use: 1, 3, 5-8
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </button>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Difficulty & Quantity Options */}
         {showOptions && (
