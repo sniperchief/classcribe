@@ -1,10 +1,9 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
-const PLAN_LIMITS = {
-  free: 2,
-  student: 15,
-};
+// Lifetime limits for free users
+const FREE_MATERIALS_LIMIT = 3;
+const FREE_LECTURES_LIMIT = 1;
 
 // GET /api/dashboard - Get all dashboard data in one request
 export async function GET() {
@@ -20,7 +19,7 @@ export async function GET() {
   }
 
   // Fetch all data in parallel
-  const [lecturesResult, profileResult] = await Promise.all([
+  const [lecturesResult, profileResult, materialsCountResult, lecturesCountResult] = await Promise.all([
     supabase
       .from('lectures')
       .select('*')
@@ -31,10 +30,22 @@ export async function GET() {
       .select('*')
       .eq('id', user.id)
       .single(),
+    // Count total materials (lifetime)
+    supabase
+      .from('materials')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', user.id),
+    // Count total lectures (lifetime)
+    supabase
+      .from('lectures')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', user.id),
   ]);
 
   const lectures = lecturesResult.data || [];
   const profile = profileResult.data;
+  const totalMaterials = materialsCountResult.count || 0;
+  const totalLectures = lecturesCountResult.count || 0;
 
   // Calculate subscription info
   let plan: 'free' | 'student' = 'free';
@@ -45,25 +56,17 @@ export async function GET() {
     }
   }
 
-  // Get usage count from profile (prevents gaming by deleting lectures)
-  const now = new Date();
-  let lecturesUsedThisMonth = profile?.lectures_used_this_month || 0;
-  const usageResetDate = profile?.usage_reset_date ? new Date(profile.usage_reset_date) : null;
+  // Materials limits (lifetime for free users)
+  const materialsUsed = totalMaterials;
+  const materialsLimit = plan === 'free' ? FREE_MATERIALS_LIMIT : 999;
+  const materialsRemaining = plan === 'free' ? Math.max(0, FREE_MATERIALS_LIMIT - materialsUsed) : 999;
+  const canUploadMaterial = plan === 'student' || materialsUsed < FREE_MATERIALS_LIMIT;
 
-  // Check if usage should be reset (new month)
-  if (usageResetDate) {
-    const resetMonth = usageResetDate.getMonth();
-    const resetYear = usageResetDate.getFullYear();
-    const currentMonth = now.getMonth();
-    const currentYear = now.getFullYear();
-
-    if (currentYear > resetYear || (currentYear === resetYear && currentMonth > resetMonth)) {
-      lecturesUsedThisMonth = 0;
-    }
-  }
-
-  const lectureLimit = PLAN_LIMITS[plan];
-  const lecturesRemaining = Math.max(0, lectureLimit - lecturesUsedThisMonth);
+  // Lectures limits (lifetime for free users)
+  const lecturesUsed = totalLectures;
+  const lecturesLimit = plan === 'free' ? FREE_LECTURES_LIMIT : 999;
+  const lecturesRemaining = plan === 'free' ? Math.max(0, FREE_LECTURES_LIMIT - lecturesUsed) : 999;
+  const canUploadLecture = plan === 'student' || lecturesUsed < FREE_LECTURES_LIMIT;
 
   return NextResponse.json({
     lectures,
@@ -71,10 +74,16 @@ export async function GET() {
     email: user.email,
     subscription: {
       plan,
-      lectureLimit,
-      lecturesUsed: lecturesUsedThisMonth,
+      // Materials (lifetime limits)
+      materialsLimit,
+      materialsUsed,
+      materialsRemaining,
+      canUploadMaterial,
+      // Lectures (lifetime limits)
+      lecturesLimit,
+      lecturesUsed,
       lecturesRemaining,
-      canUpload: lecturesRemaining > 0,
+      canUploadLecture,
     },
   });
 }
