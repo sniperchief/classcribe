@@ -4,9 +4,12 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import ReactMarkdown from 'react-markdown';
+import dynamic from 'next/dynamic';
 import type { Material } from '@/lib/types';
 import MCQViewer from '@/components/MCQViewer';
 import QuizViewer from '@/components/QuizViewer';
+
+const ShareModal = dynamic(() => import('@/components/ShareModal'), { ssr: false });
 
 // Flashcard component
 function FlashcardViewer({ flashcards }: { flashcards: { front: string; back: string }[] }) {
@@ -96,6 +99,7 @@ export default function MaterialPage() {
   const [material, setMaterial] = useState<Material | null>(null);
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
 
   useEffect(() => {
     const fetchMaterial = async () => {
@@ -198,6 +202,18 @@ export default function MaterialPage() {
                 <span className="px-3 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 capitalize">
                   {material.output_type === 'mcqs' ? 'MCQs' : material.output_type}
                 </span>
+              )}
+              {/* Share Button */}
+              {material.status === 'completed' && (
+                <button
+                  onClick={() => setShowShareModal(true)}
+                  className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                  aria-label="Share material"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                  </svg>
+                </button>
               )}
               <button
                 onClick={handleDelete}
@@ -354,6 +370,14 @@ export default function MaterialPage() {
           </Link>
         </div>
       </div>
+
+      {/* Share Modal */}
+      <ShareModal
+        isOpen={showShareModal}
+        onClose={() => setShowShareModal(false)}
+        materialId={params.id as string}
+        materialTitle={material.title}
+      />
     </main>
   );
 }
