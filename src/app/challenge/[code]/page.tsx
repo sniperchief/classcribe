@@ -64,6 +64,7 @@ interface SavedProgress {
   guestName: string;
   currentIndex: number;
   code: string;
+  score: number;
 }
 
 const GUEST_QUESTION_LIMIT = 10;
@@ -130,19 +131,23 @@ export default function ChallengePage() {
         try {
           const savedProgress: SavedProgress = JSON.parse(savedProgressStr);
           if (savedProgress.code === code) {
-            // Calculate score from saved answers
-            let restoredScore = 0;
-            const content = result.content;
-            Object.entries(savedProgress.answers).forEach(([idx, answer]) => {
-              const question = content[parseInt(idx)];
-              if (result.challenge.challengeType === 'mcqs') {
-                if (answer === (question as MCQ).correctAnswer) restoredScore++;
-              } else if (result.challenge.challengeType === 'quiz') {
-                if (answer === (question as TrueFalseQuestion).correctAnswer) restoredScore++;
-              }
-            });
+            // Use saved score if available, otherwise calculate from answers
+            let restoredScore = savedProgress.score;
+            if (restoredScore === undefined) {
+              restoredScore = 0;
+              const content = result.content;
+              Object.entries(savedProgress.answers).forEach(([idx, answer]) => {
+                const question = content[parseInt(idx)];
+                if (result.challenge.challengeType === 'mcqs') {
+                  if (answer === (question as MCQ).correctAnswer) restoredScore++;
+                } else if (result.challenge.challengeType === 'quiz') {
+                  if (answer === (question as TrueFalseQuestion).correctAnswer) restoredScore++;
+                }
+              });
+            }
 
             setAnswers(savedProgress.answers);
+            setGuestName(savedProgress.guestName);
             setScore(restoredScore);
             setCurrentIndex(Object.keys(savedProgress.answers).length);
             setStarted(true);
@@ -205,12 +210,16 @@ export default function ChallengePage() {
 
       // Check if guest has hit the limit (10 questions)
       if (!data.isAuthenticated && totalAnswered >= GUEST_QUESTION_LIMIT && data.totalQuestions > GUEST_QUESTION_LIMIT) {
+        // Calculate current score including this answer
+        const currentScore = isCorrect ? score + 1 : score;
+
         // Save progress to sessionStorage
         const progressToSave: SavedProgress = {
           answers: newAnswers,
           guestName,
           currentIndex: nextIndex,
           code,
+          score: currentScore,
         };
         sessionStorage.setItem(`challenge_progress_${code}`, JSON.stringify(progressToSave));
         setMustSignup(true);
@@ -287,7 +296,22 @@ export default function ChallengePage() {
   // Pre-challenge screen
   if (!started) {
     return (
-      <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center px-4">
+      <div className="min-h-screen bg-[#F8FAFC] px-4">
+        {/* Dashboard link for authenticated users */}
+        {data.isAuthenticated && (
+          <div className="max-w-md mx-auto pt-4">
+            <Link
+              href="/dashboard"
+              className="inline-flex items-center gap-2 text-sm text-[#A855F7] hover:text-[#9333EA] font-medium"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+              </svg>
+              Go to Dashboard
+            </Link>
+          </div>
+        )}
+        <div className="flex items-center justify-center min-h-[calc(100vh-60px)]">
         <div className="bg-white rounded-2xl shadow-lg p-8 max-w-md w-full">
           <div className="text-center mb-6">
             <div className="w-16 h-16 bg-[#A855F7] rounded-full flex items-center justify-center mx-auto mb-4">
@@ -362,6 +386,7 @@ export default function ChallengePage() {
             </div>
           )}
         </div>
+        </div>
       </div>
     );
   }
@@ -431,7 +456,22 @@ export default function ChallengePage() {
     const passed = percentage >= 50;
 
     return (
-      <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center px-4">
+      <div className="min-h-screen bg-[#F8FAFC] px-4">
+        {/* Dashboard link for authenticated users */}
+        {data.isAuthenticated && (
+          <div className="max-w-md mx-auto pt-4">
+            <Link
+              href="/dashboard"
+              className="inline-flex items-center gap-2 text-sm text-[#A855F7] hover:text-[#9333EA] font-medium"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+              </svg>
+              Go to Dashboard
+            </Link>
+          </div>
+        )}
+        <div className="flex items-center justify-center min-h-[calc(100vh-60px)]">
         <div className="bg-white rounded-2xl shadow-lg p-8 max-w-md w-full">
           <div className="text-center mb-6">
             <div className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 ${passed ? 'bg-green-100' : 'bg-red-100'}`}>
@@ -503,7 +543,16 @@ export default function ChallengePage() {
                 Sign Up for Full Access
               </Link>
             )}
+            {data.isAuthenticated && (
+              <Link
+                href="/dashboard"
+                className="block w-full py-3 border border-[#A855F7] text-[#A855F7] rounded-lg font-medium text-center hover:bg-[#A855F7]/10 transition-colors"
+              >
+                Create Your Own Quiz
+              </Link>
+            )}
           </div>
+        </div>
         </div>
       </div>
     );
@@ -515,6 +564,21 @@ export default function ChallengePage() {
   return (
     <div className="min-h-screen bg-[#F8FAFC] py-8 px-4">
       <div className="max-w-2xl mx-auto">
+        {/* Dashboard link for authenticated users */}
+        {data.isAuthenticated && (
+          <div className="mb-4">
+            <Link
+              href="/dashboard"
+              className="inline-flex items-center gap-2 text-sm text-[#A855F7] hover:text-[#9333EA] font-medium"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+              </svg>
+              Go to Dashboard
+            </Link>
+          </div>
+        )}
+
         {/* Progress */}
         <div className="mb-6">
           <div className="flex justify-between text-sm text-gray-600 mb-2">
