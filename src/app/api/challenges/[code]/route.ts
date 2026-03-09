@@ -36,7 +36,18 @@ export async function GET(
     .eq('share_code', code)
     .single();
 
-  if (challengeError || !challenge) {
+  if (challengeError) {
+    console.error('[Challenge] Error fetching challenge:', challengeError);
+    // Check if table doesn't exist
+    if (challengeError.message?.includes('does not exist')) {
+      return NextResponse.json({
+        error: 'Challenge feature not set up. Please run supabase-challenges.sql in Supabase.'
+      }, { status: 500 });
+    }
+    return NextResponse.json({ error: 'Challenge not found' }, { status: 404 });
+  }
+
+  if (!challenge) {
     return NextResponse.json({ error: 'Challenge not found' }, { status: 404 });
   }
 
