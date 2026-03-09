@@ -101,29 +101,6 @@ function SignupForm() {
 
   return (
     <div className="w-full max-w-md">
-      {/* Logo */}
-      <div className="flex justify-center mb-6">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="w-10 h-10 bg-[#A855F7] rounded-xl flex items-center justify-center">
-            <svg
-              className="w-6 h-6 text-white"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-              />
-            </svg>
-          </div>
-          <span className="text-2xl font-bold text-[#0F172A]">Classcribe</span>
-        </Link>
-      </div>
-
       {/* Heading */}
       <h1 className="text-2xl sm:text-3xl font-bold text-[#0F172A] text-center mb-2">
         {hasGuestContent ? 'Your study materials are ready!' : 'Get started!'}
@@ -267,6 +244,14 @@ function SignupForm() {
             </button>
           </div>
         </div>
+
+        {/* Terms Notice */}
+        <p className="text-xs text-gray-500 text-center">
+          By signing up, you accept Classcribe&apos;s{' '}
+          <Link href="/terms" className="text-[#A855F7] hover:underline">terms of service</Link>
+          {' '}and{' '}
+          <Link href="/privacy" className="text-[#A855F7] hover:underline">privacy policy</Link>.
+        </p>
 
         {/* Submit Button */}
         <button

@@ -95,7 +95,7 @@ export default function OnboardingPage() {
           Complete Your Profile
         </h1>
         <p style={{ color: '#6b7280', marginBottom: '2rem', textAlign: 'center' }}>
-          Help us personalize your lecture notes
+          Help us personalize how you study
         </p>
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
