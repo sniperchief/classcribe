@@ -257,9 +257,9 @@ function SignupForm() {
           />
           <label htmlFor="acceptTerms" className="text-sm font-bold text-gray-700 cursor-pointer">
             By signing up, you accept Classcribe&apos;s{' '}
-            <Link href="/terms" className="text-[#A855F7] font-bold underline">terms of service</Link>
+            <Link href="/terms" className="text-[#A855F7] font-bold underline decoration-[#A855F7] decoration-2">terms of service</Link>
             {' '}and{' '}
-            <Link href="/privacy" className="text-[#A855F7] font-bold underline">privacy policy</Link>.
+            <Link href="/privacy" className="text-[#A855F7] font-bold underline decoration-[#A855F7] decoration-2">privacy policy</Link>.
           </label>
         </div>
 
