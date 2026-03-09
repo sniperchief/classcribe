@@ -5,9 +5,13 @@ import type { MCQ } from '@/lib/types';
 
 interface MCQViewerProps {
   mcqs: MCQ[];
+  materialId?: string;
 }
 
-export default function MCQViewer({ mcqs }: MCQViewerProps) {
+export default function MCQViewer({ mcqs, materialId }: MCQViewerProps) {
+  const [challengeUrl, setChallengeUrl] = useState<string | null>(null);
+  const [creatingChallenge, setCreatingChallenge] = useState(false);
+  const [copied, setCopied] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [showExplanation, setShowExplanation] = useState(false);
@@ -66,6 +70,52 @@ export default function MCQViewer({ mcqs }: MCQViewerProps) {
     return correct;
   };
 
+  const handleCreateChallenge = async () => {
+    if (!materialId) return;
+
+    setCreatingChallenge(true);
+    try {
+      const score = getScore();
+      const res = await fetch('/api/challenges', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          materialId,
+          challengeType: 'mcqs',
+          score,
+          totalQuestions: mcqs.length,
+        }),
+      });
+      const data = await res.json();
+      if (data.challengeUrl) {
+        setChallengeUrl(data.challengeUrl);
+      }
+    } catch (err) {
+      console.error('Failed to create challenge:', err);
+    } finally {
+      setCreatingChallenge(false);
+    }
+  };
+
+  const handleCopyLink = async () => {
+    if (!challengeUrl) return;
+    try {
+      await navigator.clipboard.writeText(challengeUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Fallback
+      const textArea = document.createElement('textarea');
+      textArea.value = challengeUrl;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
   // Results screen with emotional feedback
   if (showResults) {
     const score = getScore();
@@ -112,6 +162,61 @@ export default function MCQViewer({ mcqs }: MCQViewerProps) {
             <div className="text-4xl sm:text-5xl font-bold text-white mb-1 sm:mb-2">{percentage}%</div>
             <p className="text-white/80 text-sm sm:text-base">{score} out of {mcqs.length} correct</p>
           </div>
+
+          {/* Challenge Friends Section */}
+          {materialId && (
+            <div className="bg-white/10 rounded-xl sm:rounded-2xl p-4 sm:p-5 mb-4 sm:mb-6">
+              <p className="text-white font-semibold text-base sm:text-lg mb-3 text-center">
+                🏆 Challenge your friends! Share and see who scores higher
+              </p>
+              {!challengeUrl ? (
+                <button
+                  onClick={handleCreateChallenge}
+                  disabled={creatingChallenge}
+                  className="w-full py-2.5 sm:py-3 bg-white text-[#A855F7] rounded-lg sm:rounded-xl font-semibold hover:bg-gray-100 transition-colors disabled:opacity-50 text-sm sm:text-base"
+                >
+                  {creatingChallenge ? 'Creating...' : 'Create Challenge Link'}
+                </button>
+              ) : (
+                <div className="space-y-3">
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={challengeUrl}
+                      readOnly
+                      className="flex-1 px-3 py-2 rounded-lg text-sm bg-white/20 text-white border border-white/30"
+                    />
+                    <button
+                      onClick={handleCopyLink}
+                      className={`px-4 py-2 rounded-lg font-medium transition-colors text-sm ${
+                        copied ? 'bg-green-500 text-white' : 'bg-white text-[#A855F7] hover:bg-gray-100'
+                      }`}
+                    >
+                      {copied ? 'Copied!' : 'Copy'}
+                    </button>
+                  </div>
+                  <div className="flex gap-2">
+                    <a
+                      href={`https://wa.me/?text=Can you beat my score? ${encodeURIComponent(challengeUrl)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 py-2 bg-green-500 text-white rounded-lg font-medium text-center hover:bg-green-600 transition-colors text-sm"
+                    >
+                      WhatsApp
+                    </a>
+                    <a
+                      href={`https://twitter.com/intent/tweet?text=Can you beat my score?&url=${encodeURIComponent(challengeUrl)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 py-2 bg-black text-white rounded-lg font-medium text-center hover:bg-gray-800 transition-colors text-sm"
+                    >
+                      X (Twitter)
+                    </a>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Buttons */}
           <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 justify-center">

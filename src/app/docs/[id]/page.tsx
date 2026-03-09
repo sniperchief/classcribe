@@ -250,10 +250,10 @@ export default function MaterialPage() {
             <FlashcardViewer flashcards={material.flashcards} />
           ) : /* MCQs Output */
           material.output_type === 'mcqs' && material.mcqs && material.mcqs.length > 0 ? (
-            <MCQViewer mcqs={material.mcqs} />
+            <MCQViewer mcqs={material.mcqs} materialId={material.id} />
           ) : /* Quiz Output */
           material.output_type === 'quiz' && material.quiz && material.quiz.length > 0 ? (
-            <QuizViewer quiz={material.quiz} />
+            <QuizViewer quiz={material.quiz} materialId={material.id} />
           ) : /* Summary Output */
           material.generated_content ? (
             <article className="notes-content">
