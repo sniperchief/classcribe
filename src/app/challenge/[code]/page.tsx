@@ -252,7 +252,7 @@ export default function ChallengePage() {
         body: JSON.stringify({
           score: finalScore,
           totalQuestions: data.totalQuestions,
-          guestName: data.isAuthenticated ? null : guestName,
+          guestName: guestName || null,  // Always send guestName if available (for users who started as guests)
         }),
       });
 

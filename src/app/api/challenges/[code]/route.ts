@@ -147,13 +147,32 @@ export async function POST(
 
   const percentage = Math.round((score / totalQuestions) * 100 * 100) / 100;
 
+  // Determine display name for leaderboard
+  let displayName = guestName || null;
+
+  // If no guestName provided and user is authenticated, try to get their profile name
+  if (!displayName && user) {
+    const { data: profile } = await adminClient
+      .from('profiles')
+      .select('full_name')
+      .eq('id', user.id)
+      .single();
+
+    displayName = profile?.full_name || null;
+  }
+
+  // Default to 'Guest' if still no name
+  if (!displayName) {
+    displayName = 'Guest';
+  }
+
   // Insert score
   const { data: newScore, error: insertError } = await adminClient
     .from('challenge_scores')
     .insert({
       challenge_id: challenge.id,
       user_id: user?.id || null,
-      guest_name: user ? null : (guestName || 'Guest'),
+      guest_name: displayName,
       score,
       total_questions: totalQuestions,
       percentage,
