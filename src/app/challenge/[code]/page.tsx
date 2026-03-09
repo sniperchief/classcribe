@@ -4,16 +4,21 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 
+interface MCQOption {
+  label: string;
+  text: string;
+}
+
 interface MCQ {
   question: string;
-  options: string[];
-  correctAnswer: number;
+  options: MCQOption[];
+  correctAnswer: string;
   explanation?: string;
 }
 
 interface TrueFalseQuestion {
   statement: string;
-  isTrue: boolean;
+  correctAnswer: boolean;
   explanation?: string;
 }
 
@@ -66,7 +71,7 @@ export default function ChallengePage() {
   const [started, setStarted] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [score, setScore] = useState(0);
-  const [selectedAnswer, setSelectedAnswer] = useState<number | boolean | null>(null);
+  const [selectedAnswer, setSelectedAnswer] = useState<string | boolean | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [completed, setCompleted] = useState(false);
   const [submittingScore, setSubmittingScore] = useState(false);
@@ -103,7 +108,7 @@ export default function ChallengePage() {
     setStarted(true);
   };
 
-  const handleAnswer = (answer: number | boolean) => {
+  const handleAnswer = (answer: string | boolean) => {
     if (showResult) return;
     setSelectedAnswer(answer);
   };
@@ -120,7 +125,7 @@ export default function ChallengePage() {
       isCorrect = selectedAnswer === mcq.correctAnswer;
     } else if (data.challenge.challengeType === 'quiz') {
       const quiz = currentQuestion as TrueFalseQuestion;
-      isCorrect = selectedAnswer === quiz.isTrue;
+      isCorrect = selectedAnswer === quiz.correctAnswer;
     }
 
     if (isCorrect) {
@@ -398,23 +403,23 @@ export default function ChallengePage() {
                 {(currentQuestion as MCQ).question}
               </h2>
               <div className="space-y-3">
-                {(currentQuestion as MCQ).options.map((option, index) => {
-                  const isSelected = selectedAnswer === index;
-                  const isCorrect = index === (currentQuestion as MCQ).correctAnswer;
+                {(currentQuestion as MCQ).options.map((option) => {
+                  const isSelected = selectedAnswer === option.label;
+                  const isCorrect = option.label === (currentQuestion as MCQ).correctAnswer;
                   const showCorrect = showResult && isCorrect;
                   const showWrong = showResult && isSelected && !isCorrect;
 
                   return (
                     <button
-                      key={index}
-                      onClick={() => handleAnswer(index)}
+                      key={option.label}
+                      onClick={() => handleAnswer(option.label)}
                       disabled={showResult}
                       className={`w-full p-4 text-left rounded-lg border-2 transition-all
                         ${showCorrect ? 'border-green-500 bg-green-50' :
                           showWrong ? 'border-red-500 bg-red-50' :
                           isSelected ? 'border-[#A855F7] bg-[#A855F7]/10' : 'border-gray-200 hover:border-[#A855F7]'}`}
                     >
-                      <span className="font-medium">{String.fromCharCode(65 + index)}.</span> {option}
+                      <span className="font-medium">{option.label}.</span> {option.text}
                     </button>
                   );
                 })}
@@ -430,7 +435,7 @@ export default function ChallengePage() {
               <div className="flex gap-4">
                 {[true, false].map((value) => {
                   const isSelected = selectedAnswer === value;
-                  const isCorrect = value === (currentQuestion as TrueFalseQuestion).isTrue;
+                  const isCorrect = value === (currentQuestion as TrueFalseQuestion).correctAnswer;
                   const showCorrect = showResult && isCorrect;
                   const showWrong = showResult && isSelected && !isCorrect;
 
