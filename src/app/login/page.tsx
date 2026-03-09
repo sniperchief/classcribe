@@ -43,9 +43,8 @@ function LoginForm() {
       setError(error.message);
       setLoading(false);
     } else {
-      // Refresh to sync session with server, then redirect
-      router.refresh();
       // Use hard navigation to ensure cookies are properly sent
+      // Don't call router.refresh() as it triggers middleware which redirects to dashboard
       const destination = redirectTo ? `/${redirectTo}` : '/dashboard';
       window.location.href = destination;
     }
