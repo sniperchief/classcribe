@@ -40,6 +40,11 @@ function SignupForm() {
     if (materialToken) {
       sessionStorage.setItem('guest_material_token', materialToken);
     }
+    // Store redirect URL for after verification (ensure leading /)
+    if (redirectTo) {
+      const redirectPath = redirectTo.startsWith('/') ? redirectTo : `/${redirectTo}`;
+      sessionStorage.setItem('post_verification_redirect', redirectPath);
+    }
   }, [router, redirectTo, guestToken, materialToken]);
 
   // Check if form is complete

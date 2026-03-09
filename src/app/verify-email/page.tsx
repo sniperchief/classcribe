@@ -153,6 +153,16 @@ export default function VerifyEmailPage() {
           sessionStorage.removeItem('guest_material_token');
         }
 
+        // Check for stored redirect URL (e.g., from challenge flow)
+        const postVerificationRedirect = sessionStorage.getItem('post_verification_redirect');
+        if (postVerificationRedirect) {
+          sessionStorage.removeItem('post_verification_redirect');
+          setTimeout(() => {
+            window.location.href = postVerificationRedirect;
+          }, 1500);
+          return;
+        }
+
         setTimeout(() => {
           window.location.href = '/onboarding';
         }, 1500);
