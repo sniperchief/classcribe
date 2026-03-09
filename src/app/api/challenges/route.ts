@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 
 // Generate a short unique share code
 function generateShareCode(): string {
@@ -47,7 +48,9 @@ export async function POST(request: NextRequest) {
   }
 
   // Check if challenge already exists for this material and type
-  const { data: existingChallenge } = await supabase
+  const adminClient = createAdminClient();
+
+  const { data: existingChallenge } = await adminClient
     .from('quiz_challenges')
     .select('share_code')
     .eq('material_id', materialId)
@@ -58,7 +61,7 @@ export async function POST(request: NextRequest) {
   if (existingChallenge) {
     // Update creator's score if provided
     if (score !== undefined && totalQuestions !== undefined) {
-      await supabase
+      await adminClient
         .from('quiz_challenges')
         .update({
           creator_score: score,
@@ -80,7 +83,7 @@ export async function POST(request: NextRequest) {
   // Create new challenge
   const shareCode = generateShareCode();
 
-  const { error: insertError } = await supabase
+  const { data: newChallenge, error: insertError } = await adminClient
     .from('quiz_challenges')
     .insert({
       material_id: materialId,
@@ -89,11 +92,15 @@ export async function POST(request: NextRequest) {
       created_by: user.id,
       creator_score: score,
       creator_total: totalQuestions,
-    });
+    })
+    .select()
+    .single();
+
+  console.log('[Challenge] Created:', newChallenge, 'Error:', insertError);
 
   if (insertError) {
     console.error('Error creating challenge:', insertError);
-    return NextResponse.json({ error: 'Failed to create challenge' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to create challenge', details: insertError.message }, { status: 500 });
   }
 
   const challengeUrl = `${process.env.NEXT_PUBLIC_APP_URL}/challenge/${shareCode}`;

@@ -28,13 +28,12 @@ export async function GET(
         mcqs,
         quiz,
         flashcards
-      ),
-      profiles:created_by (
-        full_name
       )
     `)
     .eq('share_code', code)
     .single();
+
+  console.log('[Challenge] Code:', code, 'Result:', challenge, 'Error:', challengeError);
 
   if (challengeError) {
     console.error('[Challenge] Error fetching challenge:', challengeError);
@@ -100,7 +99,7 @@ export async function GET(
       id: challenge.id,
       shareCode: challenge.share_code,
       challengeType: challenge.challenge_type,
-      creatorName: challenge.profiles?.full_name || 'Anonymous',
+      creatorName: 'A friend',
       creatorScore: challenge.creator_score,
       creatorTotal: challenge.creator_total,
       createdAt: challenge.created_at,
