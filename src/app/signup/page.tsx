@@ -255,11 +255,11 @@ function SignupForm() {
             onChange={(e) => setAcceptedTerms(e.target.checked)}
             className="mt-1 w-4 h-4 accent-[#A855F7] cursor-pointer"
           />
-          <label htmlFor="acceptTerms" className="text-sm font-bold text-gray-700 cursor-pointer">
+          <label htmlFor="acceptTerms" className="text-sm text-gray-700 cursor-pointer" style={{ fontFamily: 'Times New Roman, serif' }}>
             By signing up, you accept Classcribe&apos;s{' '}
-            <Link href="/terms" className="text-[#A855F7] font-bold underline decoration-[#A855F7] decoration-2">terms of service</Link>
+            <Link href="/terms" className="text-[#A855F7] underline decoration-[#A855F7] decoration-2">terms of service</Link>
             {' '}and{' '}
-            <Link href="/privacy" className="text-[#A855F7] font-bold underline decoration-[#A855F7] decoration-2">privacy policy</Link>.
+            <Link href="/privacy" className="text-[#A855F7] underline decoration-[#A855F7] decoration-2">privacy policy</Link>.
           </label>
         </div>
 
