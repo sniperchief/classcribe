@@ -83,7 +83,7 @@ function LoginForm() {
 
         {/* Subtext */}
         <p className="text-gray-600 text-center mb-8 text-sm sm:text-base px-4">
-          Sign in to continue transforming your lectures into notes
+          Sign in
         </p>
 
         {/* Form */}

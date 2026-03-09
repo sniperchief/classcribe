@@ -133,7 +133,7 @@ function SignupForm() {
       <p className="text-gray-600 text-center mb-8 text-sm sm:text-base px-4">
         {hasGuestContent
           ? 'Create an account to view your generated content'
-          : 'Join over 10,000+ students globally and start transforming your lectures and documents into study materials'
+          : ''
         }
       </p>
 
