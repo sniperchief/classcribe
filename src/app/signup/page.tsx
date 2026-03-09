@@ -12,6 +12,7 @@ function SignupForm() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(true);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -42,7 +43,7 @@ function SignupForm() {
   }, [router, redirectTo, guestToken, materialToken]);
 
   // Check if form is complete
-  const isFormComplete = fullName.trim() !== '' && email.trim() !== '' && password.trim() !== '' && confirmPassword.trim() !== '';
+  const isFormComplete = fullName.trim() !== '' && email.trim() !== '' && password.trim() !== '' && confirmPassword.trim() !== '' && acceptedTerms;
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -245,13 +246,22 @@ function SignupForm() {
           </div>
         </div>
 
-        {/* Terms Notice */}
-        <p className="text-xs text-gray-500 text-center">
-          By signing up, you accept Classcribe&apos;s{' '}
-          <Link href="/terms" className="text-[#A855F7] hover:underline">terms of service</Link>
-          {' '}and{' '}
-          <Link href="/privacy" className="text-[#A855F7] hover:underline">privacy policy</Link>.
-        </p>
+        {/* Terms Agreement Checkbox */}
+        <div className="flex items-start gap-3">
+          <input
+            type="checkbox"
+            id="acceptTerms"
+            checked={acceptedTerms}
+            onChange={(e) => setAcceptedTerms(e.target.checked)}
+            className="mt-1 w-4 h-4 accent-[#A855F7] cursor-pointer"
+          />
+          <label htmlFor="acceptTerms" className="text-sm font-bold text-gray-700 cursor-pointer">
+            By signing up, you accept Classcribe&apos;s{' '}
+            <Link href="/terms" className="text-[#A855F7] font-bold hover:underline">terms of service</Link>
+            {' '}and{' '}
+            <Link href="/privacy" className="text-[#A855F7] font-bold hover:underline">privacy policy</Link>.
+          </label>
+        </div>
 
         {/* Submit Button */}
         <button
