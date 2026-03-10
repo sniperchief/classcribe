@@ -229,12 +229,12 @@ async function processGuestMaterial(
         break;
 
       case 'mcqs':
-        mcqsData = await generateMCQs(extractedText, difficulty, quantity || 25);
+        mcqsData = await generateMCQs(extractedText, difficulty, quantity || 50);
         console.log(`[Guest Material] MCQs generated: ${mcqsData.length} questions`);
         break;
 
       case 'quiz':
-        quizData = await generateQuiz(extractedText, difficulty, quantity || 25);
+        quizData = await generateQuiz(extractedText, difficulty, quantity || 50);
         console.log(`[Guest Material] Quiz generated: ${quizData.length} questions`);
         break;
     }

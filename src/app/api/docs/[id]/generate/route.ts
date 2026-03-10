@@ -277,7 +277,7 @@ export async function POST(
 
       case 'mcqs':
         mcqsData = await withRetry(
-          () => generateMCQs(extractedText, difficulty, quantity || 25),
+          () => generateMCQs(extractedText, difficulty, quantity || 50),
           5,
           3000,
           'Generate MCQs'
@@ -287,7 +287,7 @@ export async function POST(
 
       case 'quiz':
         quizData = await withRetry(
-          () => generateQuiz(extractedText, difficulty, quantity || 25),
+          () => generateQuiz(extractedText, difficulty, quantity || 50),
           5,
           3000,
           'Generate quiz'

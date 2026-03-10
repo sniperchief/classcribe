@@ -479,7 +479,7 @@ Return ONLY the JSON array, no markdown, no additional text`;
 export async function generateMCQs(
   documentText: string,
   difficulty: DifficultyLevel = 'medium',
-  quantity: number = 25
+  quantity: number = 50
 ): Promise<MCQ[]> {
   console.log('[Anthropic] Starting MCQ generation...');
   console.log('[Anthropic] Document text length:', documentText.length);
@@ -490,7 +490,7 @@ export async function generateMCQs(
 
     const message = await client.messages.create({
       model: 'claude-sonnet-4-20250514',
-      max_tokens: 6000,
+      max_tokens: 10000,
       messages: [
         {
           role: 'user',
@@ -551,7 +551,7 @@ export async function generateMCQs(
 export async function generateQuiz(
   documentText: string,
   difficulty: DifficultyLevel = 'medium',
-  quantity: number = 25
+  quantity: number = 50
 ): Promise<TrueFalseQuestion[]> {
   console.log('[Anthropic] Starting quiz generation...');
   console.log('[Anthropic] Document text length:', documentText.length);
@@ -562,7 +562,7 @@ export async function generateQuiz(
 
     const message = await client.messages.create({
       model: 'claude-sonnet-4-20250514',
-      max_tokens: 5000,
+      max_tokens: 10000,
       messages: [
         {
           role: 'user',
