@@ -9,6 +9,7 @@ import {
   FinalCTA,
   Footer,
 } from '@/components/landing';
+import BetaBanner from '@/components/BetaBanner';
 import type { Metadata } from 'next';
 
 // Force static generation for the landing page
@@ -28,6 +29,7 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <div className="w-full overflow-x-hidden">
+      <BetaBanner />
       <Navbar />
       <main className="overflow-x-hidden">
         <Hero />

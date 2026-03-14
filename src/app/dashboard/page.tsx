@@ -9,6 +9,7 @@ import type { Lecture, Profile, Material, OutputType } from '@/lib/types';
 import type { GenerationOptions, DifficultyLevel } from '@/components/OutputSelectionModal';
 import DashboardSkeleton from '@/components/DashboardSkeleton';
 import MobileMenu from '@/components/MobileMenu';
+import BetaBanner from '@/components/BetaBanner';
 
 // Lazy load modals - they're not needed on initial render
 const ProgressModal = dynamic(() => import('@/components/ProgressModal'), {
@@ -759,6 +760,7 @@ export default function DashboardPage() {
 
   return (
     <main className="min-h-screen bg-[#F8FAFC]">
+      <BetaBanner />
       {/* Header */}
       <header className="bg-white border-b border-[#E5E7EB] sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
